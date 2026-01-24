@@ -201,6 +201,13 @@ const Icons = {
       <polyline points="17 6 23 6 23 12" />
     </svg>
   ),
+  Menu: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -323,6 +330,9 @@ function App() {
   const [filteredBeans, setFilteredBeans] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Derived state
   const rating = RATINGS[ratingIndex];
@@ -977,43 +987,62 @@ function App() {
         <Icons.Coffee />
         <h1 className="header__title">Luxe Cafe Dial-In</h1>
         <p className="header__subtitle">Ninja Luxe Cafe Pro Calibration Dashboard</p>
-        <div className="header__btns">
+
+        {/* Hamburger button for mobile */}
+        <button
+          className="header__hamburger"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <Icons.X /> : <Icons.Menu />}
+        </button>
+
+        {/* Navigation buttons */}
+        <div className={`header__btns ${mobileMenuOpen ? 'header__btns--open' : ''}`}>
           <button
             className="header__btn"
-            onClick={() => setShowBeanLibrary(true)}
+            onClick={() => { setShowBeanLibrary(true); setMobileMenuOpen(false); }}
             title="Manage Bean Library"
           >
             <Icons.Bean /> Bean Library
           </button>
           <button
             className="header__btn"
-            onClick={() => setShowStats(true)}
+            onClick={() => { setShowStats(true); setMobileMenuOpen(false); }}
             title="View Statistics"
           >
             <Icons.PieChart /> Stats
           </button>
           <button
             className="header__btn header__btn--icon"
-            onClick={() => setShowCaffeine(true)}
+            onClick={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
             title="Caffeine Tracker"
           >
             <Icons.Caffeine />
           </button>
           <button
             className="header__btn header__btn--icon"
-            onClick={toggleTheme}
+            onClick={() => { toggleTheme(); setMobileMenuOpen(false); }}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
             {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
           </button>
           <button
             className="header__btn header__btn--icon"
-            onClick={() => setShowDataModal(true)}
+            onClick={() => { setShowDataModal(true); setMobileMenuOpen(false); }}
             title="Data Management"
           >
             <Icons.Settings />
           </button>
         </div>
+
+        {/* Mobile menu overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="header__overlay"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
       </header>
 
       {/* Quick Recipe Menu */}
