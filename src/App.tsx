@@ -189,6 +189,12 @@ const Icons = {
       <line x1="14" y1="1" x2="14" y2="4" />
     </svg>
   ),
+  Copy: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -248,6 +254,7 @@ function App() {
   // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [recipeName, setRecipeName] = useState('');
+  const [editingRecipe, setEditingRecipe] = useState<SavedRecipe | null>(null);
   const [selectedShot, setSelectedShot] = useState<ShotLog | null>(null);
 
   // Bean Library modal
@@ -439,6 +446,48 @@ function App() {
     setRecipes(recipes.filter(r => r.id !== id));
   };
 
+  // Open edit recipe modal
+  const openEditRecipe = (recipe: SavedRecipe) => {
+    setEditingRecipe(recipe);
+    setRecipeName(recipe.name);
+    setBeanName(recipe.beanName);
+    setBrewType(recipe.brewType);
+    setBasket(recipe.basket);
+    setGrindSize(recipe.grindSize);
+    setStrength(recipe.strength);
+    if (recipe.temperature) setTemperature(recipe.temperature);
+    if (recipe.milk) {
+      setShowMilk(true);
+      setMilkType(recipe.milk.type);
+      setMilkStyle(recipe.milk.style);
+    } else {
+      setShowMilk(false);
+    }
+    setNotes(recipe.notes || '');
+  };
+
+  // Update existing recipe
+  const updateRecipe = () => {
+    if (!editingRecipe || !recipeName.trim()) return;
+
+    const updated: SavedRecipe = {
+      ...editingRecipe,
+      name: recipeName.trim(),
+      beanName,
+      brewType,
+      basket,
+      grindSize,
+      temperature: isColdBrew ? undefined : temperature,
+      strength,
+      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
+      notes: notes.trim() || undefined,
+    };
+
+    setRecipes(recipes.map(r => r.id === editingRecipe.id ? updated : r));
+    setEditingRecipe(null);
+    setRecipeName('');
+  };
+
   // Delete a shot
   const deleteShot = (id: string) => {
     // Also remove from favorites if it was a favorite
@@ -452,6 +501,27 @@ function App() {
       }
     }
     setShots(shots.filter(s => s.id !== id));
+    setSelectedShot(null);
+  };
+
+  // Duplicate a shot (copy settings to form)
+  const duplicateShot = (shot: ShotLog) => {
+    setBeanName(shot.beanName);
+    setBrewType(shot.brewType);
+    setGrindSize(shot.grindSize);
+    setBasket(shot.basket);
+    setStrength(shot.strength);
+    if (shot.temperature) setTemperature(shot.temperature);
+    if (shot.milk) {
+      setShowMilk(true);
+      setMilkType(shot.milk.type);
+      setMilkStyle(shot.milk.style);
+    } else {
+      setShowMilk(false);
+    }
+    setNotes(shot.notes || '');
+    // Reset rating to Balanced for new shot
+    setRatingIndex(2);
     setSelectedShot(null);
   };
 
@@ -702,6 +772,13 @@ function App() {
                   title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
                 >
                   {recipe.name}
+                </button>
+                <button
+                  className="recipe-chip__edit"
+                  onClick={() => openEditRecipe(recipe)}
+                  title="Edit recipe"
+                >
+                  <Icons.Edit />
                 </button>
                 <button
                   className="recipe-chip__delete"
@@ -1207,6 +1284,133 @@ function App() {
         </div>
       )}
 
+      {/* Edit Recipe Modal */}
+      {editingRecipe && (
+        <div className="modal-overlay" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.Edit /> Edit Recipe</h3>
+              <button className="modal__close" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              <div className="form-group">
+                <label className="form-label">Recipe Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. My Sunday Vanilla Latte"
+                  value={recipeName}
+                  onChange={(e) => setRecipeName(e.target.value)}
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Bean Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={beanName}
+                  onChange={(e) => setBeanName(e.target.value)}
+                />
+              </div>
+
+              <div className="edit-recipe__grid">
+                <div className="form-group">
+                  <label className="form-label">Grind Size</label>
+                  <input
+                    type="number"
+                    className="form-input form-input--sm"
+                    min={1}
+                    max={25}
+                    value={grindSize}
+                    onChange={(e) => setGrindSize(Number(e.target.value))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Strength</label>
+                  <div className="pill-group pill-group--sm">
+                    {STRENGTHS.map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        className={`pill-btn pill-btn--sm ${strength === s.value ? 'pill-btn--active' : ''}`}
+                        onClick={() => setStrength(s.value)}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="edit-recipe__grid">
+                <div className="form-group">
+                  <label className="form-label">Basket</label>
+                  <div className="pill-group pill-group--sm">
+                    {BASKETS.map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        className={`pill-btn pill-btn--sm ${basket === b ? 'pill-btn--active' : ''}`}
+                        onClick={() => setBasket(b)}
+                      >
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {!isColdBrew && (
+                  <div className="form-group">
+                    <label className="form-label">Temperature</label>
+                    <div className="pill-group pill-group--sm">
+                      {TEMPERATURES.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className={`pill-btn pill-btn--sm ${temperature === t ? 'pill-btn--active' : ''}`}
+                          onClick={() => setTemperature(t)}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="modal__preview">
+                <div className="modal__preview-label">Updated recipe:</div>
+                <div className="setting-tags-wrap">
+                  <span className="setting-tag">{brewType}</span>
+                  <span className="setting-tag">{beanName}</span>
+                  <span className="setting-tag">Grind {grindSize}</span>
+                  {!isColdBrew && <span className="setting-tag">{temperature}</span>}
+                  <span className="setting-tag">{basket}</span>
+                  <span className="setting-tag">S{strength}</span>
+                  {showMilk && <span className="setting-tag setting-tag--milk">{milkType} {milkStyle}</span>}
+                  {notes && <span className="setting-tag">{notes}</span>}
+                </div>
+              </div>
+            </div>
+            <div className="modal__footer">
+              <button className="btn-cancel" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
+                Cancel
+              </button>
+              <button
+                className="btn-submit"
+                onClick={updateRecipe}
+                disabled={!recipeName.trim()}
+              >
+                Update Recipe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Shot Details Modal */}
       {selectedShot && (() => {
         const config = RATING_CONFIG[selectedShot.rating];
@@ -1289,9 +1493,18 @@ function App() {
                 >
                   <Icons.Trash /> Delete Shot
                 </button>
-                <button className="btn-submit" onClick={() => setSelectedShot(null)}>
-                  Close
-                </button>
+                <div className="modal__footer-actions">
+                  <button
+                    className="btn-secondary"
+                    onClick={() => duplicateShot(selectedShot)}
+                    title="Copy settings to form"
+                  >
+                    <Icons.Copy /> Brew Again
+                  </button>
+                  <button className="btn-submit" onClick={() => setSelectedShot(null)}>
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>

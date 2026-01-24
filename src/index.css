@@ -2606,3 +2606,87 @@ body {
   background: rgba(192, 69, 69, 0.25);
   border-color: #C04545;
 }
+
+/* ============================================
+   DUPLICATE SHOT (BREW AGAIN)
+   ============================================ */
+
+.modal__footer-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: rgba(166, 123, 91, 0.15);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-latte);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(166, 123, 91, 0.25);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.btn-secondary .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   EDIT QUICK RECIPES
+   ============================================ */
+
+.recipe-chip__edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.recipe-chip__edit:hover {
+  color: var(--color-caramel);
+  background: rgba(166, 123, 91, 0.15);
+}
+
+.recipe-chip__edit .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.edit-recipe__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-input--sm {
+  width: 80px;
+  text-align: center;
+}
+
+.pill-group--sm {
+  gap: 0.375rem;
+}
+
+.pill-group--sm .pill-btn--sm {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+}
