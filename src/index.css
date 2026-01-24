@@ -592,3 +592,502 @@ body {
 .history-list::-webkit-scrollbar-thumb:hover {
   background: var(--color-caramel);
 }
+
+/* ============================================
+   NEW UX COMPONENTS
+   ============================================ */
+
+/* Autocomplete Bean Input */
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.autocomplete__input-wrap .form-input {
+  padding-right: 2.75rem;
+}
+
+.autocomplete__toggle {
+  position: absolute;
+  right: 0.75rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.autocomplete__toggle:hover {
+  color: var(--color-latte);
+}
+
+.autocomplete__dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--color-espresso);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.autocomplete__option {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.9375rem;
+  font-family: var(--font-sans);
+  background: transparent;
+  border: none;
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.autocomplete__option:hover {
+  background: var(--color-mocha);
+}
+
+.autocomplete__option:first-child {
+  border-radius: 11px 11px 0 0;
+}
+
+.autocomplete__option:last-child {
+  border-radius: 0 0 11px 11px;
+}
+
+.autocomplete__option:only-child {
+  border-radius: 11px;
+}
+
+/* Icon small variant */
+.icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Grind Control with +/- Buttons */
+.grind-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grind-control__btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.grind-control__btn:hover:not(:disabled) {
+  border-color: var(--color-caramel);
+  color: var(--color-latte);
+  background: var(--color-espresso);
+}
+
+.grind-control__btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.grind-control__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.grind-control__slider-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grind-control__value {
+  min-width: 2.5rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--color-mocha);
+  border-radius: 8px;
+  color: var(--color-latte);
+  font-family: var(--font-sans);
+}
+
+/* 5-Point Rating Scale */
+.rating-scale {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.rating-btn {
+  flex: 1;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  background: var(--color-dark-roast);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.rating-btn:hover {
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.rating-btn__label {
+  display: block;
+}
+
+.rating-btn__intensity {
+  font-size: 0.625rem;
+  opacity: 0.7;
+}
+
+/* 5-point rating colors */
+.rating-btn--very-sour.rating-btn--active {
+  background: linear-gradient(135deg, #E8A045 0%, #C87A30 100%);
+  border-color: #E8A045;
+  color: var(--color-black-coffee);
+  box-shadow: 0 0 12px rgba(232, 160, 69, 0.35);
+}
+
+.rating-btn--sour.rating-btn--active {
+  background: linear-gradient(135deg, var(--color-sour) 0%, #C07A48 100%);
+  border-color: var(--color-sour);
+  color: var(--color-black-coffee);
+  box-shadow: 0 0 12px rgba(212, 145, 92, 0.3);
+}
+
+.rating-btn--balanced.rating-btn--active {
+  background: linear-gradient(135deg, var(--color-balanced) 0%, #5E8252 100%);
+  border-color: var(--color-balanced);
+  color: var(--color-black-coffee);
+  box-shadow: 0 0 12px rgba(122, 158, 109, 0.3);
+}
+
+.rating-btn--bitter.rating-btn--active {
+  background: linear-gradient(135deg, var(--color-bitter) 0%, #9A4444 100%);
+  border-color: var(--color-bitter);
+  color: var(--color-black-coffee);
+  box-shadow: 0 0 12px rgba(184, 92, 92, 0.3);
+}
+
+.rating-btn--very-bitter.rating-btn--active {
+  background: linear-gradient(135deg, #C04545 0%, #8B3030 100%);
+  border-color: #C04545;
+  color: var(--color-cream);
+  box-shadow: 0 0 12px rgba(192, 69, 69, 0.35);
+}
+
+/* Barista Tip - Extended for 5-point scale */
+.barista-tip--very-sour {
+  border-left-color: #E8A045;
+  background: rgba(232, 160, 69, 0.08);
+}
+
+.barista-tip--very-sour .barista-tip__icon {
+  color: #E8A045;
+}
+
+.barista-tip--very-sour h4 {
+  color: #E8A045;
+}
+
+.barista-tip--very-bitter {
+  border-left-color: #C04545;
+  background: rgba(192, 69, 69, 0.08);
+}
+
+.barista-tip--very-bitter .barista-tip__icon {
+  color: #C04545;
+}
+
+.barista-tip--very-bitter h4 {
+  color: #C04545;
+}
+
+/* History Item - Extended for 5-point scale */
+.history-item__rating--very-sour {
+  background: rgba(232, 160, 69, 0.15);
+  border: 1px solid rgba(232, 160, 69, 0.25);
+  color: #E8A045;
+}
+
+.history-item__rating--very-bitter {
+  background: rgba(192, 69, 69, 0.15);
+  border: 1px solid rgba(192, 69, 69, 0.25);
+  color: #C04545;
+}
+
+/* Adjustment Badge */
+.adjustment-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.adjustment-badge--small {
+  background: rgba(166, 123, 91, 0.2);
+  color: var(--color-latte);
+}
+
+.adjustment-badge--large {
+  background: rgba(232, 160, 69, 0.25);
+  color: #E8A045;
+}
+
+/* ============================================
+   BREW TYPE & ADVANCED FEATURES
+   ============================================ */
+
+/* Select Dropdown */
+.select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.875rem 2.5rem 0.875rem 1.125rem;
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  background: var(--color-dark-roast);
+  color: var(--color-cream);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all 0.25s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 3px rgba(166, 123, 91, 0.12);
+}
+
+.form-select option {
+  background: var(--color-espresso);
+  color: var(--color-cream);
+  padding: 0.5rem;
+}
+
+.select-wrap .icon {
+  position: absolute;
+  right: 0.875rem;
+  pointer-events: none;
+  color: var(--color-muted);
+}
+
+/* Discrete Rating Slider */
+.rating-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rating-slider__label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.rating-slider__track {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.rating-slider__input {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right,
+      #E8A045 0%,
+      #D4915C 25%,
+      #7A9E6D 50%,
+      #B85C5C 75%,
+      #C04545 100%);
+  outline: none;
+  cursor: pointer;
+}
+
+.rating-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: 3px solid var(--rating-color, var(--color-caramel));
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.rating-slider__input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.rating-slider__input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: 3px solid var(--rating-color, var(--color-caramel));
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.rating-slider__markers {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 0 2px;
+}
+
+.rating-slider__marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-mocha);
+  transition: all 0.2s ease;
+}
+
+.rating-slider__marker--active {
+  transform: scale(1.25);
+}
+
+.rating-slider__scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--color-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Froth Lab - Collapsible Milk Section */
+.froth-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  background: var(--color-dark-roast);
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.froth-toggle:hover {
+  border-color: var(--color-caramel);
+}
+
+.froth-toggle .icon {
+  color: var(--color-latte);
+}
+
+.froth-toggle span:first-of-type {
+  flex: 1;
+  text-align: left;
+}
+
+.froth-toggle__badge {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  background: var(--color-mocha);
+  border-radius: 4px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.froth-panel {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(166, 123, 91, 0.05);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+}
+
+.froth-panel__row {
+  margin-bottom: 0.875rem;
+}
+
+.froth-panel__row:last-child {
+  margin-bottom: 0;
+}
+
+.froth-panel .form-label {
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Small Pill Buttons */
+.pill-btn--sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* Milk Setting Tag */
+.setting-tag--milk {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: rgba(166, 123, 91, 0.25);
+  color: var(--color-latte);
+}

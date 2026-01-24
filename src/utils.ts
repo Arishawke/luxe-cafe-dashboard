@@ -36,22 +36,39 @@ export function formatDate(date: Date): string {
     }).format(date);
 }
 
-export function getBaristaTip(rating: Rating): { message: string; icon: string } {
+// Updated barista tips for 5-point rating scale
+export function getBaristaTip(rating: Rating): { message: string; adjustment: 'large' | 'small' | 'none' } {
     switch (rating) {
+        case 'Very Sour':
+            return {
+                message: 'Heavily under-extracted. Grind significantly finer (2-3 steps) or increase temperature.',
+                adjustment: 'large',
+            };
         case 'Sour':
             return {
-                message: 'Under-extracted. Try grinding finer (lower number) or increase temperature.',
-                icon: '🍋',
+                message: 'Slightly under-extracted. Grind a bit finer (1 step) or try a higher temperature.',
+                adjustment: 'small',
             };
         case 'Balanced':
             return {
-                message: 'Perfect shot! Save these settings for this bean.',
-                icon: '✨',
+                message: 'Perfect extraction! Save these settings for this bean.',
+                adjustment: 'none',
             };
         case 'Bitter':
             return {
-                message: 'Over-extracted. Try grinding coarser (higher number) or decrease temperature.',
-                icon: '🔥',
+                message: 'Slightly over-extracted. Grind a bit coarser (1 step) or try a lower temperature.',
+                adjustment: 'small',
+            };
+        case 'Very Bitter':
+            return {
+                message: 'Heavily over-extracted. Grind significantly coarser (2-3 steps) or decrease temperature.',
+                adjustment: 'large',
             };
     }
+}
+
+// Get unique bean names from shot history
+export function getUniqueBeans(shots: ShotLog[]): string[] {
+    const unique = new Set(shots.map(s => s.beanName));
+    return Array.from(unique).sort();
 }
