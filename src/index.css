@@ -1830,3 +1830,234 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* ============================================
+   BEAN LIBRARY
+   ============================================ */
+
+/* Header Button */
+.header__btn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: rgba(166, 123, 91, 0.15);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-latte);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header__btn:hover {
+  background: rgba(166, 123, 91, 0.25);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.header {
+  position: relative;
+}
+
+/* Large Modal */
+.modal--large {
+  max-width: 700px;
+}
+
+.modal__body--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Bean Form */
+.bean-form h4,
+.bean-list h4 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.bean-form__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.bean-form__actions .btn-submit {
+  flex: 1;
+  margin-top: 0;
+}
+
+.bean-form__actions .btn-cancel {
+  flex: 0;
+  padding: 0.75rem 1rem;
+}
+
+/* Bean List */
+.bean-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.bean-card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(166, 123, 91, 0.06);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bean-card:hover {
+  background: rgba(166, 123, 91, 0.12);
+}
+
+.bean-card--editing {
+  border-color: var(--color-caramel);
+  background: rgba(166, 123, 91, 0.15);
+}
+
+.bean-card--inactive {
+  opacity: 0.5;
+}
+
+.bean-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bean-card__name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-cream);
+  margin-bottom: 0.25rem;
+}
+
+.bean-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+}
+
+.bean-card__meta span::after {
+  content: '•';
+  margin-left: 0.5rem;
+  color: var(--color-mocha);
+}
+
+.bean-card__meta span:last-child::after {
+  display: none;
+}
+
+.bean-card__freshness {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.375rem;
+}
+
+.bean-card__freshness .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.bean-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bean-card__toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--color-mocha);
+  border-radius: 6px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bean-card__toggle--active {
+  background: rgba(122, 158, 109, 0.2);
+  border-color: #7A9E6D;
+  color: #7A9E6D;
+}
+
+.bean-card__delete {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--color-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bean-card__delete:hover {
+  background: rgba(192, 69, 69, 0.2);
+  color: #C04545;
+}
+
+.empty-state--small {
+  padding: 2rem 1rem;
+}
+
+.empty-state--small .icon {
+  width: 32px;
+  height: 32px;
+}
+
+.empty-state--small p {
+  font-size: 0.8125rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal__body--split {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header__btn {
+    position: static;
+    transform: none;
+    margin-top: 1rem;
+  }
+}

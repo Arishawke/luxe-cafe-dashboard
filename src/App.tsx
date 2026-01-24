@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe } from './types';
-import { COLD_BREW_TYPES } from './types';
-import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, generateId, formatDate, getBaristaTip, getUniqueBeans } from './utils';
+import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
+import { COLD_BREW_TYPES, getDaysSinceRoast, getFreshnessStatus } from './types';
+import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans, generateId, formatDate, getBaristaTip, getUniqueBeans } from './utils';
 
 // SVG Icons Component
 const Icons = {
@@ -123,6 +123,19 @@ const Icons = {
       <path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" />
     </svg>
   ),
+  Bean: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 7c0 4-3.5 7.5-8 11-4.5-3.5-8-7-8-11a8 8 0 1 1 16 0Z" />
+      <path d="M11 13c2-2.5 4-4 4-7" />
+    </svg>
+  ),
+  Calendar: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -154,12 +167,15 @@ const STRENGTHS: { value: Strength; label: string }[] = [
 ];
 const MILK_TYPES: MilkType[] = ['Dairy', 'Plant'];
 const MILK_STYLES: MilkStyle[] = ['Steamed', 'Thin', 'Thick', 'Cold Foam'];
+const PROCESS_METHODS: ProcessMethod[] = ['Washed', 'Natural', 'Honey', 'Anaerobic', 'Other'];
+const ROAST_LEVELS: RoastLevel[] = ['Light', 'Medium', 'Medium-Dark', 'Dark'];
 
 function App() {
-  // Shot history, favorites, recipes
+  // Shot history, favorites, recipes, beans
   const [shots, setShots] = useState<ShotLog[]>([]);
   const [favorites, setFavorites] = useState<FavoritesMap>({});
   const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
+  const [beans, setBeans] = useState<BeanProfile[]>([]);
 
   // Form state
   const [beanName, setBeanName] = useState('');
@@ -181,6 +197,17 @@ function App() {
   const [recipeName, setRecipeName] = useState('');
   const [selectedShot, setSelectedShot] = useState<ShotLog | null>(null);
 
+  // Bean Library modal
+  const [showBeanLibrary, setShowBeanLibrary] = useState(false);
+  const [editingBean, setEditingBean] = useState<BeanProfile | null>(null);
+  const [newBeanName, setNewBeanName] = useState('');
+  const [newBeanRoaster, setNewBeanRoaster] = useState('');
+  const [newBeanOrigin, setNewBeanOrigin] = useState('');
+  const [newBeanRoastLevel, setNewBeanRoastLevel] = useState<RoastLevel>('Medium');
+  const [newBeanProcess, setNewBeanProcess] = useState<ProcessMethod>('Washed');
+  const [newBeanRoastDate, setNewBeanRoastDate] = useState('');
+  const [newBeanFlavorNotes, setNewBeanFlavorNotes] = useState('');
+
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredBeans, setFilteredBeans] = useState<string[]>([]);
@@ -197,6 +224,7 @@ function App() {
     if (stored.length > 0) setShots(stored);
     setFavorites(loadFavorites());
     setRecipes(loadRecipes());
+    setBeans(loadBeans());
   }, []);
 
   // Save shots to localStorage when changed
@@ -213,6 +241,11 @@ function App() {
   useEffect(() => {
     saveRecipes(recipes);
   }, [recipes]);
+
+  // Save beans when changed
+  useEffect(() => {
+    saveBeans(beans);
+  }, [beans]);
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -338,6 +371,75 @@ function App() {
     setSelectedShot(null);
   };
 
+  // Bean Library functions
+  const resetBeanForm = () => {
+    setEditingBean(null);
+    setNewBeanName('');
+    setNewBeanRoaster('');
+    setNewBeanOrigin('');
+    setNewBeanRoastLevel('Medium');
+    setNewBeanProcess('Washed');
+    setNewBeanRoastDate('');
+    setNewBeanFlavorNotes('');
+  };
+
+  const openEditBean = (bean: BeanProfile) => {
+    setEditingBean(bean);
+    setNewBeanName(bean.name);
+    setNewBeanRoaster(bean.roaster || '');
+    setNewBeanOrigin(bean.origin || '');
+    setNewBeanRoastLevel(bean.roastLevel || 'Medium');
+    setNewBeanProcess(bean.processMethod || 'Washed');
+    setNewBeanRoastDate(bean.roastDate || '');
+    setNewBeanFlavorNotes(bean.flavorNotes || '');
+  };
+
+  const saveBean = () => {
+    if (!newBeanName.trim()) return;
+
+    if (editingBean) {
+      // Update existing
+      setBeans(beans.map(b => b.id === editingBean.id ? {
+        ...b,
+        name: newBeanName.trim(),
+        roaster: newBeanRoaster.trim() || undefined,
+        origin: newBeanOrigin.trim() || undefined,
+        roastLevel: newBeanRoastLevel,
+        processMethod: newBeanProcess,
+        roastDate: newBeanRoastDate || undefined,
+        flavorNotes: newBeanFlavorNotes.trim() || undefined,
+      } : b));
+    } else {
+      // Add new
+      const newBean: BeanProfile = {
+        id: generateId(),
+        name: newBeanName.trim(),
+        roaster: newBeanRoaster.trim() || undefined,
+        origin: newBeanOrigin.trim() || undefined,
+        roastLevel: newBeanRoastLevel,
+        processMethod: newBeanProcess,
+        roastDate: newBeanRoastDate || undefined,
+        flavorNotes: newBeanFlavorNotes.trim() || undefined,
+        isActive: true,
+        createdAt: new Date(),
+      };
+      setBeans([newBean, ...beans]);
+    }
+    resetBeanForm();
+  };
+
+  const deleteBean = (id: string) => {
+    setBeans(beans.filter(b => b.id !== id));
+    if (editingBean?.id === id) resetBeanForm();
+  };
+
+  const toggleBeanActive = (id: string) => {
+    setBeans(beans.map(b => b.id === id ? { ...b, isActive: !b.isActive } : b));
+  };
+
+  // Get active beans for autocomplete
+  const activeBeans = beans.filter(b => b.isActive);
+
   // Grind size controls
   const decrementGrind = () => setGrindSize(prev => Math.max(1, prev - 1));
   const incrementGrind = () => setGrindSize(prev => Math.min(25, prev + 1));
@@ -383,6 +485,13 @@ function App() {
         <Icons.Coffee />
         <h1 className="header__title">Luxe Cafe Dial-In</h1>
         <p className="header__subtitle">Ninja Luxe Cafe Pro Calibration Dashboard</p>
+        <button
+          className="header__btn"
+          onClick={() => setShowBeanLibrary(true)}
+          title="Manage Bean Library"
+        >
+          <Icons.Bean /> Bean Library
+        </button>
       </header>
 
       {/* Quick Recipe Menu */}
@@ -961,6 +1070,179 @@ function App() {
           </div>
         );
       })()}
+
+      {/* Bean Library Modal */}
+      {showBeanLibrary && (
+        <div className="modal-overlay" onClick={() => { setShowBeanLibrary(false); resetBeanForm(); }}>
+          <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.Bean /> Bean Library</h3>
+              <button className="modal__close" onClick={() => { setShowBeanLibrary(false); resetBeanForm(); }}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body modal__body--split">
+              {/* Bean Form */}
+              <div className="bean-form">
+                <h4>{editingBean ? 'Edit Bean' : 'Add New Bean'}</h4>
+                <div className="form-group">
+                  <label className="form-label">Bean Name *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Ethiopian Yirgacheffe"
+                    value={newBeanName}
+                    onChange={(e) => setNewBeanName(e.target.value)}
+                  />
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Roaster</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Counter Culture"
+                      value={newBeanRoaster}
+                      onChange={(e) => setNewBeanRoaster(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Origin</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Ethiopia"
+                      value={newBeanOrigin}
+                      onChange={(e) => setNewBeanOrigin(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Roast Level</label>
+                    <div className="select-wrap">
+                      <select
+                        className="form-select"
+                        value={newBeanRoastLevel}
+                        onChange={(e) => setNewBeanRoastLevel(e.target.value as RoastLevel)}
+                      >
+                        {ROAST_LEVELS.map((level) => (
+                          <option key={level} value={level}>{level}</option>
+                        ))}
+                      </select>
+                      <Icons.ChevronDown />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Process</label>
+                    <div className="select-wrap">
+                      <select
+                        className="form-select"
+                        value={newBeanProcess}
+                        onChange={(e) => setNewBeanProcess(e.target.value as ProcessMethod)}
+                      >
+                        {PROCESS_METHODS.map((method) => (
+                          <option key={method} value={method}>{method}</option>
+                        ))}
+                      </select>
+                      <Icons.ChevronDown />
+                    </div>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Roast Date</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={newBeanRoastDate}
+                    onChange={(e) => setNewBeanRoastDate(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Flavor Notes</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Blueberry, Chocolate, Citrus"
+                    value={newBeanFlavorNotes}
+                    onChange={(e) => setNewBeanFlavorNotes(e.target.value)}
+                  />
+                </div>
+                <div className="bean-form__actions">
+                  {editingBean && (
+                    <button className="btn-cancel" onClick={resetBeanForm}>Cancel</button>
+                  )}
+                  <button
+                    className="btn-submit"
+                    onClick={saveBean}
+                    disabled={!newBeanName.trim()}
+                  >
+                    {editingBean ? 'Update Bean' : 'Add Bean'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Bean List */}
+              <div className="bean-list">
+                <h4>Your Beans ({beans.length})</h4>
+                {beans.length > 0 ? (
+                  <div className="bean-list__items">
+                    {beans.map((bean) => {
+                      const days = getDaysSinceRoast(bean.roastDate);
+                      const freshness = getFreshnessStatus(days);
+                      return (
+                        <div
+                          key={bean.id}
+                          className={`bean-card ${!bean.isActive ? 'bean-card--inactive' : ''} ${editingBean?.id === bean.id ? 'bean-card--editing' : ''}`}
+                        >
+                          <div className="bean-card__main" onClick={() => openEditBean(bean)}>
+                            <div className="bean-card__name">{bean.name}</div>
+                            <div className="bean-card__meta">
+                              {bean.roaster && <span>{bean.roaster}</span>}
+                              {bean.origin && <span>{bean.origin}</span>}
+                              {bean.roastLevel && <span>{bean.roastLevel}</span>}
+                            </div>
+                            {bean.roastDate && (
+                              <div
+                                className="bean-card__freshness"
+                                style={{ color: freshness.color }}
+                              >
+                                <Icons.Calendar />
+                                {days} days • {freshness.label}
+                              </div>
+                            )}
+                          </div>
+                          <div className="bean-card__actions">
+                            <button
+                              className={`bean-card__toggle ${bean.isActive ? 'bean-card__toggle--active' : ''}`}
+                              onClick={() => toggleBeanActive(bean.id)}
+                              title={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
+                            >
+                              {bean.isActive ? '✓' : '○'}
+                            </button>
+                            <button
+                              className="bean-card__delete"
+                              onClick={() => deleteBean(bean.id)}
+                              title="Delete bean"
+                            >
+                              <Icons.Trash />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="empty-state empty-state--small">
+                    <Icons.Bean />
+                    <p>No beans yet. Add your first bean above!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

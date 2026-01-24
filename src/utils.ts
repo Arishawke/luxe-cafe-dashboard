@@ -1,8 +1,9 @@
-import type { ShotLog, Rating, FavoritesMap, SavedRecipe } from './types';
+import type { ShotLog, Rating, FavoritesMap, SavedRecipe, BeanProfile } from './types';
 
 const STORAGE_KEY = 'espresso-shots';
 const FAVORITES_KEY = 'espresso-favorites';
 const RECIPES_KEY = 'espresso-recipes';
+const BEANS_KEY = 'espresso-beans';
 
 export function loadShots(): ShotLog[] {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -56,6 +57,25 @@ export function loadRecipes(): SavedRecipe[] {
 
 export function saveRecipes(recipes: SavedRecipe[]): void {
     localStorage.setItem(RECIPES_KEY, JSON.stringify(recipes));
+}
+
+// Bean Profiles
+export function loadBeans(): BeanProfile[] {
+    const stored = localStorage.getItem(BEANS_KEY);
+    if (!stored) return [];
+    try {
+        const parsed = JSON.parse(stored);
+        return parsed.map((b: BeanProfile) => ({
+            ...b,
+            createdAt: new Date(b.createdAt),
+        }));
+    } catch (e) {
+        return [];
+    }
+}
+
+export function saveBeans(beans: BeanProfile[]): void {
+    localStorage.setItem(BEANS_KEY, JSON.stringify(beans));
 }
 
 export function generateId(): string {

@@ -54,3 +54,38 @@ export interface SavedRecipe {
   notes?: string;
   createdAt: Date;
 }
+
+// Bean Profile - stores bean metadata
+export type ProcessMethod = 'Washed' | 'Natural' | 'Honey' | 'Anaerobic' | 'Other';
+export type RoastLevel = 'Light' | 'Medium' | 'Medium-Dark' | 'Dark';
+
+export interface BeanProfile {
+  id: string;
+  name: string;
+  roaster?: string;
+  origin?: string;
+  roastLevel?: RoastLevel;
+  processMethod?: ProcessMethod;
+  roastDate?: string; // ISO date string
+  flavorNotes?: string;
+  isActive: boolean; // Currently in rotation
+  createdAt: Date;
+}
+
+// Helper to calculate days since roast
+export function getDaysSinceRoast(roastDate: string | undefined): number | null {
+  if (!roastDate) return null;
+  const roast = new Date(roastDate);
+  const now = new Date();
+  const diff = now.getTime() - roast.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+// Freshness status based on days since roast
+export function getFreshnessStatus(days: number | null): { label: string; color: string } {
+  if (days === null) return { label: 'Unknown', color: '#888' };
+  if (days < 7) return { label: 'Resting', color: '#E8A045' }; // Too fresh
+  if (days <= 21) return { label: 'Peak', color: '#7A9E6D' }; // Sweet spot
+  if (days <= 35) return { label: 'Fading', color: '#D4915C' }; // Still okay
+  return { label: 'Stale', color: '#C04545' }; // Past prime
+}
