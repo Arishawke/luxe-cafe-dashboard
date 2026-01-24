@@ -30,5 +30,27 @@ export interface ShotLog {
   strength: Strength;
   rating: Rating;
   milk?: MilkSettings; // Optional milk settings
+  notes?: string; // Add-ins / Notes
   timestamp: Date;
+  isFavorite?: boolean; // Starred as favorite for this bean
+}
+
+// Favorites storage: maps lowercase bean name to shot ID
+export interface FavoritesMap {
+  [beanName: string]: string; // shot ID
+}
+
+// Saved Recipe - stores all settings for quick recall
+export interface SavedRecipe {
+  id: string;
+  name: string;
+  beanName: string;
+  brewType: BrewType;
+  basket: Basket;
+  grindSize: number;
+  temperature?: Temperature;
+  strength: Strength;
+  milk?: MilkSettings;
+  notes?: string;
+  createdAt: Date;
 }
