@@ -180,6 +180,15 @@ const Icons = {
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   ),
+  Caffeine: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+      <line x1="6" y1="1" x2="6" y2="4" />
+      <line x1="10" y1="1" x2="10" y2="4" />
+      <line x1="14" y1="1" x2="14" y2="4" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -265,6 +274,9 @@ function App() {
     const saved = localStorage.getItem('theme');
     return (saved === 'light' || saved === 'dark') ? saved : 'dark';
   });
+
+  // Caffeine tracker modal
+  const [showCaffeine, setShowCaffeine] = useState(false);
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -633,34 +645,43 @@ function App() {
         <Icons.Coffee />
         <h1 className="header__title">Luxe Cafe Dial-In</h1>
         <p className="header__subtitle">Ninja Luxe Cafe Pro Calibration Dashboard</p>
-        <button
-          className="header__btn"
-          onClick={() => setShowBeanLibrary(true)}
-          title="Manage Bean Library"
-        >
-          <Icons.Bean /> Bean Library
-        </button>
-        <button
-          className="header__btn header__btn--secondary"
-          onClick={() => setShowStats(true)}
-          title="View Statistics"
-        >
-          <Icons.PieChart /> Stats
-        </button>
-        <button
-          className="header__btn header__btn--tertiary"
-          onClick={() => setShowDataModal(true)}
-          title="Data Management"
-        >
-          <Icons.Settings />
-        </button>
-        <button
-          className="header__btn header__btn--theme"
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
-        </button>
+        <div className="header__btns">
+          <button
+            className="header__btn"
+            onClick={() => setShowBeanLibrary(true)}
+            title="Manage Bean Library"
+          >
+            <Icons.Bean /> Bean Library
+          </button>
+          <button
+            className="header__btn"
+            onClick={() => setShowStats(true)}
+            title="View Statistics"
+          >
+            <Icons.PieChart /> Stats
+          </button>
+          <button
+            className="header__btn header__btn--icon"
+            onClick={() => setShowDataModal(true)}
+            title="Data Management"
+          >
+            <Icons.Settings />
+          </button>
+          <button
+            className="header__btn header__btn--icon"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
+          </button>
+          <button
+            className="header__btn header__btn--icon"
+            onClick={() => setShowCaffeine(true)}
+            title="Caffeine Tracker"
+          >
+            <Icons.Caffeine />
+          </button>
+        </div>
       </header>
 
       {/* Quick Recipe Menu */}
@@ -1596,6 +1617,126 @@ function App() {
               <p className="data-warning">
                 ⚠️ Importing will replace all existing data
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Caffeine Tracker Modal */}
+      {showCaffeine && (
+        <div className="modal-overlay" onClick={() => setShowCaffeine(false)}>
+          <div className="modal modal--caffeine" onClick={e => e.stopPropagation()}>
+            <div className="modal__header">
+              <h2><Icons.Caffeine /> Caffeine Tracker</h2>
+              <button className="modal__close" onClick={() => setShowCaffeine(false)}>×</button>
+            </div>
+            <div className="modal__body">
+              {(() => {
+                // Caffeine amounts per basket type (mg)
+                const CAFFEINE_MG = { 'Double': 63, 'Luxe': 80 };
+
+                // Get today's date (start of day)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Calculate today's caffeine
+                const todayShots = shots.filter(s => {
+                  const shotDate = new Date(s.timestamp);
+                  shotDate.setHours(0, 0, 0, 0);
+                  return shotDate.getTime() === today.getTime();
+                });
+
+                const todayCaffeine = todayShots.reduce((sum, s) =>
+                  sum + (CAFFEINE_MG[s.basket] || 63), 0);
+
+                // Calculate 7-day stats
+                const weekAgo = new Date(today);
+                weekAgo.setDate(weekAgo.getDate() - 7);
+
+                const weekShots = shots.filter(s => {
+                  const shotDate = new Date(s.timestamp);
+                  return shotDate >= weekAgo;
+                });
+
+                const weekCaffeine = weekShots.reduce((sum, s) =>
+                  sum + (CAFFEINE_MG[s.basket] || 63), 0);
+                const avgDaily = Math.round(weekCaffeine / 7);
+
+                // Recommended daily limit is ~400mg
+                const dailyLimit = 400;
+                const percentage = Math.min((todayCaffeine / dailyLimit) * 100, 100);
+
+                // Determine status
+                let status = 'low';
+                let statusText = 'Feeling fresh';
+                if (todayCaffeine > 300) {
+                  status = 'high';
+                  statusText = 'Consider slowing down';
+                } else if (todayCaffeine > 200) {
+                  status = 'moderate';
+                  statusText = 'Nicely caffeinated';
+                } else if (todayCaffeine > 0) {
+                  status = 'low';
+                  statusText = 'Room for more';
+                }
+
+                return (
+                  <>
+                    <div className={`caffeine-gauge caffeine-gauge--${status}`}>
+                      <div className="caffeine-gauge__circle">
+                        <svg viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="45" className="caffeine-gauge__bg" />
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            className="caffeine-gauge__fill"
+                            strokeDasharray={`${percentage * 2.83} 283`}
+                            transform="rotate(-90 50 50)"
+                          />
+                        </svg>
+                        <div className="caffeine-gauge__value">
+                          <span className="caffeine-gauge__number">{todayCaffeine}</span>
+                          <span className="caffeine-gauge__unit">mg</span>
+                        </div>
+                      </div>
+                      <p className="caffeine-gauge__status">{statusText}</p>
+                    </div>
+
+                    <div className="caffeine-stats">
+                      <div className="caffeine-stat">
+                        <span className="caffeine-stat__value">{todayShots.length}</span>
+                        <span className="caffeine-stat__label">Shots Today</span>
+                      </div>
+                      <div className="caffeine-stat">
+                        <span className="caffeine-stat__value">{avgDaily}</span>
+                        <span className="caffeine-stat__label">Daily Avg (mg)</span>
+                      </div>
+                      <div className="caffeine-stat">
+                        <span className="caffeine-stat__value">{weekShots.length}</span>
+                        <span className="caffeine-stat__label">Shots This Week</span>
+                      </div>
+                    </div>
+
+                    <div className="caffeine-info">
+                      <h3>Caffeine by Basket</h3>
+                      <div className="caffeine-breakdown">
+                        <div className="caffeine-breakdown__item">
+                          <span className="caffeine-breakdown__basket">Double</span>
+                          <span className="caffeine-breakdown__mg">~63mg per shot</span>
+                        </div>
+                        <div className="caffeine-breakdown__item">
+                          <span className="caffeine-breakdown__basket">Luxe</span>
+                          <span className="caffeine-breakdown__mg">~80mg per shot</span>
+                        </div>
+                      </div>
+                      <p className="caffeine-limit">
+                        Recommended daily limit: <strong>400mg</strong>
+                      </p>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>

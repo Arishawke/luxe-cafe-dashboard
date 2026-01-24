@@ -1863,10 +1863,6 @@ body {
 
 /* Header Button */
 .header__btn {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1882,6 +1878,10 @@ body {
   transition: all 0.2s ease;
 }
 
+.header__btn--icon {
+  padding: 0.625rem;
+}
+
 .header__btn:hover {
   background: rgba(166, 123, 91, 0.25);
   border-color: var(--color-caramel);
@@ -1890,6 +1890,14 @@ body {
 
 .header {
   position: relative;
+}
+
+.header__btns {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
 /* Large Modal */
@@ -2091,20 +2099,6 @@ body {
 /* ============================================
    STATISTICS DASHBOARD
    ============================================ */
-
-/* Header button variants */
-.header__btn--secondary {
-  right: 10rem;
-}
-
-.header__btns {
-  display: flex;
-  gap: 0.5rem;
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
 
 /* Stats Summary */
 .stats-summary {
@@ -2382,21 +2376,173 @@ body {
 }
 
 /* ============================================
-   THEME TOGGLE
+   CAFFEINE TRACKER
    ============================================ */
 
-.header__btn--theme {
-  right: 20.5rem;
-  padding: 0.625rem;
+.modal--caffeine {
+  max-width: 420px;
 }
 
-.header__btn--theme .icon {
+.caffeine-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(145deg, var(--color-espresso-dark), var(--color-espresso));
+  border-radius: 1rem;
+}
+
+.caffeine-gauge__circle {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.caffeine-gauge__circle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.caffeine-gauge__bg {
+  fill: none;
+  stroke: var(--color-mocha);
+  stroke-width: 8;
+}
+
+.caffeine-gauge__fill {
+  fill: none;
+  stroke: var(--color-caramel);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.caffeine-gauge--moderate .caffeine-gauge__fill {
+  stroke: #D4915C;
+}
+
+.caffeine-gauge--high .caffeine-gauge__fill {
+  stroke: #B85C5C;
+}
+
+.caffeine-gauge__value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.caffeine-gauge__number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  font-family: var(--font-heading);
+}
+
+.caffeine-gauge__unit {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-cream-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.caffeine-gauge__status {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--color-cream);
+  font-style: italic;
+}
+
+.caffeine-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.caffeine-stat {
+  text-align: center;
+  padding: 1rem;
+  background: var(--color-espresso-dark);
+  border-radius: 0.75rem;
+}
+
+.caffeine-stat__value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-caramel);
+  font-family: var(--font-heading);
+}
+
+.caffeine-stat__label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-cream-muted);
+  margin-top: 0.25rem;
+}
+
+.caffeine-info {
+  background: var(--color-espresso-dark);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.caffeine-info h3 {
+  font-size: 0.875rem;
+  color: var(--color-cream-muted);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.caffeine-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.caffeine-breakdown__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-espresso);
+  border-radius: 0.5rem;
+}
+
+.caffeine-breakdown__basket {
+  font-weight: 600;
+  color: var(--color-cream);
+}
+
+.caffeine-breakdown__mg {
+  font-size: 0.875rem;
   color: var(--color-caramel);
 }
 
-/* Responsive header buttons */
-@media (max-width: 768px) {
-  .header__btn--theme {
+.caffeine-limit {
+  font-size: 0.813rem;
+  color: var(--color-cream-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.caffeine-limit strong {
+  color: var(--color-caramel);
+}
+
+@media (max-width: 480px) {
+  .caffeine-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .header__btn--caffeine {
     right: auto;
   }
 }
