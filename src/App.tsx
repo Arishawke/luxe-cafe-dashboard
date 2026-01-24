@@ -142,6 +142,26 @@ const Icons = {
       <path d="M22 12A10 10 0 0 0 12 2v10z" />
     </svg>
   ),
+  Download: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  ),
+  Upload: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+  ),
+  Settings: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -216,6 +236,11 @@ function App() {
 
   // Stats modal
   const [showStats, setShowStats] = useState(false);
+
+  // Data Management modal
+  const [showDataModal, setShowDataModal] = useState(false);
+  const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -449,6 +474,85 @@ function App() {
   // Get active beans for autocomplete
   const activeBeans = beans.filter(b => b.isActive);
 
+  // Export all data as JSON
+  const exportData = () => {
+    const data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      shots: shots,
+      favorites: favorites,
+      recipes: recipes,
+      beans: beans,
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `luxe-cafe-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import data from JSON file
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+
+        // Validate structure
+        if (!data.shots || !Array.isArray(data.shots)) {
+          throw new Error('Invalid backup file: missing shots data');
+        }
+
+        // Import shots with date conversion
+        const importedShots = data.shots.map((s: ShotLog) => ({
+          ...s,
+          timestamp: new Date(s.timestamp),
+        }));
+        setShots(importedShots);
+
+        // Import favorites
+        if (data.favorites) {
+          setFavorites(data.favorites);
+        }
+
+        // Import recipes with date conversion
+        if (data.recipes && Array.isArray(data.recipes)) {
+          const importedRecipes = data.recipes.map((r: SavedRecipe) => ({
+            ...r,
+            createdAt: new Date(r.createdAt),
+          }));
+          setRecipes(importedRecipes);
+        }
+
+        // Import beans with date conversion
+        if (data.beans && Array.isArray(data.beans)) {
+          const importedBeans = data.beans.map((b: BeanProfile) => ({
+            ...b,
+            createdAt: new Date(b.createdAt),
+          }));
+          setBeans(importedBeans);
+        }
+
+        setImportStatus({ type: 'success', message: `Imported ${importedShots.length} shots, ${data.recipes?.length || 0} recipes, ${data.beans?.length || 0} beans` });
+      } catch (err) {
+        setImportStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to import file' });
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // Grind size controls
   const decrementGrind = () => setGrindSize(prev => Math.max(1, prev - 1));
   const incrementGrind = () => setGrindSize(prev => Math.min(25, prev + 1));
@@ -507,6 +611,13 @@ function App() {
           title="View Statistics"
         >
           <Icons.PieChart /> Stats
+        </button>
+        <button
+          className="header__btn header__btn--tertiary"
+          onClick={() => setShowDataModal(true)}
+          title="Data Management"
+        >
+          <Icons.Settings />
         </button>
       </header>
 
@@ -1384,6 +1495,69 @@ function App() {
           </div>
         );
       })()}
+
+      {/* Data Management Modal */}
+      {showDataModal && (
+        <div className="modal-overlay" onClick={() => { setShowDataModal(false); setImportStatus(null); }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.Settings /> Data Management</h3>
+              <button className="modal__close" onClick={() => { setShowDataModal(false); setImportStatus(null); }}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              {/* Data Summary */}
+              <div className="data-summary">
+                <div className="data-summary__item">
+                  <span className="data-summary__count">{shots.length}</span>
+                  <span className="data-summary__label">Shots</span>
+                </div>
+                <div className="data-summary__item">
+                  <span className="data-summary__count">{recipes.length}</span>
+                  <span className="data-summary__label">Recipes</span>
+                </div>
+                <div className="data-summary__item">
+                  <span className="data-summary__count">{beans.length}</span>
+                  <span className="data-summary__label">Beans</span>
+                </div>
+              </div>
+
+              {/* Import Status */}
+              {importStatus && (
+                <div className={`import-status import-status--${importStatus.type}`}>
+                  {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
+                </div>
+              )}
+
+              {/* Export/Import Buttons */}
+              <div className="data-actions">
+                <button className="data-action-btn" onClick={exportData}>
+                  <Icons.Download />
+                  <span>Export Backup</span>
+                  <small>Download all data as JSON</small>
+                </button>
+                <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
+                  <Icons.Upload />
+                  <span>Import Backup</span>
+                  <small>Restore from JSON file</small>
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  style={{ display: 'none' }}
+                />
+              </div>
+
+              <p className="data-warning">
+                ⚠️ Importing will replace all existing data
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

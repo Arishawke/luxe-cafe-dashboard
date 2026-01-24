@@ -2222,3 +2222,135 @@ body {
     grid-template-columns: 80px 1fr 25px;
   }
 }
+
+/* ============================================
+   DATA MANAGEMENT MODAL
+   ============================================ */
+
+/* Header button tertiary (settings icon only) */
+.header__btn--tertiary {
+  right: 16.5rem;
+  padding: 0.625rem;
+}
+
+/* Data Summary */
+.data-summary {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.25rem;
+  background: rgba(166, 123, 91, 0.08);
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.data-summary__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.data-summary__count {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  line-height: 1;
+}
+
+.data-summary__label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+/* Import Status */
+.import-status {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.import-status--success {
+  background: rgba(122, 158, 109, 0.15);
+  color: #7A9E6D;
+  border: 1px solid rgba(122, 158, 109, 0.3);
+}
+
+.import-status--error {
+  background: rgba(192, 69, 69, 0.15);
+  color: #C04545;
+  border: 1px solid rgba(192, 69, 69, 0.3);
+}
+
+/* Data Action Buttons */
+.data-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.data-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: rgba(166, 123, 91, 0.08);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.data-action-btn:hover {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: var(--color-caramel);
+}
+
+.data-action-btn .icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-caramel);
+}
+
+.data-action-btn span {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-cream);
+}
+
+.data-action-btn small {
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+}
+
+/* Warning Text */
+.data-warning {
+  font-size: 0.75rem;
+  color: var(--color-subtle);
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .header__btn--tertiary {
+    right: auto;
+  }
+
+  .data-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .data-summary {
+    gap: 1.5rem;
+  }
+}
