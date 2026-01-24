@@ -1,73 +1,125 @@
-# React + TypeScript + Vite
+# ☕ Luxe Cafe Dial-In
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Espresso Calibration Dashboard for the Ninja Luxe Cafe Pro**
 
-Currently, two official plugins are available:
+A premium React-based dashboard for tracking and perfecting your espresso shots. Log your brews, get smart calibration tips, save favorite recipes, and dial in the perfect cup every time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Dashboard Preview](https://img.shields.io/badge/React-18+-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript) ![Vite](https://img.shields.io/badge/Vite-5+-646CFF?logo=vite)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+### 📝 Shot Logging
+- **Bean Name Autocomplete** — Quickly select from previously used beans
+- **Brew Type Selector** — Espresso, Drip Coffee, Cold Brew, Cold Pressed, Over Ice
+- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Single/Double/Luxe), Temperature, Strength
+- **5-Point Taste Rating** — Discrete slider from Very Sour → Balanced → Very Bitter
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🥛 Froth Lab
+- Collapsible milk settings panel
+- Milk Type: Dairy or Plant
+- Style: Steamed, Thin, Thick, Cold Foam
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📋 Add-ins & Notes
+- Record extras like "Vanilla syrup, Cinnamon, Extra hot"
+- Notes display on history cards for easy reference
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### ⭐ Pin Best Shot
+- Star any shot as your "Target Recipe" for that bean
+- Favorites get a gold border and sort to the top
+- Target Recipe box shows ideal settings when selecting a bean
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### ⚡ Quick Recipes
+- Save complete drink configurations with one click
+- Recipe chips at dashboard top for instant form auto-fill
+- Saves: Bean, Brew Type, Grind, Temp, Basket, Strength, Milk, Notes
+
+### 🤖 Smart Barista
+- Real-time calibration tips based on your last shot
+- Actionable advice: "Grind finer" / "Lower temperature"
+- Visual adjustment badges (Major/Minor)
+
+### 📱 Mobile-Optimized
+- 44px+ touch targets for all interactive elements
+- Thick sliders easy to grab on touchscreens
+- Responsive layout for phones and tablets
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI Components |
+| **TypeScript** | Type Safety |
+| **Vite** | Build Tool & Dev Server |
+| **Vanilla CSS** | Custom "Midnight Cafe" Design System |
+| **localStorage** | Data Persistence |
+
+---
+
+## 📁 Project Structure
+
 ```
+espresso_dashboard/
+├── src/
+│   ├── App.tsx          # Main dashboard component
+│   ├── types.ts         # TypeScript interfaces
+│   ├── utils.ts         # Storage & helper functions
+│   ├── index.css        # Complete design system
+│   └── main.tsx         # React entry point
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+
+## 🎨 Design System
+
+The **"Midnight Cafe"** theme features:
+
+- **Dark Espresso Background** — `#1a1512`
+- **Cream Text** — `#f5f0e8`
+- **Caramel Accents** — `#a67b5b`
+- **Gold Favorites** — `#FFD700`
+- **Rating Colors** — Sour (amber) → Balanced (green) → Bitter (red)
+
+Typography: **Playfair Display** (headings) + **Inter** (body)
+
+---
+
+## 💾 Data Storage
+
+All data persists in `localStorage`:
+
+| Key | Contents |
+|-----|----------|
+| `espresso-shots` | Shot history with timestamps |
+| `espresso-favorites` | Bean → Shot ID mapping |
+| `espresso-recipes` | Saved quick recipes |
+
+---
+
+## 📄 License
+
+MIT © 2026

@@ -145,7 +145,7 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 
 // Options for selectors
 const BREW_TYPES: BrewType[] = ['Espresso', 'Drip Coffee', 'Cold Brew', 'Cold Pressed', 'Over Ice'];
-const BASKETS: Basket[] = ['Single', 'Double', 'Luxe'];
+const BASKETS: Basket[] = ['Double', 'Luxe'];
 const TEMPERATURES: Temperature[] = ['Low', 'Med', 'High'];
 const STRENGTHS: { value: Strength; label: string }[] = [
   { value: 1, label: '1 Mild' },
@@ -179,6 +179,7 @@ function App() {
   // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [recipeName, setRecipeName] = useState('');
+  const [selectedShot, setSelectedShot] = useState<ShotLog | null>(null);
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -319,6 +320,22 @@ function App() {
   // Delete a recipe
   const deleteRecipe = (id: string) => {
     setRecipes(recipes.filter(r => r.id !== id));
+  };
+
+  // Delete a shot
+  const deleteShot = (id: string) => {
+    // Also remove from favorites if it was a favorite
+    const shot = shots.find(s => s.id === id);
+    if (shot) {
+      const beanKey = shot.beanName.toLowerCase();
+      if (favorites[beanKey] === id) {
+        const updated = { ...favorites };
+        delete updated[beanKey];
+        setFavorites(updated);
+      }
+    }
+    setShots(shots.filter(s => s.id !== id));
+    setSelectedShot(null);
   };
 
   // Grind size controls
@@ -748,7 +765,11 @@ function App() {
                   const ShotIcon = config.icon;
                   const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
                   return (
-                    <div key={shot.id} className={`history-item ${isFavorite ? 'history-item--favorite' : ''}`}>
+                    <div
+                      key={shot.id}
+                      className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
+                      onClick={() => setSelectedShot(shot)}
+                    >
                       <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
                         <ShotIcon />
                       </div>
@@ -776,7 +797,7 @@ function App() {
                       </div>
                       <button
                         className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
-                        onClick={() => toggleFavorite(shot)}
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
                         title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
                       >
                         <Icons.Star filled={isFavorite} />
@@ -849,6 +870,97 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Shot Details Modal */}
+      {selectedShot && (() => {
+        const config = RATING_CONFIG[selectedShot.rating];
+        const ShotIcon = config.icon;
+        const isFavorite = favorites[selectedShot.beanName.toLowerCase()] === selectedShot.id;
+        return (
+          <div className="modal-overlay" onClick={() => setSelectedShot(null)}>
+            <div className="modal modal--wide" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h3>{selectedShot.beanName}</h3>
+                <button className="modal__close" onClick={() => setSelectedShot(null)}>
+                  <Icons.X />
+                </button>
+              </div>
+              <div className="modal__body">
+                {/* Rating Banner */}
+                <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
+                  <ShotIcon />
+                  <span>{selectedShot.rating}</span>
+                  {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
+                </div>
+
+                {/* Timestamp */}
+                <div className="shot-detail__timestamp">
+                  {new Intl.DateTimeFormat('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  }).format(selectedShot.timestamp)}
+                </div>
+
+                {/* Settings Grid */}
+                <div className="shot-detail__grid">
+                  <div className="shot-detail__item">
+                    <span className="shot-detail__label">Brew Type</span>
+                    <span className="shot-detail__value">{selectedShot.brewType}</span>
+                  </div>
+                  <div className="shot-detail__item">
+                    <span className="shot-detail__label">Grind Size</span>
+                    <span className="shot-detail__value">{selectedShot.grindSize}</span>
+                  </div>
+                  {selectedShot.temperature && (
+                    <div className="shot-detail__item">
+                      <span className="shot-detail__label">Temperature</span>
+                      <span className="shot-detail__value">{selectedShot.temperature}</span>
+                    </div>
+                  )}
+                  <div className="shot-detail__item">
+                    <span className="shot-detail__label">Basket</span>
+                    <span className="shot-detail__value">{selectedShot.basket}</span>
+                  </div>
+                  <div className="shot-detail__item">
+                    <span className="shot-detail__label">Strength</span>
+                    <span className="shot-detail__value">{selectedShot.strength}</span>
+                  </div>
+                  {selectedShot.milk && (
+                    <div className="shot-detail__item">
+                      <span className="shot-detail__label">Milk</span>
+                      <span className="shot-detail__value">{selectedShot.milk.type} {selectedShot.milk.style}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Notes */}
+                {selectedShot.notes && (
+                  <div className="shot-detail__notes">
+                    <span className="shot-detail__label">Notes</span>
+                    <p>{selectedShot.notes}</p>
+                  </div>
+                )}
+              </div>
+              <div className="modal__footer modal__footer--space-between">
+                <button
+                  className="btn-delete"
+                  onClick={() => deleteShot(selectedShot.id)}
+                >
+                  <Icons.Trash /> Delete Shot
+                </button>
+                <button className="btn-submit" onClick={() => setSelectedShot(null)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -143,6 +143,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+  align-items: start;
 }
 
 @media (min-width: 768px) {
@@ -153,7 +154,35 @@ body {
 
 @media (min-width: 1024px) {
   .dashboard__grid {
-    grid-template-columns: 420px 1fr;
+    grid-template-columns: minmax(380px, 1fr) minmax(400px, 1.2fr);
+  }
+}
+
+/* Side panel sticky positioning */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .side-panel {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+  }
+
+  .side-panel .card:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .side-panel .history-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
   }
 }
 
@@ -1630,5 +1659,174 @@ body {
 
   .btn-save-recipe {
     width: 100%;
+  }
+}
+
+/* ============================================
+   SHOT DETAILS MODAL
+   ============================================ */
+
+/* Clickable History Items */
+.history-item--clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-item--clickable:hover {
+  background: rgba(166, 123, 91, 0.08);
+  transform: translateX(4px);
+}
+
+/* Wide Modal Variant */
+.modal--wide {
+  max-width: 480px;
+}
+
+/* Shot Detail Rating Banner */
+.shot-detail__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.shot-detail__rating .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.shot-detail__rating--very-sour {
+  background: rgba(232, 160, 69, 0.15);
+  color: #E8A045;
+}
+
+.shot-detail__rating--sour {
+  background: rgba(212, 145, 92, 0.15);
+  color: #D4915C;
+}
+
+.shot-detail__rating--balanced {
+  background: rgba(122, 158, 109, 0.15);
+  color: #7A9E6D;
+}
+
+.shot-detail__rating--bitter {
+  background: rgba(184, 92, 92, 0.15);
+  color: #B85C5C;
+}
+
+.shot-detail__rating--very-bitter {
+  background: rgba(192, 69, 69, 0.15);
+  color: #C04545;
+}
+
+.shot-detail__fav-badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 215, 0, 0.15);
+  border-radius: 6px;
+  color: #FFD700;
+}
+
+/* Timestamp */
+.shot-detail__timestamp {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-mocha);
+}
+
+/* Settings Grid */
+.shot-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.shot-detail__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.shot-detail__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shot-detail__value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-cream);
+}
+
+/* Notes Section */
+.shot-detail__notes {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(166, 123, 91, 0.08);
+  border-left: 3px solid var(--color-caramel);
+  border-radius: 0 8px 8px 0;
+}
+
+.shot-detail__notes p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-latte);
+  line-height: 1.5;
+}
+
+/* Footer Space Between */
+.modal__footer--space-between {
+  justify-content: space-between;
+}
+
+/* Delete Button */
+.btn-delete {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: rgba(192, 69, 69, 0.15);
+  border: 1px solid rgba(192, 69, 69, 0.3);
+  border-radius: 10px;
+  color: #C04545;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: rgba(192, 69, 69, 0.25);
+  border-color: #C04545;
+}
+
+.btn-delete .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .shot-detail__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .shot-detail__rating {
+    flex-wrap: wrap;
   }
 }
