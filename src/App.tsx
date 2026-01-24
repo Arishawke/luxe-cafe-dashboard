@@ -295,6 +295,9 @@ function App() {
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
 
+  // Shot comparison
+  const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
+
   // Pinned recipes
   const [pinnedRecipes, setPinnedRecipes] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('luxe-cafe-pinned-recipes');
@@ -670,7 +673,23 @@ function App() {
     setRecipes(recipes.map(r => r.id === editingRecipe.id ? updated : r));
     setEditingRecipe(null);
     setRecipeName('');
+    showToast('Recipe updated', 'success');
   };
+
+  // Toggle shot for comparison
+  const toggleCompareShot = (id: string) => {
+    setCompareShots(prev => {
+      if (prev[0] === id) return [null, prev[1]];
+      if (prev[1] === id) return [prev[0], null];
+      if (prev[0] === null) return [id, prev[1]];
+      if (prev[1] === null) return [prev[0], id];
+      return [prev[1], id]; // Replace oldest
+    });
+  };
+
+  // Get shots for comparison
+  const shot1 = compareShots[0] ? shots.find(s => s.id === compareShots[0]) : null;
+  const shot2 = compareShots[1] ? shots.find(s => s.id === compareShots[1]) : null;
 
   // Delete a shot (with confirmation)
   const deleteShot = (id: string) => {
@@ -811,6 +830,47 @@ function App() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    showToast('Backup exported', 'success');
+  };
+
+  // Export shots to CSV
+  const exportToCSV = () => {
+    if (shots.length === 0) {
+      showToast('No shots to export', 'error');
+      return;
+    }
+
+    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Milk Type', 'Milk Style', 'Notes'];
+    const csvRows = [headers.join(',')];
+
+    shots.forEach(shot => {
+      const row = [
+        new Date(shot.timestamp).toLocaleString(),
+        `"${shot.beanName.replace(/"/g, '""')}"`,
+        shot.brewType,
+        shot.basket,
+        shot.grindSize,
+        shot.temperature || '',
+        shot.strength,
+        shot.rating,
+        shot.milk?.type || '',
+        shot.milk?.style || '',
+        `"${(shot.notes || '').replace(/"/g, '""')}"`
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `luxe-cafe-shots-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${shots.length} shots to CSV`, 'success');
   };
 
   // Import data from JSON file
@@ -1317,6 +1377,33 @@ function App() {
               <Icons.ChefHat /> Smart Barista
             </h2>
 
+            {/* Bean Freshness Alert */}
+            {(() => {
+              if (!beanName.trim()) return null;
+              const beanProfile = beans.find(b => b.name.toLowerCase() === beanName.toLowerCase());
+              if (!beanProfile?.roastDate) return null;
+
+              const days = getDaysSinceRoast(beanProfile.roastDate);
+              const freshness = getFreshnessStatus(days);
+
+              // Only show alert for fading or stale beans
+              if (days === null || days <= 21) return null;
+
+              return (
+                <div className={`freshness-alert freshness-alert--${days > 35 ? 'stale' : 'fading'}`}>
+                  <span className="freshness-alert__badge" style={{ background: freshness.color }}>
+                    {freshness.label}
+                  </span>
+                  <span className="freshness-alert__text">
+                    {beanProfile.name} was roasted {days} days ago
+                    {days > 35
+                      ? '. Consider adjusting grind finer to compensate.'
+                      : '. Still good, but best to use soon.'}
+                  </span>
+                </div>
+              );
+            })()}
+
             {lastShotForBean ? (() => {
               const config = RATING_CONFIG[lastShotForBean.rating];
               const tip = getBaristaTip(lastShotForBean.rating);
@@ -1376,30 +1463,52 @@ function App() {
                   )}
 
                   {/* Dial-in Journey */}
-                  {shotsForBean.length > 1 && (
-                    <div className="dialin-journey">
-                      <div className="dialin-journey__label">
-                        <Icons.TrendingUp /> Recent Journey
-                      </div>
-                      <div className="dialin-journey__timeline">
-                        {shotsForBean.slice(0, 5).reverse().map((shot, idx) => {
-                          const shotConfig = RATING_CONFIG[shot.rating];
-                          const ShotIcon = shotConfig.icon;
-                          return (
+                  {shotsForBean.length > 1 && (() => {
+                    const displayShots = shotsForBean.slice(0, 5).reverse();
+                    const grindSizes = displayShots.map(s => s.grindSize);
+                    const minGrind = Math.min(...grindSizes);
+                    const maxGrind = Math.max(...grindSizes);
+                    const grindRange = maxGrind - minGrind || 1;
+
+                    return (
+                      <div className="dialin-journey">
+                        <div className="dialin-journey__label">
+                          <Icons.TrendingUp /> Recent Journey
+                        </div>
+                        <div className="dialin-journey__timeline">
+                          {displayShots.map((shot, idx) => {
+                            const shotConfig = RATING_CONFIG[shot.rating];
+                            const ShotIcon = shotConfig.icon;
+                            return (
+                              <div
+                                key={shot.id}
+                                className={`journey-step journey-step--${shotConfig.colorClass}`}
+                                title={`Grind ${shot.grindSize} • ${shot.rating}`}
+                              >
+                                <ShotIcon />
+                                <span className="journey-step__grind">G{shot.grindSize}</span>
+                                {idx < displayShots.length - 1 && <span className="journey-step__arrow">→</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Grind History Chart */}
+                        <div className="grind-history" title="Grind size trend">
+                          {displayShots.map((shot, idx) => (
                             <div
                               key={shot.id}
-                              className={`journey-step journey-step--${shotConfig.colorClass}`}
-                              title={`Grind ${shot.grindSize} • ${shot.rating}`}
-                            >
-                              <ShotIcon />
-                              <span className="journey-step__grind">G{shot.grindSize}</span>
-                              {idx < shotsForBean.length - 1 && <span className="journey-step__arrow">→</span>}
-                            </div>
-                          );
-                        })}
+                              className={`grind-history__bar ${idx === displayShots.length - 1 ? 'grind-history__bar--current' : ''}`}
+                              style={{
+                                height: `${20 + ((shot.grindSize - minGrind) / grindRange) * 80}%`,
+                                background: RATING_COLORS[shot.rating]
+                              }}
+                              title={`G${shot.grindSize}`}
+                            />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </>
               );
             })() : (
@@ -1638,8 +1747,9 @@ function App() {
                         type="button"
                         className={`pill-btn pill-btn--sm ${strength === s.value ? 'pill-btn--active' : ''}`}
                         onClick={() => setStrength(s.value)}
+                        title={s.label}
                       >
-                        {s.label}
+                        {s.value}
                       </button>
                     ))}
                   </div>
@@ -1794,6 +1904,21 @@ function App() {
                   <Icons.Trash /> Delete Shot
                 </button>
                 <div className="modal__footer-actions">
+                  <button
+                    className={`btn-compare ${compareShots.includes(selectedShot.id) ? 'btn-compare--active' : ''}`}
+                    onClick={() => {
+                      toggleCompareShot(selectedShot.id);
+                      showToast(
+                        compareShots.includes(selectedShot.id)
+                          ? 'Removed from comparison'
+                          : 'Added to comparison',
+                        'info'
+                      );
+                    }}
+                    title="Add to comparison"
+                  >
+                    <Icons.BarChart /> {compareShots.includes(selectedShot.id) ? 'In Compare' : 'Compare'}
+                  </button>
                   <button
                     className="btn-secondary"
                     onClick={() => duplicateShot(selectedShot)}
@@ -2101,6 +2226,89 @@ function App() {
                         </div>
                       </div>
                     )}
+
+                    {/* Success Rate Over Time */}
+                    {(() => {
+                      // Get last 7 days data
+                      const days: { date: string; balanced: number; total: number }[] = [];
+                      for (let i = 6; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        const dateStr = date.toLocaleDateString('en-US', { weekday: 'short' });
+                        const dayShots = shots.filter(s => {
+                          const shotDate = new Date(s.timestamp);
+                          return shotDate.toDateString() === date.toDateString();
+                        });
+                        days.push({
+                          date: dateStr,
+                          balanced: dayShots.filter(s => s.rating === 'Balanced').length,
+                          total: dayShots.length
+                        });
+                      }
+                      const maxDayTotal = Math.max(...days.map(d => d.total), 1);
+
+                      if (days.every(d => d.total === 0)) return null;
+
+                      return (
+                        <div className="stats-section">
+                          <h4>Success Rate (Last 7 Days)</h4>
+                          <div className="success-chart">
+                            {days.map((d, idx) => (
+                              <div key={idx} className="success-chart__day">
+                                <div className="success-chart__bars">
+                                  <div
+                                    className="success-chart__bar success-chart__bar--total"
+                                    style={{ height: `${(d.total / maxDayTotal) * 100}%` }}
+                                    title={`${d.total} total`}
+                                  />
+                                  <div
+                                    className="success-chart__bar success-chart__bar--balanced"
+                                    style={{ height: `${(d.balanced / maxDayTotal) * 100}%` }}
+                                    title={`${d.balanced} balanced`}
+                                  />
+                                </div>
+                                <span className="success-chart__label">{d.date}</span>
+                                <span className="success-chart__rate">
+                                  {d.total > 0 ? Math.round((d.balanced / d.total) * 100) : 0}%
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Brew Type Breakdown */}
+                    {(() => {
+                      const brewCounts = shots.reduce((acc, s) => {
+                        acc[s.brewType] = (acc[s.brewType] || 0) + 1;
+                        return acc;
+                      }, {} as Record<string, number>);
+                      const brewEntries = Object.entries(brewCounts).sort((a, b) => b[1] - a[1]);
+                      const maxBrewCount = Math.max(...brewEntries.map(([, c]) => c), 1);
+
+                      if (brewEntries.length <= 1) return null;
+
+                      return (
+                        <div className="stats-section">
+                          <h4>Brew Types</h4>
+                          <div className="bar-chart">
+                            {brewEntries.map(([brew, count]) => (
+                              <div key={brew} className="bar-chart__row">
+                                <div className="bar-chart__label">{brew}</div>
+                                <div className="bar-chart__bar-wrap">
+                                  <div
+                                    className="bar-chart__bar bar-chart__bar--muted"
+                                    style={{ width: `${(count / maxBrewCount) * 100}%` }}
+                                  />
+                                </div>
+                                <div className="bar-chart__value">{count}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
               </div>
@@ -2149,6 +2357,11 @@ function App() {
                   <Icons.Download />
                   <span>Export Backup</span>
                   <small>Download all data as JSON</small>
+                </button>
+                <button className="data-action-btn" onClick={exportToCSV}>
+                  <Icons.BarChart />
+                  <span>Export to CSV</span>
+                  <small>Shot history as spreadsheet</small>
                 </button>
                 <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
                   <Icons.Upload />
@@ -2292,7 +2505,67 @@ function App() {
         </div>
       )}
 
-      {/* Confirmation Dialog */}
+      {/* Shot Comparison Panel */}
+      {(shot1 || shot2) && (
+        <div className="compare-panel">
+          <div className="compare-panel__header">
+            <h3><Icons.BarChart /> Compare Shots</h3>
+            <button className="compare-panel__close" onClick={() => setCompareShots([null, null])}>
+              <Icons.X />
+            </button>
+          </div>
+          <div className="compare-panel__content">
+            {[shot1, shot2].map((shot, idx) => (
+              <div key={idx} className={`compare-panel__shot ${!shot ? 'compare-panel__shot--empty' : ''}`}>
+                {shot ? (
+                  <>
+                    <div className="compare-panel__shot-header">
+                      <span className="compare-panel__bean">{shot.beanName}</span>
+                      <span className={`compare-panel__rating compare-panel__rating--${RATING_CONFIG[shot.rating].colorClass}`}>
+                        {shot.rating}
+                      </span>
+                    </div>
+                    <div className="compare-panel__details">
+                      <div className="compare-panel__detail">
+                        <span className="compare-panel__label">Grind</span>
+                        <span className="compare-panel__value">{shot.grindSize}</span>
+                      </div>
+                      <div className="compare-panel__detail">
+                        <span className="compare-panel__label">Temp</span>
+                        <span className="compare-panel__value">{shot.temperature || '-'}</span>
+                      </div>
+                      <div className="compare-panel__detail">
+                        <span className="compare-panel__label">Basket</span>
+                        <span className="compare-panel__value">{shot.basket}</span>
+                      </div>
+                      <div className="compare-panel__detail">
+                        <span className="compare-panel__label">Strength</span>
+                        <span className="compare-panel__value">{shot.strength}</span>
+                      </div>
+                    </div>
+                    <button
+                      className="compare-panel__remove"
+                      onClick={() => setCompareShots(prev => idx === 0 ? [null, prev[1]] : [prev[0], null])}
+                    >
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  <span className="compare-panel__placeholder">Select a shot to compare</span>
+                )}
+              </div>
+            ))}
+          </div>
+          {shot1 && shot2 && (
+            <div className="compare-panel__diff">
+              <span className="compare-panel__diff-label">Grind Difference:</span>
+              <span className={`compare-panel__diff-value ${shot2.grindSize > shot1.grindSize ? 'diff--coarser' : shot2.grindSize < shot1.grindSize ? 'diff--finer' : ''}`}>
+                {shot2.grindSize - shot1.grindSize > 0 ? '+' : ''}{shot2.grindSize - shot1.grindSize}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
       {confirmDialog && (
         <div className="modal-overlay" onClick={closeConfirm}>
           <div className="modal modal--confirm" onClick={e => e.stopPropagation()}>
