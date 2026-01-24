@@ -289,10 +289,12 @@ function App() {
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Theme state
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+  // Theme state - supports multiple themes
+  type ThemeType = 'dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon';
+  const [theme, setTheme] = useState<ThemeType>(() => {
     const saved = localStorage.getItem('theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    const validThemes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
+    return (validThemes.includes(saved as ThemeType)) ? saved as ThemeType : 'dark';
   });
 
   // Caffeine tracker modal
@@ -391,11 +393,6 @@ function App() {
     });
   };
 
-  // Toggle theme function
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
-
   // Auto-dismiss toast after 3 seconds
   useEffect(() => {
     if (toast) {
@@ -430,11 +427,15 @@ function App() {
           }
         }
       }
-      // Ctrl+D to toggle theme (when not typing)
+      // Ctrl+D to cycle themes (when not typing)
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
           e.preventDefault();
-          toggleTheme();
+          const themes: ('dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon')[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
+          setTheme(prev => {
+            const currentIndex = themes.indexOf(prev);
+            return themes[(currentIndex + 1) % themes.length];
+          });
         }
       }
     };
@@ -1020,13 +1021,20 @@ function App() {
           >
             <Icons.Caffeine />
           </button>
-          <button
-            className="header__btn header__btn--icon"
-            onClick={() => { toggleTheme(); setMobileMenuOpen(false); }}
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
-          </button>
+          <div className="header__theme-select">
+            <select
+              className="header__theme-dropdown"
+              value={theme}
+              onChange={(e) => { setTheme(e.target.value as typeof theme); setMobileMenuOpen(false); }}
+              title="Select Theme"
+            >
+              <option value="dark">☕ Coffee Dark</option>
+              <option value="light">🥛 Coffee Light</option>
+              <option value="catppuccin">🍵 Catppuccin</option>
+              <option value="rosepine">🌹 Rose Pine</option>
+              <option value="rosepine-moon">🌙 Rose Pine Moon</option>
+            </select>
+          </div>
           <button
             className="header__btn header__btn--icon"
             onClick={() => { setShowDataModal(true); setMobileMenuOpen(false); }}

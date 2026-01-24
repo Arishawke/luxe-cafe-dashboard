@@ -73,6 +73,102 @@
   --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* Catppuccin Mocha Theme */
+[data-theme="catppuccin"] {
+  /* Mocha base colors */
+  --color-black-coffee: #1e1e2e;
+  --color-dark-roast: #181825;
+  --color-espresso: #313244;
+  --color-mocha: #45475a;
+
+  /* Accent colors - pastel tones */
+  --color-caramel: #fab387;
+  --color-toffee: #f9e2af;
+  --color-copper: #f5c2e7;
+  --color-latte: #f9e2af;
+
+  /* Text tones */
+  --color-cream: #cdd6f4;
+  --color-foam: #bac2de;
+  --color-muted: #a6adc8;
+  --color-subtle: #6c7086;
+
+  /* Rating colors - Catppuccin palette */
+  --color-sour: #fab387;
+  --color-balanced: #a6e3a1;
+  --color-bitter: #f38ba8;
+  --color-success: #a6e3a1;
+
+  /* Effects */
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 24px rgba(203, 166, 247, 0.12);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Rose Pine Theme */
+[data-theme="rosepine"] {
+  /* Rose Pine base colors */
+  --color-black-coffee: #191724;
+  --color-dark-roast: #1f1d2e;
+  --color-espresso: #26233a;
+  --color-mocha: #403d52;
+
+  /* Accent colors - muted elegant tones */
+  --color-caramel: #f6c177;
+  --color-toffee: #ebbcba;
+  --color-copper: #c4a7e7;
+  --color-latte: #ebbcba;
+
+  /* Text tones */
+  --color-cream: #e0def4;
+  --color-foam: #908caa;
+  --color-muted: #908caa;
+  --color-subtle: #6e6a86;
+
+  /* Rating colors - Rose Pine palette */
+  --color-sour: #f6c177;
+  --color-balanced: #9ccfd8;
+  --color-bitter: #eb6f92;
+  --color-success: #9ccfd8;
+
+  /* Effects */
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(196, 167, 231, 0.12);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Rose Pine Moon Theme (Darker variant) */
+[data-theme="rosepine-moon"] {
+  /* Rose Pine Moon base colors */
+  --color-black-coffee: #232136;
+  --color-dark-roast: #2a273f;
+  --color-espresso: #393552;
+  --color-mocha: #44415a;
+
+  /* Accent colors - slightly warmer than base Rose Pine */
+  --color-caramel: #f6c177;
+  --color-toffee: #ea9a97;
+  --color-copper: #c4a7e7;
+  --color-latte: #ea9a97;
+
+  /* Text tones */
+  --color-cream: #e0def4;
+  --color-foam: #908caa;
+  --color-muted: #908caa;
+  --color-subtle: #6e6a86;
+
+  /* Rating colors - Rose Pine palette */
+  --color-sour: #f6c177;
+  --color-balanced: #9ccfd8;
+  --color-bitter: #eb6f92;
+  --color-success: #9ccfd8;
+
+  /* Effects */
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 24px rgba(196, 167, 231, 0.15);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
 /* Reset & Base */
 *,
 *::before,
@@ -2045,6 +2141,50 @@ body {
   background: rgba(166, 123, 91, 0.25);
   border-color: var(--color-caramel);
   color: var(--color-cream);
+}
+
+/* Theme Dropdown Selector */
+.header__theme-select {
+  display: flex;
+  align-items: center;
+}
+
+.header__theme-dropdown {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: rgba(166, 123, 91, 0.15);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-latte);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C4A77D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.header__theme-dropdown:hover {
+  background-color: rgba(166, 123, 91, 0.25);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.header__theme-dropdown:focus {
+  outline: none;
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 3px rgba(166, 123, 91, 0.2);
+}
+
+.header__theme-dropdown option {
+  background: var(--color-dark-roast);
+  color: var(--color-cream);
+  padding: 0.5rem;
 }
 
 .header {
