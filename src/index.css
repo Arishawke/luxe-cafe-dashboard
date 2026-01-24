@@ -2690,3 +2690,180 @@ body {
   padding: 0.375rem 0.625rem;
   font-size: 0.75rem;
 }
+
+/* ============================================
+   SMART BARISTA ENHANCED
+   ============================================ */
+
+/* Suggested Settings Section */
+.suggested-settings {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(122, 158, 109, 0.1);
+  border: 1px solid rgba(122, 158, 109, 0.3);
+  border-radius: 12px;
+}
+
+.suggested-settings__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-latte);
+}
+
+.suggested-settings__header .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-success);
+}
+
+.suggested-settings__values {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.suggested-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.suggested-setting__label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggested-setting__value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-cream);
+}
+
+.suggested-setting__diff {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 0.25rem;
+}
+
+.diff--finer {
+  color: #E8A045;
+}
+
+.diff--coarser {
+  color: #7A9E6D;
+}
+
+.btn-apply-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, rgba(122, 158, 109, 0.3), rgba(122, 158, 109, 0.15));
+  border: 1px solid var(--color-success);
+  border-radius: 8px;
+  color: var(--color-success);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-apply-suggestion:hover {
+  background: linear-gradient(135deg, rgba(122, 158, 109, 0.4), rgba(122, 158, 109, 0.25));
+  transform: translateY(-1px);
+}
+
+.btn-apply-suggestion .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dial-in Journey Timeline */
+.dialin-journey {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(166, 123, 91, 0.2);
+}
+
+.dialin-journey__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dialin-journey__label .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.dialin-journey__timeline {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.journey-step {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.journey-step .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.journey-step__grind {
+  font-family: var(--font-mono);
+}
+
+.journey-step__arrow {
+  margin: 0 0.25rem;
+  color: var(--color-muted);
+  opacity: 0.5;
+}
+
+.journey-step--sour {
+  background: rgba(212, 145, 92, 0.15);
+  color: #D4915C;
+}
+
+.journey-step--very-sour {
+  background: rgba(232, 160, 69, 0.15);
+  color: #E8A045;
+}
+
+.journey-step--balanced {
+  background: rgba(122, 158, 109, 0.15);
+  color: #7A9E6D;
+}
+
+.journey-step--bitter {
+  background: rgba(184, 92, 92, 0.15);
+  color: #B85C5C;
+}
+
+.journey-step--very-bitter {
+  background: rgba(192, 69, 69, 0.15);
+  color: #C04545;
+}

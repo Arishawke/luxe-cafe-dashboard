@@ -195,6 +195,19 @@ const Icons = {
       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </svg>
   ),
+  TrendingUp: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+      <polyline points="17 6 23 6 23 12" />
+    </svg>
+  ),
+  Target: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -387,6 +400,89 @@ function App() {
   const lastShotForBean = favoriteShot || (beanName.trim()
     ? shots.find(s => s.beanName.toLowerCase() === currentBeanKey)
     : null);
+
+  // Get all shots for current bean (for journey view)
+  const shotsForBean = beanName.trim()
+    ? shots.filter(s => s.beanName.toLowerCase() === currentBeanKey).slice(0, 5)
+    : [];
+
+  // Calculate suggested settings based on last shot
+  const getSuggestedSettings = () => {
+    if (!lastShotForBean) return null;
+
+    const currentGrind = lastShotForBean.grindSize;
+    const currentTemp = lastShotForBean.temperature || 'Med';
+    const rating = lastShotForBean.rating;
+
+    // Temperature order for adjustments
+    const tempOrder: Temperature[] = ['Low', 'Med', 'High'];
+    const tempIndex = tempOrder.indexOf(currentTemp);
+
+    let suggestedGrind = currentGrind;
+    let suggestedTemp = currentTemp;
+    let adjustmentType: 'grind' | 'temp' | 'both' = 'grind';
+
+    switch (rating) {
+      case 'Very Sour':
+        // Major under-extraction: grind finer by 2-3
+        suggestedGrind = Math.max(1, currentGrind - 3);
+        if (tempIndex < 2) suggestedTemp = tempOrder[tempIndex + 1];
+        adjustmentType = 'both';
+        break;
+      case 'Sour':
+        // Minor under-extraction: grind finer by 1
+        suggestedGrind = Math.max(1, currentGrind - 1);
+        adjustmentType = 'grind';
+        break;
+      case 'Balanced':
+        // Perfect - no changes needed
+        return null;
+      case 'Bitter':
+        // Minor over-extraction: grind coarser by 1
+        suggestedGrind = Math.min(25, currentGrind + 1);
+        adjustmentType = 'grind';
+        break;
+      case 'Very Bitter':
+        // Major over-extraction: grind coarser by 2-3
+        suggestedGrind = Math.min(25, currentGrind + 3);
+        if (tempIndex > 0) suggestedTemp = tempOrder[tempIndex - 1];
+        adjustmentType = 'both';
+        break;
+    }
+
+    return {
+      grindSize: suggestedGrind,
+      temperature: suggestedTemp as Temperature,
+      adjustmentType,
+      grindDiff: suggestedGrind - currentGrind,
+    };
+  };
+
+  const suggestedSettings = getSuggestedSettings();
+
+  // Apply suggested settings to form
+  const applySuggestedSettings = () => {
+    if (!suggestedSettings || !lastShotForBean) return;
+
+    // Copy all settings from last shot
+    setBeanName(lastShotForBean.beanName);
+    setBrewType(lastShotForBean.brewType);
+    setBasket(lastShotForBean.basket);
+    setStrength(lastShotForBean.strength);
+    if (lastShotForBean.milk) {
+      setShowMilk(true);
+      setMilkType(lastShotForBean.milk.type);
+      setMilkStyle(lastShotForBean.milk.style);
+    } else {
+      setShowMilk(false);
+    }
+    setNotes(lastShotForBean.notes || '');
+
+    // Apply suggested adjustments
+    setGrindSize(suggestedSettings.grindSize);
+    setTemperature(suggestedSettings.temperature);
+    setRatingIndex(2); // Reset to Balanced
+  };
 
   // Toggle favorite for a shot
   const toggleFavorite = (shot: ShotLog) => {
@@ -1102,22 +1198,85 @@ function App() {
               const tip = getBaristaTip(lastShotForBean.rating);
               const TipIcon = config.icon;
               return (
-                <div className={`barista-tip barista-tip--${config.colorClass}`}>
-                  <span className="barista-tip__icon">
-                    <TipIcon />
-                  </span>
-                  <div className="barista-tip__content">
-                    <h4>
-                      Tip for "{lastShotForBean.beanName}"
-                      {tip.adjustment !== 'none' && (
-                        <span className={`adjustment-badge adjustment-badge--${tip.adjustment}`}>
-                          {tip.adjustment === 'large' ? 'Major Adj.' : 'Minor Adj.'}
-                        </span>
-                      )}
-                    </h4>
-                    <p>{tip.message}</p>
+                <>
+                  {/* Current Rating & Tip */}
+                  <div className={`barista-tip barista-tip--${config.colorClass}`}>
+                    <span className="barista-tip__icon">
+                      <TipIcon />
+                    </span>
+                    <div className="barista-tip__content">
+                      <h4>
+                        Tip for "{lastShotForBean.beanName}"
+                        {tip.adjustment !== 'none' && (
+                          <span className={`adjustment-badge adjustment-badge--${tip.adjustment}`}>
+                            {tip.adjustment === 'large' ? 'Major Adj.' : 'Minor Adj.'}
+                          </span>
+                        )}
+                      </h4>
+                      <p>{tip.message}</p>
+                    </div>
                   </div>
-                </div>
+
+                  {/* Suggested Next Settings */}
+                  {suggestedSettings && (
+                    <div className="suggested-settings">
+                      <div className="suggested-settings__header">
+                        <Icons.Target />
+                        <span>Suggested Next Shot</span>
+                      </div>
+                      <div className="suggested-settings__values">
+                        <div className="suggested-setting">
+                          <span className="suggested-setting__label">Grind</span>
+                          <span className="suggested-setting__value">
+                            {suggestedSettings.grindSize}
+                            <span className={`suggested-setting__diff ${suggestedSettings.grindDiff > 0 ? 'diff--coarser' : 'diff--finer'}`}>
+                              ({suggestedSettings.grindDiff > 0 ? '+' : ''}{suggestedSettings.grindDiff})
+                            </span>
+                          </span>
+                        </div>
+                        {suggestedSettings.adjustmentType === 'both' && (
+                          <div className="suggested-setting">
+                            <span className="suggested-setting__label">Temp</span>
+                            <span className="suggested-setting__value">{suggestedSettings.temperature}</span>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        className="btn-apply-suggestion"
+                        onClick={applySuggestedSettings}
+                        title="Apply suggested settings to form"
+                      >
+                        <Icons.Zap /> Apply to Form
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Dial-in Journey */}
+                  {shotsForBean.length > 1 && (
+                    <div className="dialin-journey">
+                      <div className="dialin-journey__label">
+                        <Icons.TrendingUp /> Recent Journey
+                      </div>
+                      <div className="dialin-journey__timeline">
+                        {shotsForBean.slice(0, 5).reverse().map((shot, idx) => {
+                          const shotConfig = RATING_CONFIG[shot.rating];
+                          const ShotIcon = shotConfig.icon;
+                          return (
+                            <div
+                              key={shot.id}
+                              className={`journey-step journey-step--${shotConfig.colorClass}`}
+                              title={`Grind ${shot.grindSize} • ${shot.rating}`}
+                            >
+                              <ShotIcon />
+                              <span className="journey-step__grind">G{shot.grindSize}</span>
+                              {idx < shotsForBean.length - 1 && <span className="journey-step__arrow">→</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
               );
             })() : (
               <div className="empty-state">
