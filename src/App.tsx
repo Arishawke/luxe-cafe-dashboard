@@ -1645,13 +1645,22 @@ function App() {
                             </div>
                           )}
                         </div>
-                        <button
-                          className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
-                          onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
-                          title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
-                        >
-                          <Icons.Star filled={isFavorite} />
-                        </button>
+                        <div className="history-item__actions">
+                          <button
+                            className="history-item__delete-btn"
+                            onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
+                            title="Delete shot"
+                          >
+                            <Icons.Trash />
+                          </button>
+                          <button
+                            className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
+                            title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                          >
+                            <Icons.Star filled={isFavorite} />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -1860,9 +1869,18 @@ function App() {
             <div className="modal modal--wide" onClick={(e) => e.stopPropagation()}>
               <div className="modal__header">
                 <h3>{selectedShot.beanName}</h3>
-                <button className="modal__close" onClick={() => setSelectedShot(null)}>
-                  <Icons.X />
-                </button>
+                <div className="modal__header-actions">
+                  <button
+                    className="modal__header-btn modal__header-btn--delete"
+                    onClick={(e) => { e.stopPropagation(); deleteShot(selectedShot.id); }}
+                    title="Delete shot"
+                  >
+                    <Icons.Trash />
+                  </button>
+                  <button className="modal__close" onClick={() => setSelectedShot(null)}>
+                    <Icons.X />
+                  </button>
+                </div>
               </div>
               <div className="modal__body">
                 {/* Rating Banner */}
@@ -1925,40 +1943,32 @@ function App() {
                   </div>
                 )}
               </div>
-              <div className="modal__footer modal__footer--space-between">
+              <div className="modal__footer">
                 <button
-                  className="btn-delete"
-                  onClick={() => deleteShot(selectedShot.id)}
+                  className={`btn-action ${compareShots.includes(selectedShot.id) ? 'btn-action--active' : ''}`}
+                  onClick={() => {
+                    toggleCompareShot(selectedShot.id);
+                    showToast(
+                      compareShots.includes(selectedShot.id)
+                        ? 'Removed from comparison'
+                        : 'Added to comparison',
+                      'info'
+                    );
+                  }}
+                  title="Add to comparison"
                 >
-                  <Icons.Trash /> Delete Shot
+                  <Icons.BarChart /> Compare
                 </button>
-                <div className="modal__footer-actions">
-                  <button
-                    className={`btn-compare ${compareShots.includes(selectedShot.id) ? 'btn-compare--active' : ''}`}
-                    onClick={() => {
-                      toggleCompareShot(selectedShot.id);
-                      showToast(
-                        compareShots.includes(selectedShot.id)
-                          ? 'Removed from comparison'
-                          : 'Added to comparison',
-                        'info'
-                      );
-                    }}
-                    title="Add to comparison"
-                  >
-                    <Icons.BarChart /> {compareShots.includes(selectedShot.id) ? 'In Compare' : 'Compare'}
-                  </button>
-                  <button
-                    className="btn-secondary"
-                    onClick={() => duplicateShot(selectedShot)}
-                    title="Copy settings to form"
-                  >
-                    <Icons.Copy /> Brew Again
-                  </button>
-                  <button className="btn-submit" onClick={() => setSelectedShot(null)}>
-                    Close
-                  </button>
-                </div>
+                <button
+                  className="btn-action"
+                  onClick={() => duplicateShot(selectedShot)}
+                  title="Copy settings to form"
+                >
+                  <Icons.Copy /> Brew Again
+                </button>
+                <button className="btn-action btn-action--primary" onClick={() => setSelectedShot(null)}>
+                  Close
+                </button>
               </div>
             </div>
           </div>
