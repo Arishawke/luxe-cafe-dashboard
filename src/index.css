@@ -40,6 +40,32 @@
   --radius-pill: 9999px;
 }
 
+/* Light Theme */
+[data-theme="light"] {
+  /* Light backgrounds */
+  --color-black-coffee: #FAFAFA;
+  --color-dark-roast: #F5F0EB;
+  --color-espresso: #FFFFFF;
+  --color-mocha: #E8E0D8;
+
+  /* Warm coffee accents (slightly darker for contrast) */
+  --color-caramel: #8B6914;
+  --color-toffee: #6B5010;
+  --color-copper: #7A6B4F;
+  --color-latte: #6D5D4D;
+
+  /* Text tones */
+  --color-cream: #1C1410;
+  --color-foam: #2D2319;
+  --color-muted: #6B6058;
+  --color-subtle: #9A9088;
+
+  /* Effects for light mode */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 20px rgba(166, 123, 91, 0.1);
+  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* Reset & Base */
 *,
 *::before,
@@ -2352,5 +2378,25 @@ body {
 
   .data-summary {
     gap: 1.5rem;
+  }
+}
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
+
+.header__btn--theme {
+  right: 20.5rem;
+  padding: 0.625rem;
+}
+
+.header__btn--theme .icon {
+  color: var(--color-caramel);
+}
+
+/* Responsive header buttons */
+@media (max-width: 768px) {
+  .header__btn--theme {
+    right: auto;
   }
 }
