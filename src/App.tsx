@@ -136,6 +136,12 @@ const Icons = {
       <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   ),
+  PieChart: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+      <path d="M22 12A10 10 0 0 0 12 2v10z" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -207,6 +213,9 @@ function App() {
   const [newBeanProcess, setNewBeanProcess] = useState<ProcessMethod>('Washed');
   const [newBeanRoastDate, setNewBeanRoastDate] = useState('');
   const [newBeanFlavorNotes, setNewBeanFlavorNotes] = useState('');
+
+  // Stats modal
+  const [showStats, setShowStats] = useState(false);
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -491,6 +500,13 @@ function App() {
           title="Manage Bean Library"
         >
           <Icons.Bean /> Bean Library
+        </button>
+        <button
+          className="header__btn header__btn--secondary"
+          onClick={() => setShowStats(true)}
+          title="View Statistics"
+        >
+          <Icons.PieChart /> Stats
         </button>
       </header>
 
@@ -1243,6 +1259,131 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Statistics Modal */}
+      {showStats && (() => {
+        // Calculate statistics
+        const totalShots = shots.length;
+        const ratingCounts = RATINGS.reduce((acc, r) => {
+          acc[r] = shots.filter(s => s.rating === r).length;
+          return acc;
+        }, {} as Record<Rating, number>);
+        const maxRatingCount = Math.max(...Object.values(ratingCounts), 1);
+
+        // Shots per bean (top 5)
+        const beanCounts = shots.reduce((acc, s) => {
+          acc[s.beanName] = (acc[s.beanName] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        const topBeans = Object.entries(beanCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        const maxBeanCount = Math.max(...topBeans.map(([, c]) => c), 1);
+
+        // Average grind for balanced shots
+        const balancedShots = shots.filter(s => s.rating === 'Balanced');
+        const avgGrind = balancedShots.length > 0
+          ? Math.round(balancedShots.reduce((sum, s) => sum + s.grindSize, 0) / balancedShots.length * 10) / 10
+          : null;
+
+        // Success rate (Balanced)
+        const successRate = totalShots > 0
+          ? Math.round((balancedShots.length / totalShots) * 100)
+          : 0;
+
+        // Shots this week
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const shotsThisWeek = shots.filter(s => s.timestamp >= weekAgo).length;
+
+        return (
+          <div className="modal-overlay" onClick={() => setShowStats(false)}>
+            <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h3><Icons.PieChart /> Statistics</h3>
+                <button className="modal__close" onClick={() => setShowStats(false)}>
+                  <Icons.X />
+                </button>
+              </div>
+              <div className="modal__body">
+                {totalShots === 0 ? (
+                  <div className="empty-state">
+                    <Icons.BarChart />
+                    <p className="empty-state__text">Log some shots to see your statistics!</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Summary Stats */}
+                    <div className="stats-summary">
+                      <div className="stat-card">
+                        <div className="stat-card__value">{totalShots}</div>
+                        <div className="stat-card__label">Total Shots</div>
+                      </div>
+                      <div className="stat-card stat-card--success">
+                        <div className="stat-card__value">{successRate}%</div>
+                        <div className="stat-card__label">Balanced Rate</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-card__value">{shotsThisWeek}</div>
+                        <div className="stat-card__label">This Week</div>
+                      </div>
+                      {avgGrind && (
+                        <div className="stat-card stat-card--accent">
+                          <div className="stat-card__value">{avgGrind}</div>
+                          <div className="stat-card__label">Avg Balanced Grind</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Rating Distribution */}
+                    <div className="stats-section">
+                      <h4>Rating Distribution</h4>
+                      <div className="bar-chart">
+                        {RATINGS.map((r) => (
+                          <div key={r} className="bar-chart__row">
+                            <div className="bar-chart__label">{r}</div>
+                            <div className="bar-chart__bar-wrap">
+                              <div
+                                className="bar-chart__bar"
+                                style={{
+                                  width: `${(ratingCounts[r] / maxRatingCount) * 100}%`,
+                                  backgroundColor: RATING_COLORS[r]
+                                }}
+                              />
+                            </div>
+                            <div className="bar-chart__value">{ratingCounts[r]}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Top Beans */}
+                    {topBeans.length > 0 && (
+                      <div className="stats-section">
+                        <h4>Top Beans</h4>
+                        <div className="bar-chart bar-chart--beans">
+                          {topBeans.map(([bean, count]) => (
+                            <div key={bean} className="bar-chart__row">
+                              <div className="bar-chart__label bar-chart__label--bean">{bean}</div>
+                              <div className="bar-chart__bar-wrap">
+                                <div
+                                  className="bar-chart__bar bar-chart__bar--caramel"
+                                  style={{ width: `${(count / maxBeanCount) * 100}%` }}
+                                />
+                              </div>
+                              <div className="bar-chart__value">{count}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
