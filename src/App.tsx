@@ -278,6 +278,9 @@ function App() {
   // Caffeine tracker modal
   const [showCaffeine, setShowCaffeine] = useState(false);
 
+  // History filter
+  const [beanFilter, setBeanFilter] = useState<string>('');
+
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredBeans, setFilteredBeans] = useState<string[]>([]);
@@ -1057,60 +1060,94 @@ function App() {
               <Icons.BarChart /> Shot History
             </h2>
 
-            {sortedShots.length > 0 ? (
-              <div className="history-list">
-                {sortedShots.map((shot) => {
-                  const config = RATING_CONFIG[shot.rating];
-                  const ShotIcon = config.icon;
-                  const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
-                  return (
-                    <div
-                      key={shot.id}
-                      className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
-                      onClick={() => setSelectedShot(shot)}
-                    >
-                      <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
-                        <ShotIcon />
-                      </div>
-                      <div className="history-item__details">
-                        <div className="history-item__bean">{shot.beanName}</div>
-                        <div className="history-item__meta">
-                          {shot.brewType} • {formatDate(shot.timestamp)}
-                        </div>
-                        <div className="history-item__settings">
-                          <span className="setting-tag">Grind {shot.grindSize}</span>
-                          {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
-                          <span className="setting-tag">{shot.basket}</span>
-                          <span className="setting-tag">S{shot.strength}</span>
-                          {shot.milk && (
-                            <span className="setting-tag setting-tag--milk">
-                              {shot.milk.type} {shot.milk.style}
-                            </span>
-                          )}
-                        </div>
-                        {shot.notes && (
-                          <div className="history-item__notes">
-                            {shot.notes}
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
-                        title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
-                      >
-                        <Icons.Star filled={isFavorite} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <Icons.Clipboard />
-                <p className="empty-state__text">No shots logged yet. Start dialing in!</p>
+            {/* Bean Filter */}
+            {shots.length > 0 && (
+              <div className="history-filter">
+                <select
+                  className="history-filter__select"
+                  value={beanFilter}
+                  onChange={(e) => setBeanFilter(e.target.value)}
+                >
+                  <option value="">All Beans</option>
+                  {[...new Set(shots.map(s => s.beanName))]
+                    .sort((a, b) => a.localeCompare(b))
+                    .map(bean => (
+                      <option key={bean} value={bean}>{bean}</option>
+                    ))
+                  }
+                </select>
+                {beanFilter && (
+                  <button
+                    className="history-filter__clear"
+                    onClick={() => setBeanFilter('')}
+                    title="Clear filter"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             )}
+
+            {(() => {
+              const filteredShots = beanFilter
+                ? sortedShots.filter(s => s.beanName === beanFilter)
+                : sortedShots;
+
+              return filteredShots.length > 0 ? (
+                <div className="history-list">
+                  {filteredShots.map((shot) => {
+                    const config = RATING_CONFIG[shot.rating];
+                    const ShotIcon = config.icon;
+                    const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
+                    return (
+                      <div
+                        key={shot.id}
+                        className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
+                        onClick={() => setSelectedShot(shot)}
+                      >
+                        <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
+                          <ShotIcon />
+                        </div>
+                        <div className="history-item__details">
+                          <div className="history-item__bean">{shot.beanName}</div>
+                          <div className="history-item__meta">
+                            {shot.brewType} • {formatDate(shot.timestamp)}
+                          </div>
+                          <div className="history-item__settings">
+                            <span className="setting-tag">Grind {shot.grindSize}</span>
+                            {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
+                            <span className="setting-tag">{shot.basket}</span>
+                            <span className="setting-tag">S{shot.strength}</span>
+                            {shot.milk && (
+                              <span className="setting-tag setting-tag--milk">
+                                {shot.milk.type} {shot.milk.style}
+                              </span>
+                            )}
+                          </div>
+                          {shot.notes && (
+                            <div className="history-item__notes">
+                              {shot.notes}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
+                          title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                        >
+                          <Icons.Star filled={isFavorite} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <Icons.Clipboard />
+                  <p className="empty-state__text">No shots logged yet. Start dialing in!</p>
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>
