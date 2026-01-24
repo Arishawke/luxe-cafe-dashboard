@@ -1647,18 +1647,18 @@ function App() {
                         </div>
                         <div className="history-item__actions">
                           <button
-                            className="history-item__delete-btn"
-                            onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
-                            title="Delete shot"
-                          >
-                            <Icons.Trash />
-                          </button>
-                          <button
                             className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
                             onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
                             title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
                           >
                             <Icons.Star filled={isFavorite} />
+                          </button>
+                          <button
+                            className="history-item__delete-btn"
+                            onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
+                            title="Delete shot"
+                          >
+                            <Icons.Trash />
                           </button>
                         </div>
                       </div>
