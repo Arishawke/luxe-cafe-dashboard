@@ -1,40 +1,41 @@
-/* Midnight Cafe Design System - Dark Mode */
+/* Coffee Roast Design System - True Espresso Theme */
 
 /* Google Fonts - Serif for headers, Inter for body */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
-/* CSS Variables - Midnight Cafe Palette */
+/* CSS Variables - Coffee Roast Palette (Black Coffee → Espresso → Latte → Cream) */
 :root {
-  /* Dark backgrounds */
-  --color-midnight: #0D0D0D;
-  --color-charcoal: #1A1A1A;
-  --color-slate: #252525;
-  --color-graphite: #2F2F2F;
+  /* Dark roast backgrounds */
+  --color-black-coffee: #1C1410;
+  --color-dark-roast: #241C17;
+  --color-espresso: #2D2319;
+  --color-mocha: #3D3229;
 
-  /* Warm accents - espresso machine lights */
-  --color-amber: #D4A574;
-  --color-gold: #C9A962;
-  --color-bronze: #B8860B;
-  --color-copper: #B87333;
+  /* Warm coffee accents */
+  --color-caramel: #A67B5B;
+  --color-toffee: #8B6914;
+  --color-copper: #9A7B4F;
+  --color-latte: #C4A77D;
 
-  /* Text colors */
-  --color-cream: #F5F0E6;
-  --color-muted: #9A9A9A;
-  --color-subtle: #6B6B6B;
+  /* Light tones */
+  --color-cream: #F5EDE4;
+  --color-foam: #E8DFD5;
+  --color-muted: #A89F96;
+  --color-subtle: #6B6058;
 
-  /* Rating colors */
-  --color-sour: #FFB347;
-  --color-balanced: #7CB342;
-  --color-bitter: #E57373;
+  /* Rating colors - warmer tones */
+  --color-sour: #D4915C;
+  --color-balanced: #7A9E6D;
+  --color-bitter: #B85C5C;
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Effects */
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(212, 165, 116, 0.15);
-  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(166, 123, 91, 0.12);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.4);
   --radius-card: 20px;
   --radius-pill: 9999px;
 }
@@ -56,7 +57,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background: linear-gradient(135deg, var(--color-midnight) 0%, #0A0A0A 100%);
+  background: linear-gradient(160deg, var(--color-dark-roast) 0%, var(--color-black-coffee) 100%);
   color: var(--color-cream);
   line-height: 1.6;
   min-height: 100vh;
@@ -80,9 +81,11 @@ body {
 }
 
 .header__icon {
-  font-size: 3.5rem;
-  margin-bottom: 0.75rem;
-  filter: drop-shadow(0 0 12px rgba(212, 165, 116, 0.4));
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 0.75rem;
+  color: var(--color-latte);
+  filter: drop-shadow(0 0 12px rgba(166, 123, 91, 0.35));
   animation: glow 3s ease-in-out infinite;
 }
 
@@ -90,12 +93,12 @@ body {
 
   0%,
   100% {
-    filter: drop-shadow(0 0 12px rgba(212, 165, 116, 0.4));
+    filter: drop-shadow(0 0 12px rgba(166, 123, 91, 0.35));
     transform: translateY(0);
   }
 
   50% {
-    filter: drop-shadow(0 0 20px rgba(212, 165, 116, 0.6));
+    filter: drop-shadow(0 0 20px rgba(166, 123, 91, 0.5));
     transform: translateY(-3px);
   }
 }
@@ -106,16 +109,33 @@ body {
   font-weight: 600;
   color: var(--color-cream);
   letter-spacing: 0.02em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .header__subtitle {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--color-muted);
   font-weight: 400;
   margin-top: 0.5rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* Icon styles */
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.icon--lg {
+  width: 28px;
+  height: 28px;
+}
+
+.icon--xl {
+  width: 40px;
+  height: 40px;
 }
 
 /* Grid Layout */
@@ -137,10 +157,10 @@ body {
   }
 }
 
-/* Cards - Dark Slate / Matte Metal */
+/* Cards - Dark Roast / Espresso Surface */
 .card {
-  background: linear-gradient(145deg, var(--color-slate) 0%, var(--color-charcoal) 100%);
-  border: 1px solid var(--color-graphite);
+  background: linear-gradient(145deg, var(--color-espresso) 0%, var(--color-dark-roast) 100%);
+  border: 1px solid var(--color-mocha);
   border-radius: var(--radius-card);
   padding: 1.75rem;
   box-shadow: var(--shadow-card);
@@ -162,8 +182,9 @@ body {
   gap: 0.625rem;
 }
 
-.card__title span {
-  filter: drop-shadow(0 0 6px rgba(212, 165, 116, 0.3));
+.card__title .icon {
+  color: var(--color-latte);
+  filter: drop-shadow(0 0 4px rgba(166, 123, 91, 0.25));
 }
 
 /* Form Elements */
@@ -190,17 +211,17 @@ body {
   padding: 0.875rem 1.125rem;
   font-size: 1rem;
   font-family: var(--font-sans);
-  border: 1px solid var(--color-graphite);
+  border: 1px solid var(--color-mocha);
   border-radius: 12px;
-  background: var(--color-charcoal);
+  background: var(--color-dark-roast);
   color: var(--color-cream);
   transition: all 0.25s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-amber);
-  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 3px rgba(166, 123, 91, 0.12);
 }
 
 .form-input::placeholder {
@@ -219,47 +240,47 @@ body {
   font-size: 0.875rem;
   font-weight: 500;
   font-family: var(--font-sans);
-  border: 1px solid var(--color-graphite);
+  border: 1px solid var(--color-mocha);
   border-radius: var(--radius-pill);
-  background: var(--color-charcoal);
+  background: var(--color-dark-roast);
   color: var(--color-muted);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .pill-btn:hover {
-  border-color: var(--color-amber);
+  border-color: var(--color-caramel);
   color: var(--color-cream);
 }
 
 .pill-btn--active {
-  background: linear-gradient(135deg, var(--color-amber) 0%, var(--color-bronze) 100%);
-  border-color: var(--color-amber);
-  color: var(--color-midnight);
+  background: linear-gradient(135deg, var(--color-caramel) 0%, var(--color-copper) 100%);
+  border-color: var(--color-caramel);
+  color: var(--color-black-coffee);
   font-weight: 600;
-  box-shadow: 0 0 16px rgba(212, 165, 116, 0.35);
+  box-shadow: 0 0 16px rgba(166, 123, 91, 0.25);
 }
 
-/* Rating Pills with Colors */
+/* Rating Pills with Coffee Tones */
 .pill-btn--sour.pill-btn--active {
-  background: linear-gradient(135deg, var(--color-sour) 0%, #E6A23C 100%);
+  background: linear-gradient(135deg, var(--color-sour) 0%, #C07A48 100%);
   border-color: var(--color-sour);
-  box-shadow: 0 0 16px rgba(255, 179, 71, 0.4);
+  box-shadow: 0 0 14px rgba(212, 145, 92, 0.3);
 }
 
 .pill-btn--balanced.pill-btn--active {
-  background: linear-gradient(135deg, var(--color-balanced) 0%, #558B2F 100%);
+  background: linear-gradient(135deg, var(--color-balanced) 0%, #5E8252 100%);
   border-color: var(--color-balanced);
-  box-shadow: 0 0 16px rgba(124, 179, 66, 0.4);
+  box-shadow: 0 0 14px rgba(122, 158, 109, 0.3);
 }
 
 .pill-btn--bitter.pill-btn--active {
-  background: linear-gradient(135deg, var(--color-bitter) 0%, #C62828 100%);
+  background: linear-gradient(135deg, var(--color-bitter) 0%, #9A4444 100%);
   border-color: var(--color-bitter);
-  box-shadow: 0 0 16px rgba(229, 115, 115, 0.4);
+  box-shadow: 0 0 14px rgba(184, 92, 92, 0.3);
 }
 
-/* Slider - Warm Metal Track */
+/* Slider - Coffee Gradient Track */
 .slider-container {
   display: flex;
   align-items: center;
@@ -272,10 +293,10 @@ body {
   appearance: none;
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(to right, var(--color-amber), var(--color-bronze), var(--color-copper));
+  background: linear-gradient(to right, var(--color-espresso), var(--color-caramel), var(--color-latte));
   outline: none;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(212, 165, 116, 0.2);
+  box-shadow: 0 0 8px rgba(166, 123, 91, 0.15);
 }
 
 .slider::-webkit-slider-thumb {
@@ -284,26 +305,26 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--color-cream) 0%, #E0D6C8 100%);
-  border: 3px solid var(--color-amber);
+  background: linear-gradient(145deg, var(--color-cream) 0%, var(--color-foam) 100%);
+  border: 3px solid var(--color-caramel);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(212, 165, 116, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 10px rgba(166, 123, 91, 0.2);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 165, 116, 0.5);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 16px rgba(166, 123, 91, 0.35);
 }
 
 .slider::-moz-range-thumb {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--color-cream) 0%, #E0D6C8 100%);
-  border: 3px solid var(--color-amber);
+  background: linear-gradient(145deg, var(--color-cream) 0%, var(--color-foam) 100%);
+  border: 3px solid var(--color-caramel);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .slider-value {
@@ -312,10 +333,10 @@ body {
   font-size: 1.125rem;
   font-weight: 600;
   text-align: center;
-  background: var(--color-charcoal);
-  border: 1px solid var(--color-graphite);
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
   border-radius: 10px;
-  color: var(--color-amber);
+  color: var(--color-latte);
   font-family: var(--font-sans);
 }
 
@@ -339,19 +360,19 @@ body {
   font-family: var(--font-sans);
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--color-amber) 0%, var(--color-bronze) 100%);
-  color: var(--color-midnight);
+  background: linear-gradient(135deg, var(--color-caramel) 0%, var(--color-copper) 100%);
+  color: var(--color-black-coffee);
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
+  box-shadow: 0 4px 20px rgba(166, 123, 91, 0.2);
 }
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(212, 165, 116, 0.45);
+  box-shadow: 0 8px 28px rgba(166, 123, 91, 0.35);
 }
 
 .btn-submit:active {
@@ -364,22 +385,22 @@ body {
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem;
-  background: rgba(212, 165, 116, 0.08);
+  background: rgba(166, 123, 91, 0.08);
   border-radius: 14px;
-  border-left: 3px solid var(--color-amber);
+  border-left: 3px solid var(--color-caramel);
 }
 
 .barista-tip__icon {
-  font-size: 2rem;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(212, 165, 116, 0.4));
+  color: var(--color-latte);
+  filter: drop-shadow(0 0 6px rgba(166, 123, 91, 0.3));
 }
 
 .barista-tip__content h4 {
   font-family: var(--font-display);
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--color-amber);
+  color: var(--color-latte);
   margin-bottom: 0.375rem;
 }
 
@@ -391,7 +412,11 @@ body {
 
 .barista-tip--sour {
   border-left-color: var(--color-sour);
-  background: rgba(255, 179, 71, 0.08);
+  background: rgba(212, 145, 92, 0.08);
+}
+
+.barista-tip--sour .barista-tip__icon {
+  color: var(--color-sour);
 }
 
 .barista-tip--sour h4 {
@@ -400,7 +425,11 @@ body {
 
 .barista-tip--balanced {
   border-left-color: var(--color-balanced);
-  background: rgba(124, 179, 66, 0.08);
+  background: rgba(122, 158, 109, 0.08);
+}
+
+.barista-tip--balanced .barista-tip__icon {
+  color: var(--color-balanced);
 }
 
 .barista-tip--balanced h4 {
@@ -409,7 +438,11 @@ body {
 
 .barista-tip--bitter {
   border-left-color: var(--color-bitter);
-  background: rgba(229, 115, 115, 0.08);
+  background: rgba(184, 92, 92, 0.08);
+}
+
+.barista-tip--bitter .barista-tip__icon {
+  color: var(--color-bitter);
 }
 
 .barista-tip--bitter h4 {
@@ -424,10 +457,9 @@ body {
 }
 
 .empty-state__icon {
-  font-size: 3rem;
-  margin-bottom: 0.875rem;
+  margin: 0 auto 0.875rem;
+  color: var(--color-subtle);
   opacity: 0.5;
-  filter: grayscale(0.3);
 }
 
 .empty-state__text {
@@ -450,16 +482,16 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--color-charcoal);
-  border: 1px solid var(--color-graphite);
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
   border-radius: 14px;
   transition: all 0.2s ease;
 }
 
 .history-item:hover {
-  border-color: var(--color-amber);
+  border-color: var(--color-caramel);
   transform: translateX(4px);
-  box-shadow: 0 0 12px rgba(212, 165, 116, 0.1);
+  box-shadow: 0 0 12px rgba(166, 123, 91, 0.08);
 }
 
 .history-item__rating {
@@ -469,23 +501,30 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.375rem;
   flex-shrink: 0;
 }
 
+.history-item__rating .icon {
+  width: 24px;
+  height: 24px;
+}
+
 .history-item__rating--sour {
-  background: rgba(255, 179, 71, 0.15);
-  border: 1px solid rgba(255, 179, 71, 0.3);
+  background: rgba(212, 145, 92, 0.15);
+  border: 1px solid rgba(212, 145, 92, 0.25);
+  color: var(--color-sour);
 }
 
 .history-item__rating--balanced {
-  background: rgba(124, 179, 66, 0.15);
-  border: 1px solid rgba(124, 179, 66, 0.3);
+  background: rgba(122, 158, 109, 0.15);
+  border: 1px solid rgba(122, 158, 109, 0.25);
+  color: var(--color-balanced);
 }
 
 .history-item__rating--bitter {
-  background: rgba(229, 115, 115, 0.15);
-  border: 1px solid rgba(229, 115, 115, 0.3);
+  background: rgba(184, 92, 92, 0.15);
+  border: 1px solid rgba(184, 92, 92, 0.25);
+  color: var(--color-bitter);
 }
 
 .history-item__details {
@@ -519,8 +558,8 @@ body {
 .setting-tag {
   font-size: 0.6875rem;
   padding: 0.25rem 0.5rem;
-  background: var(--color-slate);
-  border: 1px solid var(--color-graphite);
+  background: var(--color-espresso);
+  border: 1px solid var(--color-mocha);
   border-radius: 6px;
   color: var(--color-muted);
   font-weight: 500;
@@ -535,21 +574,21 @@ body {
   gap: 1.5rem;
 }
 
-/* Scrollbar Styling - Dark Theme */
+/* Scrollbar Styling - Coffee Theme */
 .history-list::-webkit-scrollbar {
   width: 5px;
 }
 
 .history-list::-webkit-scrollbar-track {
-  background: var(--color-charcoal);
+  background: var(--color-dark-roast);
   border-radius: 3px;
 }
 
 .history-list::-webkit-scrollbar-thumb {
-  background: var(--color-graphite);
+  background: var(--color-mocha);
   border-radius: 3px;
 }
 
 .history-list::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber);
+  background: var(--color-caramel);
 }
