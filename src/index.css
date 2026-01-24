@@ -27,6 +27,7 @@
   --color-sour: #D4915C;
   --color-balanced: #7A9E6D;
   --color-bitter: #B85C5C;
+  --color-success: #7A9E6D;
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
@@ -43,27 +44,33 @@
 /* Light Theme */
 [data-theme="light"] {
   /* Light backgrounds */
-  --color-black-coffee: #FAFAFA;
-  --color-dark-roast: #F5F0EB;
+  --color-black-coffee: #FAF8F5;
+  --color-dark-roast: #F0EBE5;
   --color-espresso: #FFFFFF;
-  --color-mocha: #E8E0D8;
+  --color-mocha: #E5DDD5;
 
-  /* Warm coffee accents (slightly darker for contrast) */
+  /* Warm coffee accents (stronger for contrast) */
   --color-caramel: #8B6914;
   --color-toffee: #6B5010;
-  --color-copper: #7A6B4F;
-  --color-latte: #6D5D4D;
+  --color-copper: #6A5B3F;
+  --color-latte: #5D4D3D;
 
-  /* Text tones */
-  --color-cream: #1C1410;
-  --color-foam: #2D2319;
-  --color-muted: #6B6058;
-  --color-subtle: #9A9088;
+  /* Text tones (darker for readability) */
+  --color-cream: #1A1512;
+  --color-foam: #2A231A;
+  --color-muted: #5A5048;
+  --color-subtle: #8A8078;
+
+  /* Rating colors - stronger for light mode */
+  --color-sour: #B87A40;
+  --color-balanced: #5A8050;
+  --color-bitter: #A04040;
+  --color-success: #3D7A35;
 
   /* Effects for light mode */
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --shadow-glow: 0 0 20px rgba(166, 123, 91, 0.1);
-  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(166, 123, 91, 0.08);
+  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Reset & Base */
@@ -2789,9 +2796,9 @@ body {
 
 /* Dial-in Journey Timeline */
 .dialin-journey {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(166, 123, 91, 0.2);
+  border-top: 1px solid var(--color-mocha);
 }
 
 .dialin-journey__label {
@@ -2814,18 +2821,19 @@ body {
 .dialin-journey__timeline {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .journey-step {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.5rem;
-  border-radius: 6px;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .journey-step .icon {
@@ -2838,32 +2846,96 @@ body {
 }
 
 .journey-step__arrow {
-  margin: 0 0.25rem;
+  margin: 0 0.125rem;
   color: var(--color-muted);
-  opacity: 0.5;
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .journey-step--sour {
   background: rgba(212, 145, 92, 0.15);
-  color: #D4915C;
+  color: var(--color-sour);
+  border-color: rgba(212, 145, 92, 0.25);
 }
 
 .journey-step--very-sour {
   background: rgba(232, 160, 69, 0.15);
   color: #E8A045;
+  border-color: rgba(232, 160, 69, 0.25);
 }
 
 .journey-step--balanced {
   background: rgba(122, 158, 109, 0.15);
-  color: #7A9E6D;
+  color: var(--color-balanced);
+  border-color: rgba(122, 158, 109, 0.25);
 }
 
 .journey-step--bitter {
   background: rgba(184, 92, 92, 0.15);
-  color: #B85C5C;
+  color: var(--color-bitter);
+  border-color: rgba(184, 92, 92, 0.25);
 }
 
 .journey-step--very-bitter {
   background: rgba(192, 69, 69, 0.15);
   color: #C04545;
+  border-color: rgba(192, 69, 69, 0.25);
+}
+
+/* ============================================
+   LIGHT THEME SPECIFIC OVERRIDES
+   ============================================ */
+
+[data-theme="light"] .suggested-settings {
+  background: rgba(90, 128, 80, 0.08);
+  border-color: rgba(90, 128, 80, 0.2);
+}
+
+[data-theme="light"] .btn-apply-suggestion {
+  background: linear-gradient(135deg, rgba(61, 122, 53, 0.15), rgba(61, 122, 53, 0.08));
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+[data-theme="light"] .btn-apply-suggestion:hover {
+  background: linear-gradient(135deg, rgba(61, 122, 53, 0.25), rgba(61, 122, 53, 0.15));
+}
+
+[data-theme="light"] .journey-step--sour {
+  background: rgba(184, 122, 64, 0.12);
+  border-color: rgba(184, 122, 64, 0.2);
+}
+
+[data-theme="light"] .journey-step--very-sour {
+  background: rgba(200, 140, 50, 0.12);
+  border-color: rgba(200, 140, 50, 0.2);
+  color: #B87A30;
+}
+
+[data-theme="light"] .journey-step--balanced {
+  background: rgba(90, 128, 80, 0.12);
+  border-color: rgba(90, 128, 80, 0.2);
+}
+
+[data-theme="light"] .journey-step--bitter {
+  background: rgba(160, 64, 64, 0.12);
+  border-color: rgba(160, 64, 64, 0.2);
+}
+
+[data-theme="light"] .journey-step--very-bitter {
+  background: rgba(170, 50, 50, 0.12);
+  border-color: rgba(170, 50, 50, 0.2);
+  color: #A03030;
+}
+
+[data-theme="light"] .diff--finer {
+  color: #B87A30;
+}
+
+[data-theme="light"] .diff--coarser {
+  color: #4A7A40;
+}
+
+[data-theme="light"] .dialin-journey {
+  border-top-color: var(--color-mocha);
 }

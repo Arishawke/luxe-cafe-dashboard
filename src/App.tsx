@@ -201,13 +201,6 @@ const Icons = {
       <polyline points="17 6 23 6 23 12" />
     </svg>
   ),
-  Target: () => (
-    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>
-  ),
 };
 
 // Rating config
@@ -687,9 +680,6 @@ function App() {
     setBeans(beans.map(b => b.id === id ? { ...b, isActive: !b.isActive } : b));
   };
 
-  // Get active beans for autocomplete
-  const activeBeans = beans.filter(b => b.isActive);
-
   // Export all data as JSON
   const exportData = () => {
     const data = {
@@ -831,10 +821,10 @@ function App() {
           </button>
           <button
             className="header__btn header__btn--icon"
-            onClick={() => setShowDataModal(true)}
-            title="Data Management"
+            onClick={() => setShowCaffeine(true)}
+            title="Caffeine Tracker"
           >
-            <Icons.Settings />
+            <Icons.Caffeine />
           </button>
           <button
             className="header__btn header__btn--icon"
@@ -845,10 +835,10 @@ function App() {
           </button>
           <button
             className="header__btn header__btn--icon"
-            onClick={() => setShowCaffeine(true)}
-            title="Caffeine Tracker"
+            onClick={() => setShowDataModal(true)}
+            title="Data Management"
           >
-            <Icons.Caffeine />
+            <Icons.Settings />
           </button>
         </div>
       </header>
