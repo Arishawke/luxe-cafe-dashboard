@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D2420"/>
+      <stop offset="100%" style="stop-color:#1A1412"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="32" fill="url(#bg)"/>
+  <g transform="translate(96, 96)">
+    <!-- Coffee cup -->
+    <path d="M-40,-20 L-40,30 Q-40,45 -25,45 L25,45 Q40,45 40,30 L40,-20 Z" fill="#3D302A" stroke="#A67B5B" stroke-width="3"/>
+    <!-- Handle -->
+    <path d="M40,0 Q55,0 55,15 Q55,30 40,30" fill="none" stroke="#A67B5B" stroke-width="4" stroke-linecap="round"/>
+    <!-- Coffee surface -->
+    <ellipse cx="0" cy="-20" rx="38" ry="8" fill="#5C4033"/>
+    <!-- Steam -->
+    <path d="M-15,-35 Q-10,-50 -15,-60" fill="none" stroke="#F5E6D3" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <path d="M0,-35 Q5,-50 0,-60" fill="none" stroke="#F5E6D3" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <path d="M15,-35 Q20,-50 15,-60" fill="none" stroke="#F5E6D3" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+</svg>
