@@ -2614,6 +2614,69 @@ body {
   border-color: #C04545;
 }
 
+/* History Filters Container */
+.history-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.history-filter__search {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 8px;
+  color: var(--color-cream);
+  transition: all 0.2s ease;
+}
+
+.history-filter__search:focus {
+  outline: none;
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 3px rgba(166, 123, 91, 0.1);
+}
+
+.history-filter__search::placeholder {
+  color: var(--color-muted);
+}
+
+/* Recipe Pin Button */
+.recipe-chip__pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.recipe-chip__pin:hover {
+  color: var(--color-caramel);
+}
+
+.recipe-chip__pin .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.recipe-chip--pinned {
+  border-color: var(--color-caramel);
+  background: rgba(166, 123, 91, 0.1);
+}
+
+.recipe-chip--pinned .recipe-chip__pin {
+  color: var(--color-caramel);
+}
+
 /* ============================================
    DUPLICATE SHOT (BREW AGAIN)
    ============================================ */
@@ -2938,4 +3001,144 @@ body {
 
 [data-theme="light"] .dialin-journey {
   border-top-color: var(--color-mocha);
+}
+
+/* ============================================
+   CONFIRMATION MODAL
+   ============================================ */
+
+.modal--confirm {
+  max-width: 400px;
+}
+
+.confirm-message {
+  font-size: 1rem;
+  color: var(--color-cream);
+  line-height: 1.6;
+}
+
+.modal__footer--confirm {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-mocha);
+}
+
+.btn--secondary {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: transparent;
+  border: 1px solid var(--color-muted);
+  border-radius: 8px;
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--secondary:hover {
+  background: var(--color-mocha);
+  border-color: var(--color-cream);
+}
+
+.btn--danger {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, rgba(184, 92, 92, 0.3), rgba(184, 92, 92, 0.15));
+  border: 1px solid var(--color-bitter);
+  border-radius: 8px;
+  color: var(--color-bitter);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--danger:hover {
+  background: linear-gradient(135deg, rgba(184, 92, 92, 0.5), rgba(184, 92, 92, 0.3));
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-espresso);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+  z-index: 1100;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.toast--success {
+  border-left: 4px solid var(--color-balanced);
+}
+
+.toast--error {
+  border-left: 4px solid var(--color-bitter);
+}
+
+.toast--info {
+  border-left: 4px solid var(--color-caramel);
+}
+
+.toast__message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-cream);
+}
+
+.toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toast__close:hover {
+  color: var(--color-cream);
+}
+
+.toast__close .icon {
+  width: 14px;
+  height: 14px;
 }

@@ -293,6 +293,27 @@ function App() {
 
   // History filter
   const [beanFilter, setBeanFilter] = useState<string>('');
+  const [notesSearch, setNotesSearch] = useState<string>('');
+
+  // Pinned recipes
+  const [pinnedRecipes, setPinnedRecipes] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('luxe-cafe-pinned-recipes');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  // Toast notification state
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info';
+  } | null>(null);
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -339,10 +360,74 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // Save pinned recipes when changed
+  useEffect(() => {
+    localStorage.setItem('luxe-cafe-pinned-recipes', JSON.stringify([...pinnedRecipes]));
+  }, [pinnedRecipes]);
+
+  // Toggle pin status for a recipe
+  const togglePinRecipe = (id: string) => {
+    setPinnedRecipes(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   // Toggle theme function
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
+
+  // Auto-dismiss toast after 3 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  // Helper to show toast notifications
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+  };
+
+  // Helper to show confirmation dialog
+  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setConfirmDialog({ isOpen: true, title, message, onConfirm });
+  };
+
+  const closeConfirm = () => setConfirmDialog(null);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Enter to log shot (when not in modal)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        if (!showRecipeModal && !showBeanLibrary && !showStats && !showDataModal && !showCaffeine && !selectedShot && !editingRecipe) {
+          e.preventDefault();
+          if (beanName.trim()) {
+            // Trigger form submit
+            const form = document.querySelector('.shot-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }
+        }
+      }
+      // Ctrl+D to toggle theme (when not typing)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          toggleTheme();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [beanName, showRecipeModal, showBeanLibrary, showStats, showDataModal, showCaffeine, selectedShot, editingRecipe]);
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -530,9 +615,19 @@ function App() {
     setRecipeName('');
   };
 
-  // Delete a recipe
+  // Delete a recipe (with confirmation)
   const deleteRecipe = (id: string) => {
-    setRecipes(recipes.filter(r => r.id !== id));
+    const recipe = recipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    showConfirm(
+      'Delete Recipe',
+      `Are you sure you want to delete "${recipe.name}"?`,
+      () => {
+        setRecipes(recipes.filter(r => r.id !== id));
+        showToast('Recipe deleted', 'info');
+      }
+    );
   };
 
   // Open edit recipe modal
@@ -577,20 +672,27 @@ function App() {
     setRecipeName('');
   };
 
-  // Delete a shot
+  // Delete a shot (with confirmation)
   const deleteShot = (id: string) => {
-    // Also remove from favorites if it was a favorite
     const shot = shots.find(s => s.id === id);
-    if (shot) {
-      const beanKey = shot.beanName.toLowerCase();
-      if (favorites[beanKey] === id) {
-        const updated = { ...favorites };
-        delete updated[beanKey];
-        setFavorites(updated);
+    if (!shot) return;
+
+    showConfirm(
+      'Delete Shot',
+      `Are you sure you want to delete this shot for "${shot.beanName}"?`,
+      () => {
+        // Also remove from favorites if it was a favorite
+        const beanKey = shot.beanName.toLowerCase();
+        if (favorites[beanKey] === id) {
+          const updated = { ...favorites };
+          delete updated[beanKey];
+          setFavorites(updated);
+        }
+        setShots(shots.filter(s => s.id !== id));
+        setSelectedShot(null);
+        showToast('Shot deleted', 'info');
       }
-    }
-    setShots(shots.filter(s => s.id !== id));
-    setSelectedShot(null);
+    );
   };
 
   // Duplicate a shot (copy settings to form)
@@ -672,8 +774,18 @@ function App() {
   };
 
   const deleteBean = (id: string) => {
-    setBeans(beans.filter(b => b.id !== id));
-    if (editingBean?.id === id) resetBeanForm();
+    const bean = beans.find(b => b.id === id);
+    if (!bean) return;
+
+    showConfirm(
+      'Delete Bean',
+      `Are you sure you want to delete "${bean.name}"?`,
+      () => {
+        setBeans(beans.filter(b => b.id !== id));
+        if (editingBean?.id === id) resetBeanForm();
+        showToast('Bean deleted', 'info');
+      }
+    );
   };
 
   const toggleBeanActive = (id: string) => {
@@ -786,6 +898,7 @@ function App() {
     setBeanName('');
     setNotes('');
     setShowSuggestions(false);
+    showToast('Shot logged!', 'success');
   };
 
   // Sort history: favorite for current bean at top, then by date
@@ -850,31 +963,52 @@ function App() {
             <Icons.Zap /> Quick Recipes
           </div>
           <div className="recipe-menu__chips">
-            {recipes.map((recipe) => (
-              <div key={recipe.id} className="recipe-chip">
-                <button
-                  className="recipe-chip__btn"
-                  onClick={() => applyRecipe(recipe)}
-                  title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
-                >
-                  {recipe.name}
-                </button>
-                <button
-                  className="recipe-chip__edit"
-                  onClick={() => openEditRecipe(recipe)}
-                  title="Edit recipe"
-                >
-                  <Icons.Edit />
-                </button>
-                <button
-                  className="recipe-chip__delete"
-                  onClick={() => deleteRecipe(recipe.id)}
-                  title="Delete recipe"
-                >
-                  <Icons.Trash />
-                </button>
-              </div>
-            ))}
+            {[...recipes]
+              .sort((a, b) => {
+                const aPinned = pinnedRecipes.has(a.id);
+                const bPinned = pinnedRecipes.has(b.id);
+                if (aPinned && !bPinned) return -1;
+                if (bPinned && !aPinned) return 1;
+                return 0;
+              })
+              .map((recipe) => {
+                const isPinned = pinnedRecipes.has(recipe.id);
+                return (
+                  <div key={recipe.id} className={`recipe-chip ${isPinned ? 'recipe-chip--pinned' : ''}`}>
+                    <button
+                      className="recipe-chip__pin"
+                      onClick={() => togglePinRecipe(recipe.id)}
+                      title={isPinned ? 'Unpin recipe' : 'Pin to top'}
+                    >
+                      <Icons.Star filled={isPinned} />
+                    </button>
+                    <button
+                      className="recipe-chip__btn"
+                      onClick={() => {
+                        applyRecipe(recipe);
+                        showToast(`Applied "${recipe.name}"`, 'success');
+                      }}
+                      title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
+                    >
+                      {recipe.name}
+                    </button>
+                    <button
+                      className="recipe-chip__edit"
+                      onClick={() => openEditRecipe(recipe)}
+                      title="Edit recipe"
+                    >
+                      <Icons.Edit />
+                    </button>
+                    <button
+                      className="recipe-chip__delete"
+                      onClick={() => deleteRecipe(recipe.id)}
+                      title="Delete recipe"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}
@@ -887,7 +1021,7 @@ function App() {
             <Icons.Edit /> Log New Shot
           </h2>
 
-          <form onSubmit={handleSubmit}>
+          <form className="shot-form" onSubmit={handleSubmit}>
             {/* Brew Type Selector */}
             <div className="form-group">
               <label className="form-label">Brew Type</label>
@@ -1286,38 +1420,55 @@ function App() {
               <Icons.BarChart /> Shot History
             </h2>
 
-            {/* Bean Filter */}
+            {/* Bean Filter & Notes Search */}
             {shots.length > 0 && (
-              <div className="history-filter">
-                <select
-                  className="history-filter__select"
-                  value={beanFilter}
-                  onChange={(e) => setBeanFilter(e.target.value)}
-                >
-                  <option value="">All Beans</option>
-                  {[...new Set(shots.map(s => s.beanName))]
-                    .sort((a, b) => a.localeCompare(b))
-                    .map(bean => (
-                      <option key={bean} value={bean}>{bean}</option>
-                    ))
-                  }
-                </select>
-                {beanFilter && (
-                  <button
-                    className="history-filter__clear"
-                    onClick={() => setBeanFilter('')}
-                    title="Clear filter"
+              <div className="history-filters">
+                <div className="history-filter">
+                  <select
+                    className="history-filter__select"
+                    value={beanFilter}
+                    onChange={(e) => setBeanFilter(e.target.value)}
                   >
-                    ×
-                  </button>
-                )}
+                    <option value="">All Beans</option>
+                    {[...new Set(shots.map(s => s.beanName))]
+                      .sort((a, b) => a.localeCompare(b))
+                      .map(bean => (
+                        <option key={bean} value={bean}>{bean}</option>
+                      ))
+                    }
+                  </select>
+                  {beanFilter && (
+                    <button
+                      className="history-filter__clear"
+                      onClick={() => setBeanFilter('')}
+                      title="Clear filter"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  className="history-filter__search"
+                  placeholder="Search notes..."
+                  value={notesSearch}
+                  onChange={(e) => setNotesSearch(e.target.value)}
+                />
               </div>
             )}
 
             {(() => {
-              const filteredShots = beanFilter
+              let filteredShots = beanFilter
                 ? sortedShots.filter(s => s.beanName === beanFilter)
                 : sortedShots;
+
+              // Apply notes search filter
+              if (notesSearch.trim()) {
+                const searchLower = notesSearch.toLowerCase();
+                filteredShots = filteredShots.filter(s =>
+                  s.notes?.toLowerCase().includes(searchLower)
+                );
+              }
 
               return filteredShots.length > 0 ? (
                 <div className="history-list">
@@ -2138,6 +2289,47 @@ function App() {
               })()}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <div className="modal-overlay" onClick={closeConfirm}>
+          <div className="modal modal--confirm" onClick={e => e.stopPropagation()}>
+            <div className="modal__header">
+              <h2>{confirmDialog.title}</h2>
+              <button className="modal__close" onClick={closeConfirm}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              <p className="confirm-message">{confirmDialog.message}</p>
+            </div>
+            <div className="modal__footer modal__footer--confirm">
+              <button className="btn btn--secondary" onClick={closeConfirm}>
+                Cancel
+              </button>
+              <button
+                className="btn btn--danger"
+                onClick={() => {
+                  confirmDialog.onConfirm();
+                  closeConfirm();
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`toast toast--${toast.type}`}>
+          <span className="toast__message">{toast.message}</span>
+          <button className="toast__close" onClick={() => setToast(null)}>
+            <Icons.X />
+          </button>
         </div>
       )}
     </div>
