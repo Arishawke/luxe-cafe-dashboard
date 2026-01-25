@@ -6,7 +6,9 @@ A premium React-based dashboard for tracking and perfecting your espresso shots.
 
 ![Dashboard Preview](https://img.shields.io/badge/React-18+-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript) ![Vite](https://img.shields.io/badge/Vite-5+-646CFF?logo=vite)
 
-**🌐 [Live Demo](https://luxe-cafe-dashboard.vercel.app/)** — Try it now on Vercel!
+**☕ [Use it Now](https://luxe-cafe-dashboard.vercel.app/)** — Start tracking your espresso shots!
+
+> **📱 Note:** Your data is saved in your browser's storage. If you switch browsers or clear your browser data, your shots will be lost. Use the **Export Backup** feature in Settings to save your data!
 
 ![Dashboard Overview](docs/screenshots/dashboard_overview.png)
 
