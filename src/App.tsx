@@ -326,6 +326,7 @@ function App() {
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
 
   // Shot comparison
   const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
@@ -2610,11 +2611,11 @@ function App() {
 
       {/* Expanded Shot History Modal */}
       {showHistoryModal && (
-        <div className="modal-overlay" onClick={() => setShowHistoryModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowHistoryModal(false); setPreviewShot(null); }}>
           <div className="modal modal--history" onClick={e => e.stopPropagation()}>
             <div className="modal__header">
               <h3><Icons.BarChart /> Shot History ({shots.length})</h3>
-              <button className="modal__close" onClick={() => setShowHistoryModal(false)}>
+              <button className="modal__close" onClick={() => { setShowHistoryModal(false); setPreviewShot(null); }}>
                 <Icons.X />
               </button>
             </div>
@@ -2654,84 +2655,168 @@ function App() {
                 />
               </div>
 
-              {/* Shot List */}
-              <div className="history-modal__list">
-                {(() => {
-                  let filteredShots = beanFilter
-                    ? sortedShots.filter(s => s.beanName === beanFilter)
-                    : sortedShots;
+              {/* Split content area */}
+              <div className="history-modal__content">
+                {/* Shot List */}
+                <div className="history-modal__list">
+                  {(() => {
+                    let filteredShots = beanFilter
+                      ? sortedShots.filter(s => s.beanName === beanFilter)
+                      : sortedShots;
 
-                  if (notesSearch.trim()) {
-                    const searchLower = notesSearch.toLowerCase();
-                    filteredShots = filteredShots.filter(s =>
-                      s.notes?.toLowerCase().includes(searchLower)
-                    );
-                  }
-
-                  return filteredShots.length > 0 ? (
-                    filteredShots.map((shot) => {
-                      const config = RATING_CONFIG[shot.rating];
-                      const ShotIcon = config.icon;
-                      const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
-                      return (
-                        <div
-                          key={shot.id}
-                          className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
-                          onClick={() => { setSelectedShot(shot); setShowHistoryModal(false); }}
-                        >
-                          <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
-                            <ShotIcon />
-                          </div>
-                          <div className="history-item__details">
-                            <div className="history-item__bean">{shot.beanName}</div>
-                            <div className="history-item__meta">
-                              {shot.brewType} • {formatDate(shot.timestamp)}
-                            </div>
-                            <div className="history-item__settings">
-                              <span className="setting-tag">Grind {shot.grindSize}</span>
-                              {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
-                              <span className="setting-tag">{shot.basket}</span>
-                              <span className="setting-tag">S{shot.strength}</span>
-                              {shot.milk && (
-                                <span className="setting-tag setting-tag--milk">
-                                  {shot.milk.type} {shot.milk.style}
-                                </span>
-                              )}
-                            </div>
-                            {shot.notes && (
-                              <div className="history-item__notes">
-                                {shot.notes}
-                              </div>
-                            )}
-                          </div>
-                          <div className="history-item__actions">
-                            <button
-                              className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
-                              onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
-                              title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
-                            >
-                              <Icons.Star filled={isFavorite} />
-                            </button>
-                            <button
-                              className="history-item__delete-btn"
-                              onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
-                              title="Delete shot"
-                            >
-                              <Icons.Trash />
-                            </button>
-                          </div>
-                        </div>
+                    if (notesSearch.trim()) {
+                      const searchLower = notesSearch.toLowerCase();
+                      filteredShots = filteredShots.filter(s =>
+                        s.notes?.toLowerCase().includes(searchLower)
                       );
-                    })
-                  ) : (
-                    <div className="empty-state">
-                      <Icons.Clipboard />
-                      <p className="empty-state__text">
-                        {beanFilter || notesSearch ? 'No shots match your filters.' : 'No shots logged yet.'}
-                      </p>
+                    }
+
+                    return filteredShots.length > 0 ? (
+                      filteredShots.map((shot) => {
+                        const config = RATING_CONFIG[shot.rating];
+                        const ShotIcon = config.icon;
+                        const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
+                        const isSelected = previewShot?.id === shot.id;
+                        return (
+                          <div
+                            key={shot.id}
+                            className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''} ${isSelected ? 'history-item--selected' : ''}`}
+                            onClick={() => setPreviewShot(shot)}
+                            onDoubleClick={() => { setSelectedShot(shot); setShowHistoryModal(false); setPreviewShot(null); }}
+                          >
+                            <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
+                              <ShotIcon />
+                            </div>
+                            <div className="history-item__details">
+                              <div className="history-item__bean">{shot.beanName}</div>
+                              <div className="history-item__meta">
+                                {shot.brewType} • {formatDate(shot.timestamp)}
+                              </div>
+                              {/* Compact view - no settings tags */}
+                            </div>
+                            <div className="history-item__actions">
+                              <button
+                                className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
+                                title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                              >
+                                <Icons.Star filled={isFavorite} />
+                              </button>
+                              <button
+                                className="history-item__delete-btn"
+                                onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); if (previewShot?.id === shot.id) setPreviewShot(null); }}
+                                title="Delete shot"
+                              >
+                                <Icons.Trash />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="empty-state">
+                        <Icons.Clipboard />
+                        <p className="empty-state__text">
+                          {beanFilter || notesSearch ? 'No shots match your filters.' : 'No shots logged yet.'}
+                        </p>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Preview Pane (Desktop only) */}
+                <div className="history-modal__preview">
+                  {previewShot ? (() => {
+                    const config = RATING_CONFIG[previewShot.rating];
+                    const PreviewIcon = config.icon;
+                    const isFavorite = favorites[previewShot.beanName.toLowerCase()] === previewShot.id;
+                    return (
+                      <>
+                        {/* Rating Banner */}
+                        <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
+                          <PreviewIcon />
+                          <span>{previewShot.rating}</span>
+                          {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
+                        </div>
+
+                        {/* Timestamp */}
+                        <div className="shot-detail__timestamp">
+                          {new Intl.DateTimeFormat('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                          }).format(previewShot.timestamp)}
+                        </div>
+
+                        {/* Settings Grid */}
+                        <div className="shot-detail__grid">
+                          <div className="shot-detail__item">
+                            <span className="shot-detail__label">Brew Type</span>
+                            <span className="shot-detail__value">{previewShot.brewType}</span>
+                          </div>
+                          <div className="shot-detail__item">
+                            <span className="shot-detail__label">Grind Size</span>
+                            <span className="shot-detail__value">{previewShot.grindSize}</span>
+                          </div>
+                          {previewShot.temperature && (
+                            <div className="shot-detail__item">
+                              <span className="shot-detail__label">Temperature</span>
+                              <span className="shot-detail__value">{previewShot.temperature}</span>
+                            </div>
+                          )}
+                          <div className="shot-detail__item">
+                            <span className="shot-detail__label">Basket</span>
+                            <span className="shot-detail__value">{previewShot.basket}</span>
+                          </div>
+                          <div className="shot-detail__item">
+                            <span className="shot-detail__label">Strength</span>
+                            <span className="shot-detail__value">{previewShot.strength}</span>
+                          </div>
+                          {previewShot.milk && (
+                            <div className="shot-detail__item">
+                              <span className="shot-detail__label">Milk</span>
+                              <span className="shot-detail__value">{previewShot.milk.type} {previewShot.milk.style}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Notes */}
+                        {previewShot.notes && (
+                          <div className="shot-detail__notes">
+                            <span className="shot-detail__label">Notes</span>
+                            <p>{previewShot.notes}</p>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="history-modal__preview-actions">
+                          <button
+                            className="btn-action"
+                            onClick={() => duplicateShot(previewShot)}
+                            title="Copy settings to form"
+                          >
+                            <Icons.Copy /> Brew Again
+                          </button>
+                          <button
+                            className="btn-action btn-action--primary"
+                            onClick={() => { setSelectedShot(previewShot); setShowHistoryModal(false); setPreviewShot(null); }}
+                          >
+                            Full Details
+                          </button>
+                        </div>
+                      </>
+                    );
+                  })() : (
+                    <div className="history-modal__preview-empty">
+                      <Icons.Coffee />
+                      <p>Select a shot to preview details</p>
                     </div>
-                  );
-                })()}
+                  )}
+                </div>
               </div>
             </div>
           </div>
