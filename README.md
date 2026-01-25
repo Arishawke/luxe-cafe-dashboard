@@ -107,10 +107,25 @@ Monitor your daily caffeine intake:
 
 ---
 
-### 🥛 Froth Lab
-Collapsible milk settings panel:
+### 🧪 Advanced Tools
+
+Collapsible sections for pro-level espresso tracking:
+
+![Advanced Tools](docs/screenshots/advanced-tools.png)
+
+#### 🥛 Froth Lab
 - **Milk Type** — Dairy or Plant-based
 - **Style** — Steamed, Thin, Thick, Cold Foam
+
+#### ⏱ Shot Timer
+- Start/stop/reset timer for extraction timing
+- Auto-saves with shot (only if timer was used)
+- Ideal espresso extraction: 25-30 seconds
+
+#### ⚖️ Dose & Yield
+- Enter dose (grams in) and yield (grams out)
+- **Auto-calculates ratio** (e.g., `1:2.0`)
+- Displayed in shot history and exports
 
 ### 📋 Add-ins & Notes
 - Record extras like "Vanilla syrup, Cinnamon, Extra hot"
