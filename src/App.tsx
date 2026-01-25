@@ -1159,11 +1159,11 @@ function App() {
             <Icons.PieChart /> Stats
           </button>
           <button
-            className="header__btn header__btn--icon"
+            className="header__btn"
             onClick={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
             title="Caffeine Tracker"
           >
-            <Icons.Caffeine />
+            <Icons.Caffeine /> Caffeine
           </button>
           {/* Settings button for desktop */}
           <button
@@ -3089,6 +3089,29 @@ function App() {
                 <p className="data-warning">
                   ⚠️ Importing will replace all existing data
                 </p>
+
+                {/* Clear Data - Danger Zone */}
+                <button
+                  className="data-action-btn data-action-btn--danger"
+                  onClick={() => {
+                    showConfirm(
+                      'Clear All Data',
+                      `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
+                      () => {
+                        setShots([]);
+                        setRecipes([]);
+                        setBeans([]);
+                        setFavorites({});
+                        showToast('All data cleared', 'success');
+                        setShowThemePicker(false);
+                      }
+                    );
+                  }}
+                >
+                  <Icons.Trash />
+                  <span>Clear All Data</span>
+                  <small>Permanently delete everything</small>
+                </button>
               </div>
             </div>
           </div>

@@ -3079,6 +3079,25 @@ body {
   color: var(--color-muted);
 }
 
+/* Danger variant for destructive actions */
+.data-action-btn--danger {
+  border-color: rgba(220, 53, 69, 0.4);
+  margin-top: 1rem;
+}
+
+.data-action-btn--danger:hover {
+  border-color: rgba(220, 53, 69, 0.8);
+  background: rgba(220, 53, 69, 0.08);
+}
+
+.data-action-btn--danger .icon {
+  color: #dc3545;
+}
+
+.data-action-btn--danger span {
+  color: #dc3545;
+}
+
 /* Warning Text */
 .data-warning {
   font-size: 0.75rem;
@@ -4445,7 +4464,7 @@ body {
   .header__btns .header__btn--icon::after {
     content: attr(title);
     font-size: 0.875rem;
-    color: var(--color-cream);
+    color: var(--color-muted);
   }
 
   .header__overlay {
