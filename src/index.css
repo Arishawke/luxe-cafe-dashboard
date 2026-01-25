@@ -895,30 +895,23 @@ body {
   gap: 1.5rem;
 }
 
-/* Scrollbar Styling - Coffee Theme */
-.history-list::-webkit-scrollbar,
-.history-modal__list::-webkit-scrollbar,
-.history-modal__preview::-webkit-scrollbar {
+/* Scrollbar Styling - Coffee Theme (Global) */
+*::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
-.history-list::-webkit-scrollbar-track,
-.history-modal__list::-webkit-scrollbar-track,
-.history-modal__preview::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: var(--color-dark-roast);
   border-radius: 3px;
 }
 
-.history-list::-webkit-scrollbar-thumb,
-.history-modal__list::-webkit-scrollbar-thumb,
-.history-modal__preview::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background: var(--color-mocha);
   border-radius: 3px;
 }
 
-.history-list::-webkit-scrollbar-thumb:hover,
-.history-modal__list::-webkit-scrollbar-thumb:hover,
-.history-modal__preview::-webkit-scrollbar-thumb:hover {
+*::-webkit-scrollbar-thumb:hover {
   background: var(--color-caramel);
 }
 

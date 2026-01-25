@@ -2242,7 +2242,7 @@ function App() {
                 ) : (
                   <div className="empty-state empty-state--small">
                     <Icons.Bean />
-                    <p>No beans yet. Add your first bean above!</p>
+                    <p>No beans yet. Add your first bean using the form!</p>
                   </div>
                 )}
               </div>
