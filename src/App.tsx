@@ -222,6 +222,14 @@ const Icons = {
       <polyline points="20 6 9 17 4 12" />
     </svg>
   ),
+  Expand: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15 3 21 3 21 9" />
+      <polyline points="9 21 3 21 3 15" />
+      <line x1="21" y1="3" x2="14" y2="10" />
+      <line x1="3" y1="21" x2="10" y2="14" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -317,6 +325,7 @@ function App() {
   // History filter
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Shot comparison
   const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
@@ -1602,6 +1611,15 @@ function App() {
           <div className="card">
             <h2 className="card__title">
               <Icons.BarChart /> Shot History
+              {shots.length > 0 && (
+                <button
+                  className="card__expand-btn"
+                  onClick={() => setShowHistoryModal(true)}
+                  title="Expand shot history"
+                >
+                  <Icons.Expand />
+                </button>
+              )}
             </h2>
 
             {/* Bean Filter & Notes Search */}
@@ -2585,6 +2603,136 @@ function App() {
                   </>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expanded Shot History Modal */}
+      {showHistoryModal && (
+        <div className="modal-overlay" onClick={() => setShowHistoryModal(false)}>
+          <div className="modal modal--history" onClick={e => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.BarChart /> Shot History ({shots.length})</h3>
+              <button className="modal__close" onClick={() => setShowHistoryModal(false)}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              {/* Filters */}
+              <div className="history-modal__filters">
+                <div className="history-filter">
+                  <select
+                    className="history-filter__select"
+                    value={beanFilter}
+                    onChange={(e) => setBeanFilter(e.target.value)}
+                  >
+                    <option value="">All Beans</option>
+                    {[...new Set(shots.map(s => s.beanName))]
+                      .sort((a, b) => a.localeCompare(b))
+                      .map(bean => (
+                        <option key={bean} value={bean}>{bean}</option>
+                      ))
+                    }
+                  </select>
+                  {beanFilter && (
+                    <button
+                      className="history-filter__clear"
+                      onClick={() => setBeanFilter('')}
+                      title="Clear filter"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  className="history-filter__search"
+                  placeholder="Search notes..."
+                  value={notesSearch}
+                  onChange={(e) => setNotesSearch(e.target.value)}
+                />
+              </div>
+
+              {/* Shot List */}
+              <div className="history-modal__list">
+                {(() => {
+                  let filteredShots = beanFilter
+                    ? sortedShots.filter(s => s.beanName === beanFilter)
+                    : sortedShots;
+
+                  if (notesSearch.trim()) {
+                    const searchLower = notesSearch.toLowerCase();
+                    filteredShots = filteredShots.filter(s =>
+                      s.notes?.toLowerCase().includes(searchLower)
+                    );
+                  }
+
+                  return filteredShots.length > 0 ? (
+                    filteredShots.map((shot) => {
+                      const config = RATING_CONFIG[shot.rating];
+                      const ShotIcon = config.icon;
+                      const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
+                      return (
+                        <div
+                          key={shot.id}
+                          className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
+                          onClick={() => { setSelectedShot(shot); setShowHistoryModal(false); }}
+                        >
+                          <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
+                            <ShotIcon />
+                          </div>
+                          <div className="history-item__details">
+                            <div className="history-item__bean">{shot.beanName}</div>
+                            <div className="history-item__meta">
+                              {shot.brewType} • {formatDate(shot.timestamp)}
+                            </div>
+                            <div className="history-item__settings">
+                              <span className="setting-tag">Grind {shot.grindSize}</span>
+                              {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
+                              <span className="setting-tag">{shot.basket}</span>
+                              <span className="setting-tag">S{shot.strength}</span>
+                              {shot.milk && (
+                                <span className="setting-tag setting-tag--milk">
+                                  {shot.milk.type} {shot.milk.style}
+                                </span>
+                              )}
+                            </div>
+                            {shot.notes && (
+                              <div className="history-item__notes">
+                                {shot.notes}
+                              </div>
+                            )}
+                          </div>
+                          <div className="history-item__actions">
+                            <button
+                              className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(shot); }}
+                              title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                            >
+                              <Icons.Star filled={isFavorite} />
+                            </button>
+                            <button
+                              className="history-item__delete-btn"
+                              onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
+                              title="Delete shot"
+                            >
+                              <Icons.Trash />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="empty-state">
+                      <Icons.Clipboard />
+                      <p className="empty-state__text">
+                        {beanFilter || notesSearch ? 'No shots match your filters.' : 'No shots logged yet.'}
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           </div>
         </div>
