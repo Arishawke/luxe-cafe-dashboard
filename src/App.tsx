@@ -2427,7 +2427,9 @@ function App() {
             <div className="modal__body">
               {(() => {
                 // Caffeine amounts per basket type (mg)
-                const CAFFEINE_MG = { 'Double': 63, 'Luxe': 80 };
+                const CAFFEINE_MG: Record<string, number> = { 'Double': 63, 'Luxe': 80 };
+                // Actual espresso shots per basket type
+                const SHOTS_PER_BASKET: Record<string, number> = { 'Double': 2, 'Luxe': 4 };
 
                 // Get today's date (start of day)
                 const today = new Date();
@@ -2443,6 +2445,10 @@ function App() {
                 const todayCaffeine = todayShots.reduce((sum, s) =>
                   sum + (CAFFEINE_MG[s.basket] || 63), 0);
 
+                // Calculate actual shot count (not entries)
+                const todayShotCount = todayShots.reduce((sum, s) =>
+                  sum + (SHOTS_PER_BASKET[s.basket] || 2), 0);
+
                 // Calculate 7-day stats
                 const weekAgo = new Date(today);
                 weekAgo.setDate(weekAgo.getDate() - 7);
@@ -2455,6 +2461,10 @@ function App() {
                 const weekCaffeine = weekShots.reduce((sum, s) =>
                   sum + (CAFFEINE_MG[s.basket] || 63), 0);
                 const avgDaily = Math.round(weekCaffeine / 7);
+
+                // Calculate actual shot count for the week
+                const weekShotCount = weekShots.reduce((sum, s) =>
+                  sum + (SHOTS_PER_BASKET[s.basket] || 2), 0);
 
                 // Recommended daily limit is ~400mg
                 const dailyLimit = 400;
@@ -2499,7 +2509,7 @@ function App() {
 
                     <div className="caffeine-stats">
                       <div className="caffeine-stat">
-                        <span className="caffeine-stat__value">{todayShots.length}</span>
+                        <span className="caffeine-stat__value">{todayShotCount}</span>
                         <span className="caffeine-stat__label">Shots Today</span>
                       </div>
                       <div className="caffeine-stat">
@@ -2507,7 +2517,7 @@ function App() {
                         <span className="caffeine-stat__label">Daily Avg (mg)</span>
                       </div>
                       <div className="caffeine-stat">
-                        <span className="caffeine-stat__value">{weekShots.length}</span>
+                        <span className="caffeine-stat__value">{weekShotCount}</span>
                         <span className="caffeine-stat__label">Shots This Week</span>
                       </div>
                     </div>
