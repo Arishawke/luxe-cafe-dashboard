@@ -4486,6 +4486,18 @@ body {
   .header__theme-btn {
     display: none !important;
   }
+
+  /* Prefs button shown on desktop */
+  .header__prefs-btn {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Prefs button hidden on mobile (they use the theme-btn instead) */
+@media (max-width: 768px) {
+  .header__prefs-btn {
+    display: none !important;
+  }
 }
 
 /* ============================================
@@ -4544,6 +4556,56 @@ body {
   width: 18px;
   height: 18px;
   color: var(--color-caramel);
+}
+
+/* Preferences Sections */
+.prefs-section {
+  margin-bottom: 1.5rem;
+}
+
+.prefs-section:last-child {
+  margin-bottom: 0;
+}
+
+.prefs-section__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
+}
+
+.prefs-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.prefs-toggle__option {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: rgba(166, 123, 91, 0.06);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.prefs-toggle__option:hover {
+  background: rgba(166, 123, 91, 0.12);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.prefs-toggle__option--active {
+  background: rgba(166, 123, 91, 0.18);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
 }
 
 /* ============================================

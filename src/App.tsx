@@ -96,6 +96,14 @@ const Icons = {
       <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
     </svg>
   ),
+  Sliders: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+    </svg>
+  ),
   X: () => (
     <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -334,6 +342,11 @@ function App() {
     const saved = localStorage.getItem('theme');
     const validThemes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
     return (validThemes.includes(saved as ThemeType)) ? saved as ThemeType : 'dark';
+  });
+
+  // Time format preference (24-hour / military time)
+  const [use24Hour, setUse24Hour] = useState(() => {
+    return localStorage.getItem('luxe-cafe-24hour') === 'true';
   });
 
   // Caffeine tracker modal
@@ -1152,27 +1165,20 @@ function App() {
           >
             <Icons.Caffeine />
           </button>
-          {/* Theme selector - dropdown for desktop, button for mobile */}
-          <div className="header__theme-select header__theme-select--desktop">
-            <select
-              className="header__theme-dropdown"
-              value={theme}
-              onChange={(e) => { setTheme(e.target.value as typeof theme); setMobileMenuOpen(false); }}
-              title="Select Theme"
-            >
-              <option value="dark">☕ Coffee Dark</option>
-              <option value="light">🥛 Coffee Light</option>
-              <option value="catppuccin">🍵 Catppuccin</option>
-              <option value="rosepine">🌹 Rose Pine</option>
-              <option value="rosepine-moon">🌙 Rose Pine Moon</option>
-            </select>
-          </div>
+          {/* Preferences button for desktop */}
+          <button
+            className="header__btn header__btn--icon header__prefs-btn"
+            onClick={() => setShowThemePicker(true)}
+            title="Preferences"
+          >
+            <Icons.Sliders />
+          </button>
           <button
             className="header__btn header__theme-btn"
             onClick={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
-            title="Change Theme"
+            title="Preferences"
           >
-            <Icons.Palette /> {theme === 'dark' ? 'Coffee Dark' : theme === 'light' ? 'Coffee Light' : theme === 'catppuccin' ? 'Catppuccin' : theme === 'rosepine' ? 'Rose Pine' : 'Rose Pine Moon'}
+            <Icons.Palette /> Preferences
           </button>
           <button
             className="header__btn header__btn--icon"
@@ -1874,7 +1880,7 @@ function App() {
                         <div className="history-item__details">
                           <div className="history-item__bean">{shot.beanName}</div>
                           <div className="history-item__meta">
-                            {shot.brewType} • {formatDate(shot.timestamp)}
+                            {shot.brewType} • {formatDate(shot.timestamp, use24Hour)}
                           </div>
                           <div className="history-item__settings">
                             <span className="setting-tag">Grind {shot.grindSize}</span>
@@ -2155,7 +2161,7 @@ function App() {
                     day: 'numeric',
                     hour: 'numeric',
                     minute: '2-digit',
-                    hour12: true,
+                    hour12: !use24Hour,
                   }).format(selectedShot.timestamp)}
                 </div>
 
@@ -2895,7 +2901,7 @@ function App() {
                             <div className="history-item__details">
                               <div className="history-item__bean">{shot.beanName}</div>
                               <div className="history-item__meta">
-                                {shot.brewType} • {formatDate(shot.timestamp)}
+                                {shot.brewType} • {formatDate(shot.timestamp, use24Hour)}
                               </div>
                               {/* Compact view - no settings tags */}
                             </div>
@@ -2953,7 +2959,7 @@ function App() {
                             day: 'numeric',
                             hour: 'numeric',
                             minute: '2-digit',
-                            hour12: true,
+                            hour12: !use24Hour,
                           }).format(previewShot.timestamp)}
                         </div>
 
@@ -3047,30 +3053,51 @@ function App() {
         <div className="modal-overlay" onClick={() => setShowThemePicker(false)}>
           <div className="modal modal--theme-picker" onClick={e => e.stopPropagation()}>
             <div className="modal__header">
-              <h3><Icons.Palette /> Choose Theme</h3>
+              <h3><Icons.Palette /> Preferences</h3>
               <button className="modal__close" onClick={() => setShowThemePicker(false)}>
                 <Icons.X />
               </button>
             </div>
             <div className="modal__body">
-              <div className="theme-picker__options">
-                {[
-                  { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
-                  { value: 'light', label: 'Coffee Light', emoji: '🥛' },
-                  { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
-                  { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
-                  { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
-                ].map((t) => (
+              <div className="prefs-section">
+                <label className="prefs-section__label">Theme</label>
+                <div className="theme-picker__options">
+                  {[
+                    { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
+                    { value: 'light', label: 'Coffee Light', emoji: '🥛' },
+                    { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
+                    { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
+                    { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
+                  ].map((t) => (
+                    <button
+                      key={t.value}
+                      className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
+                      onClick={() => { setTheme(t.value as typeof theme); }}
+                    >
+                      <span className="theme-picker__emoji">{t.emoji}</span>
+                      <span className="theme-picker__label">{t.label}</span>
+                      {theme === t.value && <Icons.Check />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="prefs-section">
+                <label className="prefs-section__label">Time Format</label>
+                <div className="prefs-toggle">
                   <button
-                    key={t.value}
-                    className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
-                    onClick={() => { setTheme(t.value as typeof theme); setShowThemePicker(false); }}
+                    className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
+                    onClick={() => { setUse24Hour(false); localStorage.setItem('luxe-cafe-24hour', 'false'); }}
                   >
-                    <span className="theme-picker__emoji">{t.emoji}</span>
-                    <span className="theme-picker__label">{t.label}</span>
-                    {theme === t.value && <Icons.Check />}
+                    🕐 12-hour
                   </button>
-                ))}
+                  <button
+                    className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
+                    onClick={() => { setUse24Hour(true); localStorage.setItem('luxe-cafe-24hour', 'true'); }}
+                  >
+                    🕒 24-hour
+                  </button>
+                </div>
               </div>
             </div>
           </div>
