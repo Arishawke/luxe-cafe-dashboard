@@ -4,6 +4,7 @@ import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType
 import { COLD_BREW_TYPES, getDaysSinceRoast, getFreshnessStatus } from './types';
 import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans, generateId, formatDate, getBaristaTip, getUniqueBeans } from './utils';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS } from './constants';
+import { useToast, useConfirm, useTimer } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -104,19 +105,10 @@ function App() {
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
 
-  // Confirmation dialog state
-  const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-  } | null>(null);
-
-  // Toast notification state
-  const [toast, setToast] = useState<{
-    message: string;
-    type: 'success' | 'error' | 'info';
-  } | null>(null);
+  // Custom hooks for UI state
+  const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
+  const { toast, showToast, hideToast } = useToast(3000);
+  const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -133,11 +125,6 @@ function App() {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
     return stored === null ? true : stored === 'true';
   });
-
-  // Shot timer state
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Derived state
   const rating = RATINGS[ratingIndex];
@@ -195,53 +182,6 @@ function App() {
       return next;
     });
   };
-
-  // Auto-dismiss toast after 3 seconds
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
-
-  // Timer interval logic
-  useEffect(() => {
-    if (timerRunning) {
-      timerRef.current = setInterval(() => {
-        setTimerSeconds(prev => prev + 0.1);
-      }, 100);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [timerRunning]);
-
-  // Timer control functions
-  const startTimer = () => setTimerRunning(true);
-  const stopTimer = () => setTimerRunning(false);
-  const resetTimer = () => {
-    setTimerRunning(false);
-    setTimerSeconds(0);
-  };
-
-  // Helper to show toast notifications
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    setToast({ message, type });
-  };
-
-  // Helper to show confirmation dialog
-  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
-    setConfirmDialog({ isOpen: true, title, message, onConfirm });
-  };
-
-  const closeConfirm = () => setConfirmDialog(null);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -3109,7 +3049,7 @@ function App() {
       {toast && (
         <div className={`toast toast--${toast.type} ${showShortcuts ? 'toast--shortcuts-open' : ''}`}>
           <span className="toast__message">{toast.message}</span>
-          <button className="toast__close" onClick={() => setToast(null)}>
+          <button className="toast__close" onClick={hideToast}>
             <Icons.X />
           </button>
         </div>
