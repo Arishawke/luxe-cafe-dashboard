@@ -1405,11 +1405,13 @@ body {
 }
 
 .froth-panel {
-  margin-top: 0.75rem;
+  margin-top: -0.5rem;
   padding: 1rem;
-  background: rgba(166, 123, 91, 0.05);
+  background: var(--color-dark-roast);
   border: 1px solid var(--color-mocha);
-  border-radius: 12px;
+  border-radius: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .froth-panel__row {

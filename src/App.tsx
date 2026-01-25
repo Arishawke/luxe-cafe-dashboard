@@ -1475,15 +1475,15 @@ function App() {
             </div>
 
             {/* Froth Lab - Collapsible Milk Settings */}
-            <div className="form-group">
+            <div className="advanced-tools">
               <button
                 type="button"
-                className="froth-toggle"
+                className={`advanced-toggle ${showMilk ? 'advanced-toggle--active' : ''}`}
                 onClick={() => setShowMilk(!showMilk)}
               >
                 <Icons.Milk />
                 <span>Froth Lab</span>
-                <span className="froth-toggle__badge">{showMilk ? 'On' : 'Off'}</span>
+                <span className="advanced-toggle__badge">{showMilk ? 'On' : 'Off'}</span>
                 {showMilk ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
               </button>
 
@@ -1578,7 +1578,7 @@ function App() {
                         type="number"
                         step="0.1"
                         min="0"
-                        placeholder="18"
+                        placeholder="18.0"
                         value={doseIn}
                         onChange={(e) => setDoseIn(e.target.value)}
                       />
@@ -1590,7 +1590,7 @@ function App() {
                         type="number"
                         step="0.1"
                         min="0"
-                        placeholder="36"
+                        placeholder="36.0"
                         value={doseOut}
                         onChange={(e) => setDoseOut(e.target.value)}
                       />
