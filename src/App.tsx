@@ -2802,10 +2802,10 @@ function App() {
                             <Icons.Copy /> Brew Again
                           </button>
                           <button
-                            className="btn-action btn-action--primary"
-                            onClick={() => { setSelectedShot(previewShot); setShowHistoryModal(false); setPreviewShot(null); }}
+                            className={`btn-action ${compareShots.includes(previewShot.id) ? 'btn-action--active' : 'btn-action--primary'}`}
+                            onClick={() => toggleCompareShot(previewShot.id)}
                           >
-                            Full Details
+                            <Icons.BarChart /> {compareShots.includes(previewShot.id) ? 'In Compare' : 'Add to Compare'}
                           </button>
                         </div>
                       </>
