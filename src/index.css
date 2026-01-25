@@ -1763,7 +1763,7 @@ body {
   color: var(--color-caramel);
 }
 
-.recipe-chip__delete {
+.recipe-chip__dismiss {
   padding: 0.5rem 0.625rem;
   background: transparent;
   border: none;
@@ -1773,9 +1773,9 @@ body {
   transition: all 0.2s ease;
 }
 
-.recipe-chip__delete:hover {
-  background: rgba(184, 92, 92, 0.2);
-  color: #C04545;
+.recipe-chip__dismiss:hover {
+  background: rgba(166, 123, 91, 0.15);
+  color: var(--color-muted);
 }
 
 /* ============================================
@@ -2873,6 +2873,22 @@ body {
   border-color: rgba(220, 53, 69, 0.6);
   background: rgba(220, 53, 69, 0.1);
   color: #dc3545;
+}
+
+/* Starred/pinned recipe styling */
+.recipe-library__action-btn--starred {
+  color: var(--color-caramel);
+  border-color: var(--color-caramel);
+  background: rgba(210, 165, 109, 0.15);
+}
+
+.recipe-library__action-btn--starred:hover {
+  background: rgba(210, 165, 109, 0.25);
+}
+
+.recipe-library__item--starred {
+  border-color: var(--color-caramel);
+  background: rgba(210, 165, 109, 0.08);
 }
 
 .recipe-library__action-btn .icon {
@@ -4364,7 +4380,7 @@ body {
   .star-btn,
   .recipe-chip__btn,
   .recipe-chip__edit,
-  .recipe-chip__delete,
+  .recipe-chip__dismiss,
   .recipe-chip__pin,
   .btn-submit,
   .btn-secondary,

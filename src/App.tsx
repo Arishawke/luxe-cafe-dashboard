@@ -804,6 +804,9 @@ function App() {
       setShowMilk(false);
     }
     setNotes(recipe.notes || '');
+    // Close library and open edit modal
+    setShowRecipeLibrary(false);
+    setShowRecipeModal(true);
   };
 
   // Update existing recipe
@@ -1208,59 +1211,39 @@ function App() {
         )}
       </header>
 
-      {/* Quick Recipe Menu */}
-      {recipes.length > 0 && (
+      {/* Quick Recipe Hotbar - Only shows starred/pinned recipes */}
+      {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
         <div className="recipe-menu">
           <div className="recipe-menu__label">
-            <Icons.Zap /> Quick Recipes
+            <Icons.Star filled /> Quick Recipes
           </div>
           <div className="recipe-menu__chips">
-            {[...recipes]
-              .sort((a, b) => {
-                const aPinned = pinnedRecipes.has(a.id);
-                const bPinned = pinnedRecipes.has(b.id);
-                if (aPinned && !bPinned) return -1;
-                if (bPinned && !aPinned) return 1;
-                return 0;
-              })
-              .map((recipe) => {
-                const isPinned = pinnedRecipes.has(recipe.id);
-                return (
-                  <div key={recipe.id} className={`recipe-chip ${isPinned ? 'recipe-chip--pinned' : ''}`}>
-                    <button
-                      className="recipe-chip__pin"
-                      onClick={() => togglePinRecipe(recipe.id)}
-                      title={isPinned ? 'Unpin recipe' : 'Pin to top'}
-                    >
-                      <Icons.Star filled={isPinned} />
-                    </button>
-                    <button
-                      className="recipe-chip__btn"
-                      onClick={() => {
-                        applyRecipe(recipe);
-                        showToast(`Applied "${recipe.name}"`, 'success');
-                      }}
-                      title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
-                    >
-                      {recipe.name}
-                    </button>
-                    <button
-                      className="recipe-chip__edit"
-                      onClick={() => openEditRecipe(recipe)}
-                      title="Edit recipe"
-                    >
-                      <Icons.Edit />
-                    </button>
-                    <button
-                      className="recipe-chip__delete"
-                      onClick={() => deleteRecipe(recipe.id)}
-                      title="Delete recipe"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
-                );
-              })}
+            {recipes
+              .filter(recipe => pinnedRecipes.has(recipe.id))
+              .map((recipe) => (
+                <div key={recipe.id} className="recipe-chip recipe-chip--pinned">
+                  <button
+                    className="recipe-chip__btn"
+                    onClick={() => {
+                      applyRecipe(recipe);
+                      showToast(`Applied "${recipe.name}"`, 'success');
+                    }}
+                    title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
+                  >
+                    {recipe.name}
+                  </button>
+                  <button
+                    className="recipe-chip__dismiss"
+                    onClick={() => {
+                      togglePinRecipe(recipe.id);
+                      showToast(`Removed "${recipe.name}" from quick recipes`, 'info');
+                    }}
+                    title="Remove from quick recipes"
+                  >
+                    <Icons.X />
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       )}
@@ -2101,6 +2084,18 @@ function App() {
                 )}
               </div>
 
+              {/* Notes/Add-ins */}
+              <div className="form-group">
+                <label className="form-label">Add-Ins / Notes</label>
+                <textarea
+                  className="form-input form-input--textarea"
+                  placeholder="e.g. Vanilla syrup, extra foam, specific techniques..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={2}
+                />
+              </div>
+
               <div className="modal__preview">
                 <div className="modal__preview-label">Updated recipe:</div>
                 <div className="setting-tags-wrap">
@@ -2453,86 +2448,89 @@ function App() {
                 </div>
               ) : (
                 <div className="recipe-library">
-                  {recipes.map((recipe) => (
-                    <div key={recipe.id} className="recipe-library__item">
-                      <div className="recipe-library__header">
-                        <h4 className="recipe-library__name">{recipe.name}</h4>
-                        <div className="recipe-library__actions">
-                          <button
-                            className="recipe-library__action-btn"
-                            onClick={() => {
-                              // Apply recipe to form
-                              setBeanName(recipe.beanName);
-                              setBrewType(recipe.brewType);
-                              setBasket(recipe.basket);
-                              setGrindSize(recipe.grindSize);
-                              if (recipe.temperature) setTemperature(recipe.temperature);
-                              setStrength(recipe.strength);
-                              if (recipe.milk) {
-                                setMilkType(recipe.milk.type);
-                                setMilkStyle(recipe.milk.style);
-                                setShowMilk(true);
-                              }
-                              if (recipe.notes) setNotes(recipe.notes);
-                              setShowRecipeLibrary(false);
-                              showToast(`Applied "${recipe.name}"`, 'success');
-                            }}
-                            title="Apply Recipe"
-                          >
-                            <Icons.Check />
-                          </button>
-                          <button
-                            className="recipe-library__action-btn"
-                            onClick={() => {
-                              setEditingRecipe(recipe);
-                              setRecipeName(recipe.name);
-                              setShowRecipeModal(true);
-                              setShowRecipeLibrary(false);
-                            }}
-                            title="Edit Recipe"
-                          >
-                            <Icons.Edit />
-                          </button>
-                          <button
-                            className="recipe-library__action-btn recipe-library__action-btn--danger"
-                            onClick={() => {
-                              showConfirm(
-                                'Delete Recipe',
-                                `Are you sure you want to delete "${recipe.name}"?`,
-                                () => {
-                                  setRecipes(prev => prev.filter(r => r.id !== recipe.id));
-                                  showToast('Recipe deleted', 'success');
+                  {recipes.map((recipe) => {
+                    const isStarred = pinnedRecipes.has(recipe.id);
+                    return (
+                      <div key={recipe.id} className={`recipe-library__item ${isStarred ? 'recipe-library__item--starred' : ''}`}>
+                        <div className="recipe-library__header">
+                          <h4 className="recipe-library__name">{recipe.name}</h4>
+                          <div className="recipe-library__actions">
+                            <button
+                              className={`recipe-library__action-btn ${isStarred ? 'recipe-library__action-btn--starred' : ''}`}
+                              onClick={() => {
+                                togglePinRecipe(recipe.id);
+                                if (isStarred) {
+                                  showToast(`Removed "${recipe.name}" from quick recipes`, 'info');
+                                } else {
+                                  showToast(`Added "${recipe.name}" to quick recipes`, 'success');
                                 }
-                              );
-                            }}
-                            title="Delete Recipe"
-                          >
-                            <Icons.Trash />
-                          </button>
+                              }}
+                              title={isStarred ? 'Remove from quick recipes' : 'Add to quick recipes'}
+                            >
+                              <Icons.Star filled={isStarred} />
+                            </button>
+                            <button
+                              className="recipe-library__action-btn"
+                              onClick={() => {
+                                // Apply recipe to form
+                                setBeanName(recipe.beanName);
+                                setBrewType(recipe.brewType);
+                                setBasket(recipe.basket);
+                                setGrindSize(recipe.grindSize);
+                                if (recipe.temperature) setTemperature(recipe.temperature);
+                                setStrength(recipe.strength);
+                                if (recipe.milk) {
+                                  setMilkType(recipe.milk.type);
+                                  setMilkStyle(recipe.milk.style);
+                                  setShowMilk(true);
+                                }
+                                if (recipe.notes) setNotes(recipe.notes);
+                                setShowRecipeLibrary(false);
+                                showToast(`Applied "${recipe.name}"`, 'success');
+                              }}
+                              title="Apply Recipe"
+                            >
+                              <Icons.Check />
+                            </button>
+                            <button
+                              className="recipe-library__action-btn"
+                              onClick={() => openEditRecipe(recipe)}
+                              title="Edit Recipe"
+                            >
+                              <Icons.Edit />
+                            </button>
+                            <button
+                              className="recipe-library__action-btn recipe-library__action-btn--danger"
+                              onClick={() => deleteRecipe(recipe.id)}
+                              title="Delete Recipe"
+                            >
+                              <Icons.Trash />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="recipe-library__details">
-                        <span className="recipe-library__bean">
-                          <Icons.Bean /> {recipe.beanName}
-                        </span>
-                        <div className="recipe-library__settings">
-                          <span className="setting-tag">{recipe.brewType}</span>
-                          <span className="setting-tag">Grind {recipe.grindSize}</span>
-                          {recipe.temperature && <span className="setting-tag">{recipe.temperature}</span>}
-                          <span className="setting-tag">{recipe.basket}</span>
-                          <span className="setting-tag">S{recipe.strength}</span>
-                          {recipe.milk && (
-                            <span className="setting-tag setting-tag--milk">
-                              🥛 {recipe.milk.type} {recipe.milk.style}
-                            </span>
+                        <div className="recipe-library__details">
+                          <span className="recipe-library__bean">
+                            <Icons.Bean /> {recipe.beanName}
+                          </span>
+                          <div className="recipe-library__settings">
+                            <span className="setting-tag">{recipe.brewType}</span>
+                            <span className="setting-tag">Grind {recipe.grindSize}</span>
+                            {recipe.temperature && <span className="setting-tag">{recipe.temperature}</span>}
+                            <span className="setting-tag">{recipe.basket}</span>
+                            <span className="setting-tag">S{recipe.strength}</span>
+                            {recipe.milk && (
+                              <span className="setting-tag setting-tag--milk">
+                                🥛 {recipe.milk.type} {recipe.milk.style}
+                              </span>
+                            )}
+                          </div>
+                          {recipe.notes && (
+                            <p className="recipe-library__notes">{recipe.notes}</p>
                           )}
                         </div>
-                        {recipe.notes && (
-                          <p className="recipe-library__notes">{recipe.notes}</p>
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
