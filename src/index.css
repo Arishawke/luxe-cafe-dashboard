@@ -3881,6 +3881,19 @@ body {
   height: 14px;
 }
 
+/* Toast positioning on desktop based on shortcuts panel state */
+@media (min-width: 900px) {
+  .toast {
+    /* Default: above the collapsed keyboard icon button */
+    bottom: 5rem;
+  }
+
+  .toast--shortcuts-open {
+    /* When shortcuts panel is open, position above it */
+    bottom: 14rem;
+  }
+}
+
 /* ============================================
    FRESHNESS ALERTS
    ============================================ */

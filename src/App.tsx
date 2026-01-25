@@ -3259,7 +3259,7 @@ function App() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className={`toast toast--${toast.type}`}>
+        <div className={`toast toast--${toast.type} ${showShortcuts ? 'toast--shortcuts-open' : ''}`}>
           <span className="toast__message">{toast.message}</span>
           <button className="toast__close" onClick={() => setToast(null)}>
             <Icons.X />
