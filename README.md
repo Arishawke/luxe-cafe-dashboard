@@ -1,10 +1,12 @@
-# ☕ Luxe Cafe Dial-In
+# ☕ Luxe Cafe Dashboard
 
 **Espresso Calibration Dashboard for the Ninja Luxe Cafe Pro**
 
 A premium React-based dashboard for tracking and perfecting your espresso shots. Log your brews, get smart calibration tips, save favorite recipes, and dial in the perfect cup every time.
 
 ![Dashboard Preview](https://img.shields.io/badge/React-18+-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript) ![Vite](https://img.shields.io/badge/Vite-5+-646CFF?logo=vite)
+
+**🌐 [Live Demo](https://luxe-cafe-dashboard.vercel.app/)** — Try it now on Vercel!
 
 ![Dashboard Overview](docs/screenshots/dashboard_overview.png)
 
@@ -25,6 +27,17 @@ Click any shot in history to view full details with actionable buttons:
 - **Delete** — Remove shots with one-click trash icon
 
 ![Shot Detail Modal](docs/screenshots/shot_detail.png)
+
+---
+
+### 📊 Expanded Shot History (Desktop)
+On desktop, click the expand icon next to "Shot History" to open a full split-view modal:
+- **Left Panel** — Scrollable list of all shots with filters (bean, notes search)
+- **Right Panel** — Live preview of selected shot details
+- **Quick Actions** — "Brew Again" to copy settings, "Add to Compare" to queue for comparison
+- **Smart Filtering** — Filter by bean name or search notes instantly
+
+![Expanded Shot History](docs/screenshots/expanded_history.png)
 
 ---
 
