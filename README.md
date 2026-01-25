@@ -15,7 +15,7 @@ A premium React-based dashboard for tracking and perfecting your espresso shots.
 ### 📝 Shot Logging
 - **Bean Name Autocomplete** — Quickly select from previously used beans
 - **Brew Type Selector** — Espresso, Drip Coffee, Cold Brew, Cold Pressed, Over Ice
-- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Single/Double/Luxe), Temperature, Strength
+- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Double/Luxe), Temperature, Strength
 - **5-Point Taste Rating** — Discrete slider from Very Sour → Balanced → Very Bitter
 
 ### 🔍 Shot Details & Actions
@@ -24,7 +24,7 @@ Click any shot in history to view full details with actionable buttons:
 - **Brew Again** — Instantly reload all settings to log another shot
 - **Delete** — Remove shots with one-click trash icon
 
-![Shot Detail Modal](docs/screenshots/shot_detail_modal.png)
+![Shot Detail Modal](docs/screenshots/shot_detail.png)
 
 ---
 
@@ -39,12 +39,20 @@ Switch between 5 carefully crafted color themes using the dropdown in the header
 | 🌹 **Rose Pine** | Muted elegant rose tones |
 | 🌙 **Rose Pine Moon** | Darker Rose Pine variant |
 
-<p align="center">
-  <img src="docs/screenshots/catppuccin_theme.png" width="90%" alt="Catppuccin Mocha Theme">
-</p>
-<p align="center">
-  <img src="docs/screenshots/light_theme.png" width="90%" alt="Coffee Light Theme">
-</p>
+#### ☕ Coffee Dark
+![Coffee Dark Theme](docs/screenshots/dashboard_overview.png)
+
+#### 🥛 Coffee Light
+![Coffee Light Theme](docs/screenshots/theme_coffee_light.png)
+
+#### 🍵 Catppuccin Mocha
+![Catppuccin Mocha Theme](docs/screenshots/theme_catppuccin.png)
+
+#### 🌹 Rose Pine
+![Rose Pine Theme](docs/screenshots/theme_rosepine.png)
+
+#### 🌙 Rose Pine Moon
+![Rose Pine Moon Theme](docs/screenshots/theme_rosepine_moon.png)
 
 ---
 
@@ -69,7 +77,7 @@ View your brewing analytics with the Stats modal:
 - **Success Rate Chart** — Weekly breakdown of balanced shots
 - **Brew Types** — Distribution of espresso, cold brew, etc.
 
-![Stats Modal](docs/screenshots/stats_modal.png)
+![Statistics Dashboard](docs/screenshots/stats_modal.png)
 
 ---
 
@@ -109,9 +117,11 @@ Collapsible milk settings panel:
 - Visual adjustment badges (Major/Minor)
 
 ### 💾 Data Management
-- **Export Data** — Download all shots, beans, and recipes as JSON
-- **Import Data** — Restore data from a backup file
-- **Clear All Data** — Start fresh with confirmation protection
+- **Export Backup** — Download all shots, beans, and recipes as JSON
+- **Export to CSV** — Export shot history as a spreadsheet
+- **Import Backup** — Restore data from a JSON file
+
+![Data Management](docs/screenshots/data_management.png)
 
 ### 📱 Mobile-Optimized
 - 44px+ touch targets for all interactive elements
