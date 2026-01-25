@@ -832,6 +832,30 @@ body {
   border-radius: 11px;
 }
 
+/* Library bean styling in autocomplete */
+.autocomplete__option--library {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.autocomplete__option--library .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-caramel);
+  flex-shrink: 0;
+}
+
+.autocomplete__option-name {
+  flex: 1;
+}
+
+.autocomplete__option-roaster {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-left: auto;
+}
+
 /* Icon small variant */
 .icon--sm {
   width: 16px;

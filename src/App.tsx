@@ -474,10 +474,18 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Filter beans for autocomplete
+  // Filter beans for autocomplete - combine bean library + shot history
+  const getAllBeanSuggestions = () => {
+    const libraryBeans = beans.filter(b => b.isActive).map(b => b.name);
+    const historyBeans = getUniqueBeans(shots);
+    // Combine and deduplicate, prioritizing library beans
+    const combined = [...new Set([...libraryBeans, ...historyBeans])];
+    return combined.sort((a, b) => a.localeCompare(b));
+  };
+
   const handleBeanInput = (value: string) => {
     setBeanName(value);
-    const allBeans = getUniqueBeans(shots);
+    const allBeans = getAllBeanSuggestions();
     if (value.trim()) {
       const filtered = allBeans.filter(b =>
         b.toLowerCase().includes(value.toLowerCase())
@@ -489,7 +497,7 @@ function App() {
   };
 
   const handleBeanFocus = () => {
-    setFilteredBeans(getUniqueBeans(shots));
+    setFilteredBeans(getAllBeanSuggestions());
     setShowSuggestions(true);
   };
 
@@ -1174,12 +1182,12 @@ function App() {
                     onFocus={handleBeanFocus}
                     required
                   />
-                  {shots.length > 0 && (
+                  {(shots.length > 0 || beans.length > 0) && (
                     <button
                       type="button"
                       className="autocomplete__toggle"
                       onClick={() => {
-                        setFilteredBeans(getUniqueBeans(shots));
+                        setFilteredBeans(getAllBeanSuggestions());
                         setShowSuggestions(!showSuggestions);
                       }}
                     >
@@ -1189,16 +1197,23 @@ function App() {
                 </div>
                 {showSuggestions && filteredBeans.length > 0 && (
                   <div ref={suggestionsRef} className="autocomplete__dropdown">
-                    {filteredBeans.map((bean) => (
-                      <button
-                        key={bean}
-                        type="button"
-                        className="autocomplete__option"
-                        onClick={() => selectBean(bean)}
-                      >
-                        {bean}
-                      </button>
-                    ))}
+                    {filteredBeans.map((beanName) => {
+                      const libraryBean = beans.find(b => b.name.toLowerCase() === beanName.toLowerCase() && b.isActive);
+                      return (
+                        <button
+                          key={beanName}
+                          type="button"
+                          className={`autocomplete__option ${libraryBean ? 'autocomplete__option--library' : ''}`}
+                          onClick={() => selectBean(beanName)}
+                        >
+                          {libraryBean && <Icons.Bean />}
+                          <span className="autocomplete__option-name">{beanName}</span>
+                          {libraryBean?.roaster && (
+                            <span className="autocomplete__option-roaster">{libraryBean.roaster}</span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
