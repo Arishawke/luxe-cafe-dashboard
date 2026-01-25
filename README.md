@@ -149,7 +149,10 @@ Collapsible milk settings panel:
 
 | Shortcut | Action |
 |----------|--------|
+| **Ctrl+Enter** | Log the current shot |
+| **Ctrl+B** | Open/close Bean Library |
 | **Ctrl+D** | Cycle through themes |
+| **Escape** | Close any open modal |
 
 ---
 

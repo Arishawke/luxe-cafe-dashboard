@@ -463,10 +463,42 @@ function App() {
           });
         }
       }
+      // Escape to close any open modal
+      if (e.key === 'Escape') {
+        if (confirmDialog) {
+          closeConfirm();
+        } else if (selectedShot) {
+          setSelectedShot(null);
+        } else if (editingRecipe) {
+          setEditingRecipe(null);
+        } else if (showHistoryModal) {
+          setShowHistoryModal(false);
+          setPreviewShot(null);
+        } else if (showBeanLibrary) {
+          setShowBeanLibrary(false);
+        } else if (showStats) {
+          setShowStats(false);
+        } else if (showCaffeine) {
+          setShowCaffeine(false);
+        } else if (showDataModal) {
+          setShowDataModal(false);
+        } else if (showRecipeModal) {
+          setShowRecipeModal(false);
+        } else if (showThemePicker) {
+          setShowThemePicker(false);
+        }
+      }
+      // Ctrl+B to open Bean Library
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          setShowBeanLibrary(prev => !prev);
+        }
+      }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [beanName, showRecipeModal, showBeanLibrary, showStats, showDataModal, showCaffeine, selectedShot, editingRecipe]);
+  }, [beanName, showRecipeModal, showBeanLibrary, showStats, showDataModal, showCaffeine, selectedShot, editingRecipe, showHistoryModal, previewShot, confirmDialog, showThemePicker]);
 
   // Handle click outside to close suggestions
   useEffect(() => {
