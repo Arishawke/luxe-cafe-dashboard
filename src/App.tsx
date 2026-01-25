@@ -208,6 +208,20 @@ const Icons = {
       <line x1="3" y1="18" x2="21" y2="18" />
     </svg>
   ),
+  Palette: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" />
+      <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" />
+      <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" />
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+    </svg>
+  ),
+  Check: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
 };
 
 // Rating config
@@ -335,6 +349,7 @@ function App() {
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
 
   // Derived state
   const rating = RATINGS[ratingIndex];
@@ -1021,7 +1036,8 @@ function App() {
           >
             <Icons.Caffeine />
           </button>
-          <div className="header__theme-select">
+          {/* Theme selector - dropdown for desktop, button for mobile */}
+          <div className="header__theme-select header__theme-select--desktop">
             <select
               className="header__theme-dropdown"
               value={theme}
@@ -1035,6 +1051,13 @@ function App() {
               <option value="rosepine-moon">🌙 Rose Pine Moon</option>
             </select>
           </div>
+          <button
+            className="header__btn header__theme-btn"
+            onClick={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
+            title="Change Theme"
+          >
+            <Icons.Palette /> {theme === 'dark' ? 'Coffee Dark' : theme === 'light' ? 'Coffee Light' : theme === 'catppuccin' ? 'Catppuccin' : theme === 'rosepine' ? 'Rose Pine' : 'Rose Pine Moon'}
+          </button>
           <button
             className="header__btn header__btn--icon"
             onClick={() => { setShowDataModal(true); setMobileMenuOpen(false); }}
@@ -2547,6 +2570,41 @@ function App() {
                   </>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Theme Picker Modal (Mobile) */}
+      {showThemePicker && (
+        <div className="modal-overlay" onClick={() => setShowThemePicker(false)}>
+          <div className="modal modal--theme-picker" onClick={e => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.Palette /> Choose Theme</h3>
+              <button className="modal__close" onClick={() => setShowThemePicker(false)}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              <div className="theme-picker__options">
+                {[
+                  { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
+                  { value: 'light', label: 'Coffee Light', emoji: '🥛' },
+                  { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
+                  { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
+                  { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
+                ].map((t) => (
+                  <button
+                    key={t.value}
+                    className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
+                    onClick={() => { setTheme(t.value as typeof theme); setShowThemePicker(false); }}
+                  >
+                    <span className="theme-picker__emoji">{t.emoji}</span>
+                    <span className="theme-picker__label">{t.label}</span>
+                    {theme === t.value && <Icons.Check />}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

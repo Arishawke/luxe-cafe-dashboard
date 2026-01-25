@@ -4037,4 +4037,83 @@ body {
   .header__title {
     font-size: 1.125rem;
   }
+
+  /* Hide dropdown on mobile, show theme button */
+  .header__theme-select--desktop {
+    display: none;
+  }
+
+  .header__theme-btn {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    background: var(--color-dark-roast);
+    border-radius: 8px;
+  }
+}
+
+/* Theme button: hidden on desktop, shown on mobile via media query above */
+@media (min-width: 769px) {
+  .header__theme-btn {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   THEME PICKER MODAL
+   ============================================ */
+
+.modal--theme-picker {
+  max-width: 340px;
+}
+
+.theme-picker__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.theme-picker__option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(166, 123, 91, 0.06);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+  color: var(--color-cream);
+  text-align: left;
+  width: 100%;
+}
+
+.theme-picker__option:hover {
+  background: rgba(166, 123, 91, 0.12);
+  border-color: var(--color-caramel);
+}
+
+.theme-picker__option--active {
+  background: rgba(166, 123, 91, 0.18);
+  border-color: var(--color-caramel);
+}
+
+.theme-picker__emoji {
+  font-size: 1.25rem;
+  width: 28px;
+  text-align: center;
+}
+
+.theme-picker__label {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.theme-picker__option .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-caramel);
 }
