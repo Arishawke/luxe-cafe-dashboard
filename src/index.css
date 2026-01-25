@@ -3508,36 +3508,9 @@ body {
   color: var(--color-muted);
 }
 
-/* Recipe Pin Button */
-.recipe-chip__pin {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  color: var(--color-muted);
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.recipe-chip__pin:hover {
-  color: var(--color-caramel);
-}
-
-.recipe-chip__pin .icon {
-  width: 14px;
-  height: 14px;
-}
-
 .recipe-chip--pinned {
   border-color: var(--color-caramel);
   background: rgba(166, 123, 91, 0.1);
-}
-
-.recipe-chip--pinned .recipe-chip__pin {
-  color: var(--color-caramel);
 }
 
 /* ============================================
@@ -3577,31 +3550,8 @@ body {
 }
 
 /* ============================================
-   EDIT QUICK RECIPES
+   EDIT RECIPE MODAL
    ============================================ */
-
-.recipe-chip__edit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  color: var(--color-muted);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.recipe-chip__edit:hover {
-  color: var(--color-caramel);
-  background: rgba(166, 123, 91, 0.15);
-}
-
-.recipe-chip__edit .icon {
-  width: 14px;
-  height: 14px;
-}
 
 .edit-recipe__grid {
   display: grid;
@@ -4379,9 +4329,7 @@ body {
   .header__btn,
   .star-btn,
   .recipe-chip__btn,
-  .recipe-chip__edit,
   .recipe-chip__dismiss,
-  .recipe-chip__pin,
   .btn-submit,
   .btn-secondary,
   .btn-delete,
