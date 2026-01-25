@@ -31,6 +31,7 @@ export interface ShotLog {
   rating: Rating;
   milk?: MilkSettings; // Optional milk settings
   notes?: string; // Add-ins / Notes
+  extractionTime?: number; // Shot timer in seconds
   timestamp: Date;
   isFavorite?: boolean; // Starred as favorite for this bean
 }

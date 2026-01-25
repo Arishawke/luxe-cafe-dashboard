@@ -954,7 +954,7 @@ function App() {
       return;
     }
 
-    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Milk Type', 'Milk Style', 'Notes'];
+    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Extraction Time', 'Milk Type', 'Milk Style', 'Notes'];
     const csvRows = [headers.join(',')];
 
     shots.forEach(shot => {
@@ -967,6 +967,7 @@ function App() {
         shot.temperature || '',
         shot.strength,
         shot.rating,
+        shot.extractionTime || '',
         shot.milk?.type || '',
         shot.milk?.style || '',
         `"${(shot.notes || '').replace(/"/g, '""')}"`
@@ -1065,6 +1066,7 @@ function App() {
       rating,
       milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
       notes: notes.trim() || undefined,
+      extractionTime: timerSeconds > 0 ? Math.round(timerSeconds * 10) / 10 : undefined,
       timestamp: new Date(),
     };
 
@@ -1072,6 +1074,7 @@ function App() {
     setBeanName('');
     setNotes('');
     setShowSuggestions(false);
+    resetTimer(); // Reset timer after logging
     showToast('Shot logged!', 'success');
   };
 
@@ -1789,6 +1792,9 @@ function App() {
                             {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
                             <span className="setting-tag">{shot.basket}</span>
                             <span className="setting-tag">S{shot.strength}</span>
+                            {shot.extractionTime && (
+                              <span className="setting-tag setting-tag--timer">⏱ {shot.extractionTime}s</span>
+                            )}
                             {shot.milk && (
                               <span className="setting-tag setting-tag--milk">
                                 {shot.milk.type} {shot.milk.style}
@@ -2087,6 +2093,12 @@ function App() {
                     <div className="shot-detail__item">
                       <span className="shot-detail__label">Milk</span>
                       <span className="shot-detail__value">{selectedShot.milk.type} {selectedShot.milk.style}</span>
+                    </div>
+                  )}
+                  {selectedShot.extractionTime && (
+                    <div className="shot-detail__item">
+                      <span className="shot-detail__label">Extraction Time</span>
+                      <span className="shot-detail__value">{selectedShot.extractionTime}s</span>
                     </div>
                   )}
                 </div>
