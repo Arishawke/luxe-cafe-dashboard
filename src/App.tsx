@@ -1165,27 +1165,21 @@ function App() {
           >
             <Icons.Caffeine />
           </button>
-          {/* Preferences button for desktop */}
+          {/* Settings button for desktop */}
           <button
             className="header__btn header__btn--icon header__prefs-btn"
             onClick={() => setShowThemePicker(true)}
-            title="Preferences"
+            title="Settings"
           >
             <Icons.Sliders />
           </button>
+          {/* Settings button for mobile */}
           <button
             className="header__btn header__theme-btn"
             onClick={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
-            title="Preferences"
+            title="Settings"
           >
-            <Icons.Palette /> Preferences
-          </button>
-          <button
-            className="header__btn header__btn--icon"
-            onClick={() => { setShowDataModal(true); setMobileMenuOpen(false); }}
-            title="Data Management"
-          >
-            <Icons.Settings />
+            <Icons.Sliders /> Settings
           </button>
         </div>
 
@@ -2632,73 +2626,7 @@ function App() {
         );
       })()}
 
-      {/* Data Management Modal */}
-      {showDataModal && (
-        <div className="modal-overlay" onClick={() => { setShowDataModal(false); setImportStatus(null); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h3><Icons.Settings /> Data Management</h3>
-              <button className="modal__close" onClick={() => { setShowDataModal(false); setImportStatus(null); }}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              {/* Data Summary */}
-              <div className="data-summary">
-                <div className="data-summary__item">
-                  <span className="data-summary__count">{shots.length}</span>
-                  <span className="data-summary__label">Shots</span>
-                </div>
-                <div className="data-summary__item">
-                  <span className="data-summary__count">{recipes.length}</span>
-                  <span className="data-summary__label">Recipes</span>
-                </div>
-                <div className="data-summary__item">
-                  <span className="data-summary__count">{beans.length}</span>
-                  <span className="data-summary__label">Beans</span>
-                </div>
-              </div>
 
-              {/* Import Status */}
-              {importStatus && (
-                <div className={`import-status import-status--${importStatus.type}`}>
-                  {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
-                </div>
-              )}
-
-              {/* Export/Import Buttons */}
-              <div className="data-actions">
-                <button className="data-action-btn" onClick={exportData}>
-                  <Icons.Download />
-                  <span>Export Backup</span>
-                  <small>Download all data as JSON</small>
-                </button>
-                <button className="data-action-btn" onClick={exportToCSV}>
-                  <Icons.BarChart />
-                  <span>Export to CSV</span>
-                  <small>Shot history as spreadsheet</small>
-                </button>
-                <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
-                  <Icons.Upload />
-                  <span>Import Backup</span>
-                  <small>Restore from JSON file</small>
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  onChange={handleImport}
-                  style={{ display: 'none' }}
-                />
-              </div>
-
-              <p className="data-warning">
-                ⚠️ Importing will replace all existing data
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Caffeine Tracker Modal */}
       {showCaffeine && (
@@ -3048,56 +2976,119 @@ function App() {
         </div>
       )}
 
-      {/* Theme Picker Modal (Mobile) */}
+      {/* Unified Settings Modal */}
       {showThemePicker && (
-        <div className="modal-overlay" onClick={() => setShowThemePicker(false)}>
-          <div className="modal modal--theme-picker" onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => { setShowThemePicker(false); setImportStatus(null); }}>
+          <div className="modal modal--settings" onClick={e => e.stopPropagation()}>
             <div className="modal__header">
-              <h3><Icons.Palette /> Preferences</h3>
-              <button className="modal__close" onClick={() => setShowThemePicker(false)}>
+              <h3><Icons.Sliders /> Settings</h3>
+              <button className="modal__close" onClick={() => { setShowThemePicker(false); setImportStatus(null); }}>
                 <Icons.X />
               </button>
             </div>
             <div className="modal__body">
-              <div className="prefs-section">
-                <label className="prefs-section__label">Theme</label>
-                <div className="theme-picker__options">
-                  {[
-                    { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
-                    { value: 'light', label: 'Coffee Light', emoji: '🥛' },
-                    { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
-                    { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
-                    { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
-                  ].map((t) => (
+              {/* Appearance Section */}
+              <div className="settings-section">
+                <h4 className="settings-section__title">🎨 Appearance</h4>
+
+                <div className="prefs-section">
+                  <label className="prefs-section__label">Theme</label>
+                  <div className="theme-picker__options">
+                    {[
+                      { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
+                      { value: 'light', label: 'Coffee Light', emoji: '🥛' },
+                      { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
+                      { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
+                      { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
+                    ].map((t) => (
+                      <button
+                        key={t.value}
+                        className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
+                        onClick={() => { setTheme(t.value as typeof theme); }}
+                      >
+                        <span className="theme-picker__emoji">{t.emoji}</span>
+                        <span className="theme-picker__label">{t.label}</span>
+                        {theme === t.value && <Icons.Check />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="prefs-section">
+                  <label className="prefs-section__label">Time Format</label>
+                  <div className="prefs-toggle">
                     <button
-                      key={t.value}
-                      className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
-                      onClick={() => { setTheme(t.value as typeof theme); }}
+                      className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
+                      onClick={() => { setUse24Hour(false); localStorage.setItem('luxe-cafe-24hour', 'false'); }}
                     >
-                      <span className="theme-picker__emoji">{t.emoji}</span>
-                      <span className="theme-picker__label">{t.label}</span>
-                      {theme === t.value && <Icons.Check />}
+                      🕐 12-hour
                     </button>
-                  ))}
+                    <button
+                      className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
+                      onClick={() => { setUse24Hour(true); localStorage.setItem('luxe-cafe-24hour', 'true'); }}
+                    >
+                      🕒 24-hour
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="prefs-section">
-                <label className="prefs-section__label">Time Format</label>
-                <div className="prefs-toggle">
-                  <button
-                    className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                    onClick={() => { setUse24Hour(false); localStorage.setItem('luxe-cafe-24hour', 'false'); }}
-                  >
-                    🕐 12-hour
-                  </button>
-                  <button
-                    className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                    onClick={() => { setUse24Hour(true); localStorage.setItem('luxe-cafe-24hour', 'true'); }}
-                  >
-                    🕒 24-hour
-                  </button>
+              {/* Data Section */}
+              <div className="settings-section">
+                <h4 className="settings-section__title">💾 Data</h4>
+
+                {/* Data Summary */}
+                <div className="data-summary">
+                  <div className="data-summary__item">
+                    <span className="data-summary__count">{shots.length}</span>
+                    <span className="data-summary__label">Shots</span>
+                  </div>
+                  <div className="data-summary__item">
+                    <span className="data-summary__count">{recipes.length}</span>
+                    <span className="data-summary__label">Recipes</span>
+                  </div>
+                  <div className="data-summary__item">
+                    <span className="data-summary__count">{beans.length}</span>
+                    <span className="data-summary__label">Beans</span>
+                  </div>
                 </div>
+
+                {/* Import Status */}
+                {importStatus && (
+                  <div className={`import-status import-status--${importStatus.type}`}>
+                    {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
+                  </div>
+                )}
+
+                {/* Export/Import Buttons */}
+                <div className="data-actions">
+                  <button className="data-action-btn" onClick={exportData}>
+                    <Icons.Download />
+                    <span>Export Backup</span>
+                    <small>Download all data as JSON</small>
+                  </button>
+                  <button className="data-action-btn" onClick={exportToCSV}>
+                    <Icons.BarChart />
+                    <span>Export to CSV</span>
+                    <small>Shot history as spreadsheet</small>
+                  </button>
+                  <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
+                    <Icons.Upload />
+                    <span>Import Backup</span>
+                    <small>Restore from JSON file</small>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleImport}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+
+                <p className="data-warning">
+                  ⚠️ Importing will replace all existing data
+                </p>
               </div>
             </div>
           </div>
