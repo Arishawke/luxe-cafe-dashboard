@@ -32,6 +32,8 @@ export interface ShotLog {
   milk?: MilkSettings; // Optional milk settings
   notes?: string; // Add-ins / Notes
   extractionTime?: number; // Shot timer in seconds
+  doseIn?: number; // Grams of coffee in
+  doseOut?: number; // Grams of espresso out (yield)
   timestamp: Date;
   isFavorite?: boolean; // Starred as favorite for this bean
 }

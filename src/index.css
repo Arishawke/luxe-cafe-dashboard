@@ -1857,6 +1857,164 @@ body {
 }
 
 /* ============================================
+   ADVANCED TOOLS SECTION
+   ============================================ */
+
+.advanced-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.advanced-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  width: 100%;
+  text-align: left;
+}
+
+.advanced-toggle:hover {
+  background: rgba(166, 123, 91, 0.12);
+  border-color: var(--color-caramel);
+}
+
+.advanced-toggle--active {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.advanced-toggle .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-caramel);
+}
+
+.advanced-toggle__badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  background: var(--color-espresso);
+  border-radius: 4px;
+  color: var(--color-muted);
+}
+
+.advanced-toggle--active .advanced-toggle__badge {
+  background: var(--color-caramel);
+  color: var(--color-espresso);
+}
+
+/* Dose & Yield Section */
+.dose-yield {
+  padding: 1rem;
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: -0.5rem;
+}
+
+.dose-yield__inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.dose-yield__field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dose-yield__field label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dose-yield__field input {
+  padding: 0.625rem 0.75rem;
+  background: var(--color-espresso);
+  border: 1px solid var(--color-mocha);
+  border-radius: 8px;
+  color: var(--color-cream);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+}
+
+.dose-yield__field input:focus {
+  border-color: var(--color-caramel);
+  outline: none;
+}
+
+/* Number input spinner buttons - Webkit (Chrome, Safari, Edge) */
+.dose-yield__field input::-webkit-outer-spin-button,
+.dose-yield__field input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  opacity: 1;
+  background: var(--color-mocha);
+  border-left: 1px solid var(--color-mocha);
+  cursor: pointer;
+}
+
+/* Style for Firefox number inputs */
+.dose-yield__field input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.dose-yield__arrow {
+  font-size: 1.5rem;
+  color: var(--color-caramel);
+  padding-bottom: 0.5rem;
+}
+
+.dose-yield__ratio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-mocha);
+}
+
+.dose-yield__ratio-label {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.dose-yield__ratio-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-caramel);
+  font-family: var(--font-mono, monospace);
+}
+
+/* Shot timer when nested in advanced tools */
+.advanced-tools .shot-timer {
+  margin-top: -0.5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* ============================================
    FORM ACTIONS (Log + Save Recipe)
    ============================================ */
 

@@ -87,6 +87,15 @@ const Icons = {
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   ),
+  Scale: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+      <path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+      <path d="M7 21h10" />
+      <path d="M12 3v18" />
+      <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+    </svg>
+  ),
   X: () => (
     <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -285,6 +294,14 @@ function App() {
   const [showMilk, setShowMilk] = useState(false);
   const [milkType, setMilkType] = useState<MilkType>('Dairy');
   const [milkStyle, setMilkStyle] = useState<MilkStyle>('Steamed');
+
+  // Advanced section toggles
+  const [showTimer, setShowTimer] = useState(false);
+  const [showDose, setShowDose] = useState(false);
+
+  // Dose/Yield inputs
+  const [doseIn, setDoseIn] = useState<string>('');
+  const [doseOut, setDoseOut] = useState<string>('');
 
   // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
@@ -954,10 +971,11 @@ function App() {
       return;
     }
 
-    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Extraction Time', 'Milk Type', 'Milk Style', 'Notes'];
+    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Extraction Time', 'Dose In (g)', 'Dose Out (g)', 'Ratio', 'Milk Type', 'Milk Style', 'Notes'];
     const csvRows = [headers.join(',')];
 
     shots.forEach(shot => {
+      const ratio = shot.doseIn && shot.doseOut ? `1:${(shot.doseOut / shot.doseIn).toFixed(1)}` : '';
       const row = [
         new Date(shot.timestamp).toLocaleString(),
         `"${shot.beanName.replace(/"/g, '""')}"`,
@@ -968,6 +986,9 @@ function App() {
         shot.strength,
         shot.rating,
         shot.extractionTime || '',
+        shot.doseIn || '',
+        shot.doseOut || '',
+        ratio,
         shot.milk?.type || '',
         shot.milk?.style || '',
         `"${(shot.notes || '').replace(/"/g, '""')}"`
@@ -1067,6 +1088,8 @@ function App() {
       milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
       notes: notes.trim() || undefined,
       extractionTime: timerSeconds > 0 ? Math.round(timerSeconds * 10) / 10 : undefined,
+      doseIn: doseIn ? parseFloat(doseIn) : undefined,
+      doseOut: doseOut ? parseFloat(doseOut) : undefined,
       timestamp: new Date(),
     };
 
@@ -1075,6 +1098,8 @@ function App() {
     setNotes('');
     setShowSuggestions(false);
     resetTimer(); // Reset timer after logging
+    setDoseIn(''); // Reset dose fields
+    setDoseOut('');
     showToast('Shot logged!', 'success');
   };
 
@@ -1498,6 +1523,91 @@ function App() {
               )}
             </div>
 
+            {/* Advanced Tools Section */}
+            <div className="advanced-tools">
+              {/* Shot Timer Toggle */}
+              <button
+                type="button"
+                className={`advanced-toggle ${showTimer ? 'advanced-toggle--active' : ''}`}
+                onClick={() => setShowTimer(!showTimer)}
+              >
+                <Icons.Zap />
+                <span>Shot Timer</span>
+                <span className="advanced-toggle__badge">{showTimer ? 'On' : 'Off'}</span>
+                {showTimer ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
+              </button>
+              {showTimer && (
+                <div className="shot-timer">
+                  <div className="shot-timer__display">
+                    <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
+                  </div>
+                  <div className="shot-timer__controls">
+                    {timerRunning ? (
+                      <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
+                        ⏸
+                      </button>
+                    ) : (
+                      <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
+                        ▶
+                      </button>
+                    )}
+                    <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
+                      ↺
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Dose/Yield Toggle */}
+              <button
+                type="button"
+                className={`advanced-toggle ${showDose ? 'advanced-toggle--active' : ''}`}
+                onClick={() => setShowDose(!showDose)}
+              >
+                <Icons.Scale />
+                <span>Dose & Yield</span>
+                <span className="advanced-toggle__badge">{showDose ? 'On' : 'Off'}</span>
+                {showDose ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
+              </button>
+              {showDose && (
+                <div className="dose-yield">
+                  <div className="dose-yield__inputs">
+                    <div className="dose-yield__field">
+                      <label>In (g)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="18"
+                        value={doseIn}
+                        onChange={(e) => setDoseIn(e.target.value)}
+                      />
+                    </div>
+                    <span className="dose-yield__arrow">→</span>
+                    <div className="dose-yield__field">
+                      <label>Out (g)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="36"
+                        value={doseOut}
+                        onChange={(e) => setDoseOut(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  {doseIn && doseOut && parseFloat(doseIn) > 0 && (
+                    <div className="dose-yield__ratio">
+                      <span className="dose-yield__ratio-label">Ratio</span>
+                      <span className="dose-yield__ratio-value">
+                        1:{(parseFloat(doseOut) / parseFloat(doseIn)).toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Add-ins / Notes */}
             <div className="form-group">
               <label className="form-label">Add-ins / Notes</label>
@@ -1508,27 +1618,6 @@ function App() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
-            </div>
-
-            {/* Shot Timer */}
-            <div className="shot-timer">
-              <div className="shot-timer__display">
-                <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
-              </div>
-              <div className="shot-timer__controls">
-                {timerRunning ? (
-                  <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
-                    ⏸
-                  </button>
-                ) : (
-                  <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
-                    ▶
-                  </button>
-                )}
-                <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
-                  ↺
-                </button>
-              </div>
             </div>
 
             {/* Action Buttons */}
@@ -1794,6 +1883,11 @@ function App() {
                             <span className="setting-tag">S{shot.strength}</span>
                             {shot.extractionTime && (
                               <span className="setting-tag setting-tag--timer">⏱ {shot.extractionTime}s</span>
+                            )}
+                            {shot.doseIn && shot.doseOut && (
+                              <span className="setting-tag setting-tag--dose">
+                                {shot.doseIn}→{shot.doseOut}g (1:{(shot.doseOut / shot.doseIn).toFixed(1)})
+                              </span>
                             )}
                             {shot.milk && (
                               <span className="setting-tag setting-tag--milk">
@@ -2099,6 +2193,14 @@ function App() {
                     <div className="shot-detail__item">
                       <span className="shot-detail__label">Extraction Time</span>
                       <span className="shot-detail__value">{selectedShot.extractionTime}s</span>
+                    </div>
+                  )}
+                  {selectedShot.doseIn && selectedShot.doseOut && (
+                    <div className="shot-detail__item">
+                      <span className="shot-detail__label">Dose / Yield</span>
+                      <span className="shot-detail__value">
+                        {selectedShot.doseIn}g → {selectedShot.doseOut}g (1:{(selectedShot.doseOut / selectedShot.doseIn).toFixed(1)})
+                      </span>
                     </div>
                   )}
                 </div>
@@ -2883,6 +2985,20 @@ function App() {
                             <div className="shot-detail__item">
                               <span className="shot-detail__label">Milk</span>
                               <span className="shot-detail__value">{previewShot.milk.type} {previewShot.milk.style}</span>
+                            </div>
+                          )}
+                          {previewShot.extractionTime && (
+                            <div className="shot-detail__item">
+                              <span className="shot-detail__label">Extraction Time</span>
+                              <span className="shot-detail__value">{previewShot.extractionTime}s</span>
+                            </div>
+                          )}
+                          {previewShot.doseIn && previewShot.doseOut && (
+                            <div className="shot-detail__item">
+                              <span className="shot-detail__label">Dose / Yield</span>
+                              <span className="shot-detail__value">
+                                {previewShot.doseIn}g → {previewShot.doseOut}g (1:{(previewShot.doseOut / previewShot.doseIn).toFixed(1)})
+                              </span>
                             </div>
                           )}
                         </div>
