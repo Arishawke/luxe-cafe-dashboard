@@ -361,6 +361,12 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
 
+  // Keyboard shortcuts panel (desktop only)
+  const [showShortcuts, setShowShortcuts] = useState(() => {
+    const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
+    return stored === null ? true : stored === 'true';
+  });
+
   // Derived state
   const rating = RATINGS[ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(brewType);
@@ -2980,6 +2986,56 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Keyboard Shortcuts Panel (Desktop Only) */}
+      <div className={`shortcuts-panel ${showShortcuts ? 'shortcuts-panel--open' : ''}`}>
+        {showShortcuts ? (
+          <>
+            <div className="shortcuts-panel__header">
+              <span>⌨️ Shortcuts</span>
+              <button
+                className="shortcuts-panel__close"
+                onClick={() => {
+                  setShowShortcuts(false);
+                  localStorage.setItem('luxe-cafe-show-shortcuts', 'false');
+                }}
+                title="Hide shortcuts"
+              >
+                <Icons.X />
+              </button>
+            </div>
+            <div className="shortcuts-panel__list">
+              <div className="shortcuts-panel__item">
+                <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
+                <span>Log Shot</span>
+              </div>
+              <div className="shortcuts-panel__item">
+                <kbd>Ctrl</kbd>+<kbd>B</kbd>
+                <span>Bean Library</span>
+              </div>
+              <div className="shortcuts-panel__item">
+                <kbd>Ctrl</kbd>+<kbd>D</kbd>
+                <span>Cycle Theme</span>
+              </div>
+              <div className="shortcuts-panel__item">
+                <kbd>Esc</kbd>
+                <span>Close Modal</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <button
+            className="shortcuts-panel__toggle"
+            onClick={() => {
+              setShowShortcuts(true);
+              localStorage.setItem('luxe-cafe-show-shortcuts', 'true');
+            }}
+            title="Show keyboard shortcuts"
+          >
+            ⌨️
+          </button>
+        )}
+      </div>
 
       {/* Toast Notification */}
       {toast && (
