@@ -2806,6 +2806,115 @@ body {
   font-size: 0.8125rem;
 }
 
+/* ============================================
+   RECIPE LIBRARY
+   ============================================ */
+
+.recipe-library {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recipe-library__item {
+  background: rgba(166, 123, 91, 0.06);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.recipe-library__item:hover {
+  border-color: var(--color-caramel);
+  background: rgba(166, 123, 91, 0.1);
+}
+
+.recipe-library__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.recipe-library__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  margin: 0;
+}
+
+.recipe-library__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recipe-library__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: rgba(166, 123, 91, 0.1);
+  border: 1px solid var(--color-mocha);
+  border-radius: 8px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recipe-library__action-btn:hover {
+  background: rgba(166, 123, 91, 0.2);
+  border-color: var(--color-caramel);
+  color: var(--color-cream);
+}
+
+.recipe-library__action-btn--danger:hover {
+  border-color: rgba(220, 53, 69, 0.6);
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.recipe-library__action-btn .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.recipe-library__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipe-library__bean {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-caramel);
+  font-weight: 500;
+}
+
+.recipe-library__bean .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.recipe-library__settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.recipe-library__notes {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  font-style: italic;
+  margin: 0.5rem 0 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(166, 123, 91, 0.15);
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .modal__body--split {

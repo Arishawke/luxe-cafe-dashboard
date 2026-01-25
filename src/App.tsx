@@ -104,6 +104,12 @@ const Icons = {
       <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
     </svg>
   ),
+  Book: () => (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  ),
   X: () => (
     <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -330,6 +336,9 @@ function App() {
 
   // Stats modal
   const [showStats, setShowStats] = useState(false);
+
+  // Recipe Library modal
+  const [showRecipeLibrary, setShowRecipeLibrary] = useState(false);
 
   // Data Management modal
   const [showDataModal, setShowDataModal] = useState(false);
@@ -1150,6 +1159,13 @@ function App() {
             title="Manage Bean Library"
           >
             <Icons.Bean /> Bean Library
+          </button>
+          <button
+            className="header__btn"
+            onClick={() => { setShowRecipeLibrary(true); setMobileMenuOpen(false); }}
+            title="Manage Recipes"
+          >
+            <Icons.Book /> Recipes
           </button>
           <button
             className="header__btn"
@@ -2413,6 +2429,112 @@ function App() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recipe Library Modal */}
+      {showRecipeLibrary && (
+        <div className="modal-overlay" onClick={() => setShowRecipeLibrary(false)}>
+          <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3><Icons.Book /> Recipe Library</h3>
+              <button className="modal__close" onClick={() => setShowRecipeLibrary(false)}>
+                <Icons.X />
+              </button>
+            </div>
+            <div className="modal__body">
+              {recipes.length === 0 ? (
+                <div className="empty-state">
+                  <Icons.Book />
+                  <p>No recipes saved yet</p>
+                  <small>Save a recipe after logging a shot to quickly recall your favorite settings</small>
+                </div>
+              ) : (
+                <div className="recipe-library">
+                  {recipes.map((recipe) => (
+                    <div key={recipe.id} className="recipe-library__item">
+                      <div className="recipe-library__header">
+                        <h4 className="recipe-library__name">{recipe.name}</h4>
+                        <div className="recipe-library__actions">
+                          <button
+                            className="recipe-library__action-btn"
+                            onClick={() => {
+                              // Apply recipe to form
+                              setBeanName(recipe.beanName);
+                              setBrewType(recipe.brewType);
+                              setBasket(recipe.basket);
+                              setGrindSize(recipe.grindSize);
+                              if (recipe.temperature) setTemperature(recipe.temperature);
+                              setStrength(recipe.strength);
+                              if (recipe.milk) {
+                                setMilkType(recipe.milk.type);
+                                setMilkStyle(recipe.milk.style);
+                                setShowMilk(true);
+                              }
+                              if (recipe.notes) setNotes(recipe.notes);
+                              setShowRecipeLibrary(false);
+                              showToast(`Applied "${recipe.name}"`, 'success');
+                            }}
+                            title="Apply Recipe"
+                          >
+                            <Icons.Check />
+                          </button>
+                          <button
+                            className="recipe-library__action-btn"
+                            onClick={() => {
+                              setEditingRecipe(recipe);
+                              setRecipeName(recipe.name);
+                              setShowRecipeModal(true);
+                              setShowRecipeLibrary(false);
+                            }}
+                            title="Edit Recipe"
+                          >
+                            <Icons.Edit />
+                          </button>
+                          <button
+                            className="recipe-library__action-btn recipe-library__action-btn--danger"
+                            onClick={() => {
+                              showConfirm(
+                                'Delete Recipe',
+                                `Are you sure you want to delete "${recipe.name}"?`,
+                                () => {
+                                  setRecipes(prev => prev.filter(r => r.id !== recipe.id));
+                                  showToast('Recipe deleted', 'success');
+                                }
+                              );
+                            }}
+                            title="Delete Recipe"
+                          >
+                            <Icons.Trash />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="recipe-library__details">
+                        <span className="recipe-library__bean">
+                          <Icons.Bean /> {recipe.beanName}
+                        </span>
+                        <div className="recipe-library__settings">
+                          <span className="setting-tag">{recipe.brewType}</span>
+                          <span className="setting-tag">Grind {recipe.grindSize}</span>
+                          {recipe.temperature && <span className="setting-tag">{recipe.temperature}</span>}
+                          <span className="setting-tag">{recipe.basket}</span>
+                          <span className="setting-tag">S{recipe.strength}</span>
+                          {recipe.milk && (
+                            <span className="setting-tag setting-tag--milk">
+                              🥛 {recipe.milk.type} {recipe.milk.style}
+                            </span>
+                          )}
+                        </div>
+                        {recipe.notes && (
+                          <p className="recipe-library__notes">{recipe.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
