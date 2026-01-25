@@ -3082,7 +3082,6 @@ body {
 /* Danger variant for destructive actions */
 .data-action-btn--danger {
   border-color: rgba(220, 53, 69, 0.4);
-  margin-top: 1rem;
 }
 
 .data-action-btn--danger:hover {

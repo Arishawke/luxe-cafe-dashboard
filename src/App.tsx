@@ -3077,6 +3077,27 @@ function App() {
                     <span>Import Backup</span>
                     <small>Restore from JSON file</small>
                   </button>
+                  <button
+                    className="data-action-btn data-action-btn--danger"
+                    onClick={() => {
+                      showConfirm(
+                        'Clear All Data',
+                        `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
+                        () => {
+                          setShots([]);
+                          setRecipes([]);
+                          setBeans([]);
+                          setFavorites({});
+                          showToast('All data cleared', 'success');
+                          setShowThemePicker(false);
+                        }
+                      );
+                    }}
+                  >
+                    <Icons.Trash />
+                    <span>Clear All Data</span>
+                    <small>Permanently delete everything</small>
+                  </button>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -3089,29 +3110,6 @@ function App() {
                 <p className="data-warning">
                   ⚠️ Importing will replace all existing data
                 </p>
-
-                {/* Clear Data - Danger Zone */}
-                <button
-                  className="data-action-btn data-action-btn--danger"
-                  onClick={() => {
-                    showConfirm(
-                      'Clear All Data',
-                      `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
-                      () => {
-                        setShots([]);
-                        setRecipes([]);
-                        setBeans([]);
-                        setFavorites({});
-                        showToast('All data cleared', 'success');
-                        setShowThemePicker(false);
-                      }
-                    );
-                  }}
-                >
-                  <Icons.Trash />
-                  <span>Clear All Data</span>
-                  <small>Permanently delete everything</small>
-                </button>
               </div>
             </div>
           </div>
