@@ -367,6 +367,11 @@ function App() {
     return stored === null ? true : stored === 'true';
   });
 
+  // Shot timer state
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   // Derived state
   const rating = RATINGS[ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(brewType);
@@ -431,6 +436,33 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  // Timer interval logic
+  useEffect(() => {
+    if (timerRunning) {
+      timerRef.current = setInterval(() => {
+        setTimerSeconds(prev => prev + 0.1);
+      }, 100);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [timerRunning]);
+
+  // Timer control functions
+  const startTimer = () => setTimerRunning(true);
+  const stopTimer = () => setTimerRunning(false);
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setTimerSeconds(0);
+  };
 
   // Helper to show toast notifications
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -1473,6 +1505,27 @@ function App() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
+            </div>
+
+            {/* Shot Timer */}
+            <div className="shot-timer">
+              <div className="shot-timer__display">
+                <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
+              </div>
+              <div className="shot-timer__controls">
+                {timerRunning ? (
+                  <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
+                    ⏸
+                  </button>
+                ) : (
+                  <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
+                    ▶
+                  </button>
+                )}
+                <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
+                  ↺
+                </button>
+              </div>
             </div>
 
             {/* Action Buttons */}

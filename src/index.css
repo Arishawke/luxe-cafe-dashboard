@@ -1777,6 +1777,86 @@ body {
 }
 
 /* ============================================
+   SHOT TIMER
+   ============================================ */
+
+.shot-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 12px;
+}
+
+.shot-timer__display {
+  min-width: 80px;
+  text-align: center;
+}
+
+.shot-timer__time {
+  font-family: var(--font-mono, 'SF Mono', 'Consolas', monospace);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  letter-spacing: 0.02em;
+}
+
+.shot-timer__controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.shot-timer__btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-mocha);
+  border-radius: 8px;
+  background: var(--color-espresso);
+  color: var(--color-cream);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shot-timer__btn:hover:not(:disabled) {
+  background: var(--color-mocha);
+  border-color: var(--color-caramel);
+}
+
+.shot-timer__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.shot-timer__btn--start {
+  background: rgba(34, 139, 34, 0.2);
+  border-color: rgba(34, 139, 34, 0.4);
+  color: #5cb85c;
+}
+
+.shot-timer__btn--start:hover {
+  background: rgba(34, 139, 34, 0.35);
+  border-color: #5cb85c;
+}
+
+.shot-timer__btn--stop {
+  background: rgba(166, 123, 91, 0.2);
+  border-color: var(--color-caramel);
+  color: var(--color-caramel);
+}
+
+.shot-timer__btn--stop:hover {
+  background: rgba(166, 123, 91, 0.35);
+}
+
+/* ============================================
    FORM ACTIONS (Log + Save Recipe)
    ============================================ */
 
