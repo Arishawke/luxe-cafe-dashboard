@@ -170,7 +170,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ## 📁 Project Structure
 
 ```
-espresso_dashboard/
+luxe_cafe_dashboard/
 ├── src/
 │   ├── App.tsx          # Main dashboard component
 │   ├── types.ts         # TypeScript interfaces
