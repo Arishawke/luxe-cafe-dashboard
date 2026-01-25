@@ -40,8 +40,7 @@ Switch between 5 carefully crafted color themes using the dropdown in the header
 | 🌙 **Rose Pine Moon** | Darker Rose Pine variant |
 
 <p align="center">
-  <img src="docs/screenshots/theme_selector.png" width="45%" alt="Theme Selector">
-  <img src="docs/screenshots/catppuccin_theme.png" width="45%" alt="Catppuccin Theme">
+  <img src="docs/screenshots/catppuccin_theme.png" width="90%" alt="Catppuccin Mocha Theme">
 </p>
 <p align="center">
   <img src="docs/screenshots/light_theme.png" width="90%" alt="Coffee Light Theme">
@@ -64,11 +63,24 @@ Manage your coffee bean collection with detailed metadata:
 ### 📊 Statistics Dashboard
 View your brewing analytics with the Stats modal:
 - **Total Shots Logged** — Track your espresso journey
-- **Favorite Beans** — See which beans you use most
-- **Taste Distribution** — Histogram of your taste ratings
-- **Average Grind Size** — Track your grind tendencies
+- **Balanced Rate** — Percentage of perfectly dialed shots
+- **Top Beans** — See which beans you use most
+- **Taste Distribution** — Color-coded histogram of your ratings
+- **Success Rate Chart** — Weekly breakdown of balanced shots
+- **Brew Types** — Distribution of espresso, cold brew, etc.
 
 ![Stats Modal](docs/screenshots/stats_modal.png)
+
+---
+
+### ☕ Caffeine Tracker
+Monitor your daily caffeine intake:
+- **Live Caffeine Count** — Circular progress ring showing mg consumed
+- **Daily Stats** — Shots today, daily average, weekly count
+- **Caffeine by Basket** — ~63mg (Double) vs ~80mg (Luxe) per shot
+- **Recommended Limit** — Visual warning at 400mg daily limit
+
+![Caffeine Tracker](docs/screenshots/caffeine_tracker.png)
 
 ---
 
