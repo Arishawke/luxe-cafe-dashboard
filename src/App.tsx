@@ -2590,7 +2590,9 @@ function App() {
           <div className="modal modal--caffeine" onClick={e => e.stopPropagation()}>
             <div className="modal__header">
               <h2><Icons.Caffeine /> Caffeine Tracker</h2>
-              <button className="modal__close" onClick={() => setShowCaffeine(false)}>×</button>
+              <button className="modal__close" onClick={() => setShowCaffeine(false)}>
+                <Icons.X />
+              </button>
             </div>
             <div className="modal__body">
               {(() => {
