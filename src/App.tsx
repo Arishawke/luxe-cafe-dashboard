@@ -1683,6 +1683,13 @@ function App() {
                             <Icons.Star filled={isFavorite} />
                           </button>
                           <button
+                            className="history-item__edit-btn"
+                            onClick={(e) => { e.stopPropagation(); openEditShot(shot); }}
+                            title="Edit shot"
+                          >
+                            <Icons.Edit />
+                          </button>
+                          <button
                             className="history-item__delete-btn"
                             onClick={(e) => { e.stopPropagation(); deleteShot(shot.id); }}
                             title="Delete shot"
@@ -2862,6 +2869,13 @@ function App() {
 
                         {/* Actions */}
                         <div className="history-modal__preview-actions">
+                          <button
+                            className="btn-action"
+                            onClick={() => openEditShot(previewShot)}
+                            title="Edit shot details"
+                          >
+                            <Icons.Edit /> Edit
+                          </button>
                           <button
                             className="btn-action"
                             onClick={() => duplicateShot(previewShot)}

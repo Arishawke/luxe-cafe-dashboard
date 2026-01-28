@@ -485,11 +485,21 @@ body {
   margin-top: auto;
   padding-top: 1rem;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .history-modal__preview-actions .btn-action {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.75rem;
+  gap: 0.25rem;
+}
+
+.history-modal__preview-actions .btn-action .icon {
+  width: 14px;
+  height: 14px;
 }
 
 @media (max-width: 899px) {
@@ -2243,6 +2253,37 @@ body {
 }
 
 .history-item__delete-btn .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* History Item Edit Button */
+.history-item__edit-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--color-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.4;
+}
+
+.history-item:hover .history-item__edit-btn {
+  opacity: 0.7;
+}
+
+.history-item__edit-btn:hover {
+  opacity: 1;
+  background: rgba(166, 123, 91, 0.15);
+  color: var(--color-caramel);
+}
+
+.history-item__edit-btn .icon {
   width: 16px;
   height: 16px;
 }
