@@ -42,6 +42,10 @@ function App() {
   const [showTimer, setShowTimer] = useState(false);
   const [showDose, setShowDose] = useState(false);
 
+  // Manual timer input mode
+  const [manualTimeInput, setManualTimeInput] = useState(false);
+  const [manualTimerValue, setManualTimerValue] = useState<string>('');
+
   // Dose/Yield inputs
   const [doseIn, setDoseIn] = useState<string>('');
   const [doseOut, setDoseOut] = useState<string>('');
@@ -858,6 +862,15 @@ function App() {
       return;
     }
 
+    // Get extraction time from either manual input or stopwatch
+    const getExtractionTime = (): number | undefined => {
+      if (manualTimeInput) {
+        const parsed = parseFloat(manualTimerValue);
+        return parsed > 0 ? Math.round(parsed * 10) / 10 : undefined;
+      }
+      return timerSeconds > 0 ? Math.round(timerSeconds * 10) / 10 : undefined;
+    };
+
     const newShot: ShotLog = {
       id: generateId(),
       beanName: beanName.trim(),
@@ -869,7 +882,7 @@ function App() {
       rating,
       milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
       notes: notes.trim() || undefined,
-      extractionTime: timerSeconds > 0 ? Math.round(timerSeconds * 10) / 10 : undefined,
+      extractionTime: getExtractionTime(),
       doseIn: doseIn ? parseFloat(doseIn) : undefined,
       doseOut: doseOut ? parseFloat(doseOut) : undefined,
       timestamp: new Date(),
@@ -880,6 +893,7 @@ function App() {
     setNotes('');
     setShowSuggestions(false);
     resetTimer(); // Reset timer after logging
+    setManualTimerValue(''); // Reset manual timer value
     setDoseIn(''); // Reset dose fields
     setDoseOut('');
     showToast('Shot logged!', 'success');
@@ -1294,23 +1308,57 @@ function App() {
               </button>
               {showTimer && (
                 <div className="shot-timer">
-                  <div className="shot-timer__display">
-                    <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
-                  </div>
-                  <div className="shot-timer__controls">
-                    {timerRunning ? (
-                      <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
-                        ⏸
-                      </button>
-                    ) : (
-                      <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
-                        ▶
-                      </button>
-                    )}
-                    <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
-                      ↺
+                  <div className="shot-timer__mode-toggle">
+                    <button
+                      type="button"
+                      className={`shot-timer__mode-btn ${!manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
+                      onClick={() => setManualTimeInput(false)}
+                    >
+                      Stopwatch
+                    </button>
+                    <button
+                      type="button"
+                      className={`shot-timer__mode-btn ${manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
+                      onClick={() => setManualTimeInput(true)}
+                    >
+                      Manual
                     </button>
                   </div>
+                  {manualTimeInput ? (
+                    <div className="shot-timer__manual">
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="120"
+                        placeholder="0.0"
+                        value={manualTimerValue}
+                        onChange={(e) => setManualTimerValue(e.target.value)}
+                        className="shot-timer__input"
+                      />
+                      <span className="shot-timer__unit">seconds</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="shot-timer__display">
+                        <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
+                      </div>
+                      <div className="shot-timer__controls">
+                        {timerRunning ? (
+                          <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
+                            ⏸
+                          </button>
+                        ) : (
+                          <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
+                            ▶
+                          </button>
+                        )}
+                        <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
+                          ↺
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 

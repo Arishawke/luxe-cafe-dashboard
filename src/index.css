@@ -4879,3 +4879,85 @@ body {
     transform: scale(1.05);
   }
 }
+
+/* ============================================
+   SHOT TIMER MODE TOGGLE & MANUAL INPUT
+   ============================================ */
+
+.shot-timer__mode-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--color-espresso);
+  border-radius: 8px;
+  padding: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.shot-timer__mode-btn {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shot-timer__mode-btn:hover {
+  color: var(--color-cream);
+}
+
+.shot-timer__mode-btn--active {
+  background: var(--color-caramel);
+  color: var(--color-black-coffee);
+  font-weight: 600;
+}
+
+.shot-timer__manual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.shot-timer__input {
+  width: 80px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  text-align: center;
+  background: var(--color-dark-roast);
+  border: 1px solid var(--color-mocha);
+  border-radius: 10px;
+  color: var(--color-caramel);
+  transition: all 0.25s ease;
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+/* Hide native number input spinners */
+.shot-timer__input::-webkit-outer-spin-button,
+.shot-timer__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.shot-timer__input:focus {
+  outline: none;
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 3px rgba(166, 123, 91, 0.12);
+}
+
+.shot-timer__input::placeholder {
+  color: var(--color-subtle);
+}
+
+.shot-timer__unit {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
