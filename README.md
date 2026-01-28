@@ -19,7 +19,7 @@ A premium React-based dashboard for tracking and perfecting your espresso shots.
 ### 📝 Shot Logging
 - **Bean Name Autocomplete** — Quickly select from previously used beans
 - **Brew Type Selector** — Espresso, Drip Coffee, Cold Brew, Cold Pressed, Over Ice
-- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Double/Luxe), Temperature, Strength
+- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Single/Double/Luxe), Temperature, Strength
 - **5-Point Taste Rating** — Discrete slider from Very Sour → Balanced → Very Bitter
 
 ### 🔍 Shot Details & Actions
@@ -100,7 +100,7 @@ View your brewing analytics with the Stats modal:
 Monitor your daily caffeine intake:
 - **Live Caffeine Count** — Circular progress ring showing mg consumed
 - **Daily Stats** — Shots today, daily average, weekly count
-- **Caffeine by Basket** — ~63mg (Double) vs ~80mg (Luxe) per shot
+- **Caffeine by Basket** — ~32mg (Single), ~63mg (Double), ~80mg (Luxe) per shot
 - **Recommended Limit** — Visual warning at 400mg daily limit
 
 ![Caffeine Tracker](docs/screenshots/caffeine_tracker.png)
