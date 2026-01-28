@@ -1,4 +1,4 @@
-export type Basket = 'Double' | 'Luxe';
+export type Basket = 'Single' | 'Double' | 'Luxe';
 export type Temperature = 'Low' | 'Med' | 'High';
 export type Strength = 1 | 2 | 3;
 

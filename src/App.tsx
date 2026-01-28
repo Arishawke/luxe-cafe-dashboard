@@ -2427,9 +2427,9 @@ function App() {
             <div className="modal__body">
               {(() => {
                 // Caffeine amounts per basket type (mg)
-                const CAFFEINE_MG: Record<string, number> = { 'Double': 63, 'Luxe': 80 };
+                const CAFFEINE_MG: Record<string, number> = { 'Single': 32, 'Double': 63, 'Luxe': 80 };
                 // Actual espresso shots per basket type
-                const SHOTS_PER_BASKET: Record<string, number> = { 'Double': 2, 'Luxe': 4 };
+                const SHOTS_PER_BASKET: Record<string, number> = { 'Single': 1, 'Double': 2, 'Luxe': 4 };
 
                 // Get today's date (start of day)
                 const today = new Date();
@@ -2525,6 +2525,10 @@ function App() {
                     <div className="caffeine-info">
                       <h3>Caffeine by Basket</h3>
                       <div className="caffeine-breakdown">
+                        <div className="caffeine-breakdown__item">
+                          <span className="caffeine-breakdown__basket">Single</span>
+                          <span className="caffeine-breakdown__mg">~32mg per shot</span>
+                        </div>
                         <div className="caffeine-breakdown__item">
                           <span className="caffeine-breakdown__basket">Double</span>
                           <span className="caffeine-breakdown__mg">~63mg per shot</span>

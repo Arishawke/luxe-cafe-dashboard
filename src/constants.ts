@@ -14,7 +14,7 @@ export const RATING_COLORS: Record<Rating, string> = {
 
 // Options for selectors
 export const BREW_TYPES: BrewType[] = ['Espresso', 'Drip Coffee', 'Cold Brew', 'Cold Pressed', 'Over Ice'];
-export const BASKETS: Basket[] = ['Double', 'Luxe'];
+export const BASKETS: Basket[] = ['Single', 'Double', 'Luxe'];
 export const TEMPERATURES: Temperature[] = ['Low', 'Med', 'High'];
 export const STRENGTHS: { value: Strength; label: string }[] = [
     { value: 1, label: '1 Mild' },
