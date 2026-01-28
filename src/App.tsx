@@ -51,6 +51,7 @@ function App() {
   const [recipeName, setRecipeName] = useState('');
   const [editingRecipe, setEditingRecipe] = useState<SavedRecipe | null>(null);
   const [selectedShot, setSelectedShot] = useState<ShotLog | null>(null);
+  const [editingShot, setEditingShot] = useState<ShotLog | null>(null);
 
   // Bean Library modal
   const [showBeanLibrary, setShowBeanLibrary] = useState(false);
@@ -559,6 +560,82 @@ function App() {
     setSelectedShot(null);
   };
 
+  // Open edit shot mode (populate form with shot data)
+  const openEditShot = (shot: ShotLog) => {
+    setBeanName(shot.beanName);
+    setBrewType(shot.brewType);
+    setGrindSize(shot.grindSize);
+    setBasket(shot.basket);
+    setStrength(shot.strength);
+    // Set rating index from rating value
+    const ratingIdx = RATINGS.indexOf(shot.rating);
+    setRatingIndex(ratingIdx >= 0 ? ratingIdx : 2);
+    if (shot.temperature) setTemperature(shot.temperature);
+    if (shot.milk) {
+      setShowMilk(true);
+      setMilkType(shot.milk.type);
+      setMilkStyle(shot.milk.style);
+    } else {
+      setShowMilk(false);
+    }
+    setNotes(shot.notes || '');
+    // Set dose/yield if present
+    if (shot.doseIn) {
+      setShowDose(true);
+      setDoseIn(shot.doseIn.toString());
+    }
+    if (shot.doseOut) {
+      setDoseOut(shot.doseOut.toString());
+    }
+    // Set extraction time if present
+    if (shot.extractionTime) {
+      setShowTimer(true);
+    }
+    // Set editing state
+    setEditingShot(shot);
+    setSelectedShot(null);
+    setShowHistoryModal(false);
+    showToast('Editing shot - make changes and click Update Shot', 'info');
+  };
+
+  // Update existing shot
+  const updateShot = () => {
+    if (!editingShot || !beanName.trim()) return;
+
+    const updated: ShotLog = {
+      ...editingShot,
+      beanName: beanName.trim(),
+      brewType,
+      basket,
+      grindSize,
+      temperature: isColdBrew ? undefined : temperature,
+      strength,
+      rating,
+      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
+      notes: notes.trim() || undefined,
+      doseIn: doseIn ? parseFloat(doseIn) : undefined,
+      doseOut: doseOut ? parseFloat(doseOut) : undefined,
+      // Preserve original timestamp and id
+    };
+
+    // Update the shot in state
+    setShots(shots.map(s => s.id === editingShot.id ? updated : s));
+
+    // Update favorites if bean name changed
+    const oldBeanKey = editingShot.beanName.toLowerCase();
+    const newBeanKey = beanName.trim().toLowerCase();
+    if (oldBeanKey !== newBeanKey && favorites[oldBeanKey] === editingShot.id) {
+      const updatedFavorites = { ...favorites };
+      delete updatedFavorites[oldBeanKey];
+      updatedFavorites[newBeanKey] = editingShot.id;
+      setFavorites(updatedFavorites);
+    }
+
+    // Clear editing state
+    setEditingShot(null);
+    showToast('Shot updated', 'success');
+  };
+
   // Bean Library functions
   const resetBeanForm = () => {
     setEditingBean(null);
@@ -769,6 +846,18 @@ function App() {
     e.preventDefault();
     if (!beanName.trim()) return;
 
+    // If editing an existing shot, update it instead of creating new
+    if (editingShot) {
+      updateShot();
+      setBeanName('');
+      setNotes('');
+      setShowSuggestions(false);
+      resetTimer();
+      setDoseIn('');
+      setDoseOut('');
+      return;
+    }
+
     const newShot: ShotLog = {
       id: generateId(),
       beanName: beanName.trim(),
@@ -921,7 +1010,7 @@ function App() {
         {/* Left Column - Shot Logger */}
         <div className="card">
           <h2 className="card__title">
-            <Icons.Edit /> Log New Shot
+            <Icons.Edit /> {editingShot ? 'Edit Shot' : 'Log New Shot'}
           </h2>
 
           <form className="shot-form" onSubmit={handleSubmit}>
@@ -1289,17 +1378,34 @@ function App() {
 
             {/* Action Buttons */}
             <div className="form-actions">
-              <button type="submit" className="btn-submit">
-                Log Shot
+              <button type="submit" className={editingShot ? 'btn-submit btn-submit--edit' : 'btn-submit'}>
+                {editingShot ? 'Update Shot' : 'Log Shot'}
               </button>
-              <button
-                type="button"
-                className="btn-save-recipe"
-                onClick={() => setShowRecipeModal(true)}
-                disabled={!beanName.trim()}
-              >
-                <Icons.Save /> Save as Recipe
-              </button>
+              {editingShot ? (
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => {
+                    setEditingShot(null);
+                    setBeanName('');
+                    setNotes('');
+                    setDoseIn('');
+                    setDoseOut('');
+                    showToast('Edit cancelled', 'info');
+                  }}
+                >
+                  Cancel Edit
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-save-recipe"
+                  onClick={() => setShowRecipeModal(true)}
+                  disabled={!beanName.trim()}
+                >
+                  <Icons.Save /> Save as Recipe
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -1805,6 +1911,13 @@ function App() {
               <div className="modal__header">
                 <h3>{selectedShot.beanName}</h3>
                 <div className="modal__header-actions">
+                  <button
+                    className="modal__header-btn"
+                    onClick={() => openEditShot(selectedShot)}
+                    title="Edit shot"
+                  >
+                    <Icons.Edit />
+                  </button>
                   <button
                     className="modal__header-btn modal__header-btn--delete"
                     onClick={(e) => { e.stopPropagation(); deleteShot(selectedShot.id); }}
