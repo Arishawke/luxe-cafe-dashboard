@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
+import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -75,18 +75,6 @@ function App() {
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Theme state - supports multiple themes
-  const [theme, setTheme] = useState<ThemeType>(() => {
-    const saved = localStorage.getItem('theme');
-    const validThemes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
-    return (validThemes.includes(saved as ThemeType)) ? saved as ThemeType : 'dark';
-  });
-
-  // Time format preference (24-hour / military time)
-  const [use24Hour, setUse24Hour] = useState(() => {
-    return localStorage.getItem('luxe-cafe-24hour') === 'true';
-  });
-
   // Caffeine tracker modal
   const [showCaffeine, setShowCaffeine] = useState(false);
 
@@ -107,6 +95,7 @@ function App() {
   const { beans, addBean, updateBean: replaceBean, deleteBean: removeBean, toggleActive: toggleBeanActiveHook, replaceAll: setBeans } = useBeans();
   const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe: replaceRecipe, deleteRecipe: removeRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
+  const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -128,12 +117,6 @@ function App() {
   const rating = RATINGS[ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(brewType);
 
-  // Apply theme to document and save to localStorage
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -152,11 +135,7 @@ function App() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
           e.preventDefault();
-          const themes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
-          setTheme(prev => {
-            const currentIndex = themes.indexOf(prev);
-            return themes[(currentIndex + 1) % themes.length];
-          });
+          cycleTheme();
         }
       }
       // Escape to close any open modal
@@ -2874,13 +2853,13 @@ function App() {
                   <div className="prefs-toggle">
                     <button
                       className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                      onClick={() => { setUse24Hour(false); localStorage.setItem('luxe-cafe-24hour', 'false'); }}
+                      onClick={() => setUse24Hour(false)}
                     >
                       🕐 12-hour
                     </button>
                     <button
                       className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                      onClick={() => { setUse24Hour(true); localStorage.setItem('luxe-cafe-24hour', 'true'); }}
+                      onClick={() => setUse24Hour(true)}
                     >
                       🕒 24-hour
                     </button>
