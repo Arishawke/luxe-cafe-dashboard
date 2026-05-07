@@ -3006,11 +3006,9 @@ function App() {
                         'Clear All Data',
                         `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
                         () => {
-                          // Clear localStorage first (shots persisted via useShots effect)
                           saveRecipes([]);
                           saveBeans([]);
                           saveFavorites({});
-                          // Then update state
                           setShots([]);
                           setRecipes([]);
                           setBeans([]);
