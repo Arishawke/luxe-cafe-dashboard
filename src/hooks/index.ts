@@ -8,3 +8,5 @@ export type { ConfirmDialog } from './useConfirm';
 export { useTimer } from './useTimer';
 
 export { useShots } from './useShots';
+
+export { useBeans } from './useBeans';

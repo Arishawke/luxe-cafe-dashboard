@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
 import { COLD_BREW_TYPES } from './types';
-import { loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
+import { loadFavorites, saveFavorites, loadRecipes, saveRecipes } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -23,7 +23,6 @@ function App() {
   // Shot history, favorites, recipes, beans
   const [favorites, setFavorites] = useState<FavoritesMap>({});
   const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
-  const [beans, setBeans] = useState<BeanProfile[]>([]);
 
   // Form state
   const [beanName, setBeanName] = useState('');
@@ -116,6 +115,7 @@ function App() {
   const { toast, showToast, hideToast } = useToast(3000);
   const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
   const { shots, addShot, updateShot: replaceShot, deleteShot: removeShot, replaceAll: setShots } = useShots();
+  const { beans, addBean, updateBean: replaceBean, deleteBean: removeBean, toggleActive: toggleBeanActiveHook, replaceAll: setBeans } = useBeans();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -141,7 +141,6 @@ function App() {
   useEffect(() => {
     setFavorites(loadFavorites());
     setRecipes(loadRecipes());
-    setBeans(loadBeans());
   }, []);
 
   // Save favorites when changed
@@ -153,11 +152,6 @@ function App() {
   useEffect(() => {
     saveRecipes(recipes);
   }, [recipes]);
-
-  // Save beans when changed
-  useEffect(() => {
-    saveBeans(beans);
-  }, [beans]);
 
   // Apply theme to document and save to localStorage
   useEffect(() => {
@@ -610,9 +604,8 @@ function App() {
     if (!newBeanName.trim()) return;
 
     if (editingBean) {
-      // Update existing
-      setBeans(beans.map(b => b.id === editingBean.id ? {
-        ...b,
+      replaceBean({
+        ...editingBean,
         name: newBeanName.trim(),
         roaster: newBeanRoaster.trim() || undefined,
         origin: newBeanOrigin.trim() || undefined,
@@ -620,9 +613,8 @@ function App() {
         processMethod: newBeanProcess,
         roastDate: newBeanRoastDate || undefined,
         flavorNotes: newBeanFlavorNotes.trim() || undefined,
-      } : b));
+      });
     } else {
-      // Add new
       const newBean: BeanProfile = {
         id: generateId(),
         name: newBeanName.trim(),
@@ -635,7 +627,7 @@ function App() {
         isActive: true,
         createdAt: new Date(),
       };
-      setBeans([newBean, ...beans]);
+      addBean(newBean);
     }
     resetBeanForm();
   };
@@ -648,15 +640,11 @@ function App() {
       'Delete Bean',
       `Are you sure you want to delete "${bean.name}"?`,
       () => {
-        setBeans(beans.filter(b => b.id !== id));
+        removeBean(id);
         if (editingBean?.id === id) resetBeanForm();
         showToast('Bean deleted', 'info');
       }
     );
-  };
-
-  const toggleBeanActive = (id: string) => {
-    setBeans(beans.map(b => b.id === id ? { ...b, isActive: !b.isActive } : b));
   };
 
   // Export all data as JSON
@@ -2179,7 +2167,7 @@ function App() {
                           <div className="bean-card__actions">
                             <button
                               className={`bean-card__toggle ${bean.isActive ? 'bean-card__toggle--active' : ''}`}
-                              onClick={() => toggleBeanActive(bean.id)}
+                              onClick={() => toggleBeanActiveHook(bean.id)}
                               title={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
                             >
                               {bean.isActive ? '✓' : '○'}
@@ -3007,7 +2995,6 @@ function App() {
                         `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
                         () => {
                           saveRecipes([]);
-                          saveBeans([]);
                           saveFavorites({});
                           setShots([]);
                           setRecipes([]);
