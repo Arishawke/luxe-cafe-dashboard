@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
 import { COLD_BREW_TYPES } from './types';
-import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
+import { loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer } from './hooks';
+import { useToast, useConfirm, useTimer, useShots } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -21,7 +21,6 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 
 function App() {
   // Shot history, favorites, recipes, beans
-  const [shots, setShots] = useState<ShotLog[]>([]);
   const [favorites, setFavorites] = useState<FavoritesMap>({});
   const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
   const [beans, setBeans] = useState<BeanProfile[]>([]);
@@ -116,6 +115,7 @@ function App() {
   const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
   const { toast, showToast, hideToast } = useToast(3000);
   const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
+  const { shots, addShot, updateShot: replaceShot, deleteShot: removeShot, replaceAll: setShots } = useShots();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -139,17 +139,10 @@ function App() {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = loadShots();
-    if (stored.length > 0) setShots(stored);
     setFavorites(loadFavorites());
     setRecipes(loadRecipes());
     setBeans(loadBeans());
   }, []);
-
-  // Save shots to localStorage when changed
-  useEffect(() => {
-    if (shots.length > 0) saveShots(shots);
-  }, [shots]);
 
   // Save favorites when changed
   useEffect(() => {
@@ -486,7 +479,7 @@ function App() {
           delete updated[beanKey];
           setFavorites(updated);
         }
-        setShots(shots.filter(s => s.id !== id));
+        removeShot(id);
         setSelectedShot(null);
         showToast('Shot deleted', 'info');
       }
@@ -573,7 +566,7 @@ function App() {
     };
 
     // Update the shot in state
-    setShots(shots.map(s => s.id === editingShot.id ? updated : s));
+    replaceShot(updated);
 
     // Update favorites if bean name changed
     const oldBeanKey = editingShot.beanName.toLowerCase();
@@ -838,7 +831,7 @@ function App() {
       timestamp: new Date(),
     };
 
-    setShots([newShot, ...shots]);
+    addShot(newShot);
     setBeanName('');
     setNotes('');
     setShowSuggestions(false);
@@ -3013,8 +3006,7 @@ function App() {
                         'Clear All Data',
                         `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
                         () => {
-                          // Clear localStorage first
-                          saveShots([]);
+                          // Clear localStorage first (shots persisted via useShots effect)
                           saveRecipes([]);
                           saveBeans([]);
                           saveFavorites({});
