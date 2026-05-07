@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
 import { COLD_BREW_TYPES } from './types';
-import { loadFavorites, saveFavorites, loadRecipes, saveRecipes } from './lib/storage';
+import { loadFavorites, saveFavorites } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -22,7 +22,6 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 function App() {
   // Shot history, favorites, recipes, beans
   const [favorites, setFavorites] = useState<FavoritesMap>({});
-  const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
 
   // Form state
   const [beanName, setBeanName] = useState('');
@@ -104,18 +103,13 @@ function App() {
   // Shot comparison
   const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
 
-  // Pinned recipes
-  const [pinnedRecipes, setPinnedRecipes] = useState<Set<string>>(() => {
-    const saved = localStorage.getItem('luxe-cafe-pinned-recipes');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
-
   // Custom hooks for UI state
   const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
   const { toast, showToast, hideToast } = useToast(3000);
   const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
   const { shots, addShot, updateShot: replaceShot, deleteShot: removeShot, replaceAll: setShots } = useShots();
   const { beans, addBean, updateBean: replaceBean, deleteBean: removeBean, toggleActive: toggleBeanActiveHook, replaceAll: setBeans } = useBeans();
+  const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe: replaceRecipe, deleteRecipe: removeRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -140,7 +134,6 @@ function App() {
   // Load from localStorage on mount
   useEffect(() => {
     setFavorites(loadFavorites());
-    setRecipes(loadRecipes());
   }, []);
 
   // Save favorites when changed
@@ -148,34 +141,11 @@ function App() {
     saveFavorites(favorites);
   }, [favorites]);
 
-  // Save recipes when changed
-  useEffect(() => {
-    saveRecipes(recipes);
-  }, [recipes]);
-
   // Apply theme to document and save to localStorage
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
-
-  // Save pinned recipes when changed
-  useEffect(() => {
-    localStorage.setItem('luxe-cafe-pinned-recipes', JSON.stringify([...pinnedRecipes]));
-  }, [pinnedRecipes]);
-
-  // Toggle pin status for a recipe
-  const togglePinRecipe = (id: string) => {
-    setPinnedRecipes(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -376,7 +346,7 @@ function App() {
       createdAt: new Date(),
     };
 
-    setRecipes([newRecipe, ...recipes]);
+    addRecipe(newRecipe);
     setShowRecipeModal(false);
     setRecipeName('');
   };
@@ -390,7 +360,7 @@ function App() {
       'Delete Recipe',
       `Are you sure you want to delete "${recipe.name}"?`,
       () => {
-        setRecipes(recipes.filter(r => r.id !== id));
+        removeRecipe(id);
         showToast('Recipe deleted', 'info');
       }
     );
@@ -436,7 +406,7 @@ function App() {
       notes: notes.trim() || undefined,
     };
 
-    setRecipes(recipes.map(r => r.id === editingRecipe.id ? updated : r));
+    replaceRecipe(updated);
     setEditingRecipe(null);
     setRecipeName('');
     showToast('Recipe updated', 'success');
@@ -2994,7 +2964,6 @@ function App() {
                         'Clear All Data',
                         `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
                         () => {
-                          saveRecipes([]);
                           saveFavorites({});
                           setShots([]);
                           setRecipes([]);

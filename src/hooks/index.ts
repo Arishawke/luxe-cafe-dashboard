@@ -10,3 +10,5 @@ export { useTimer } from './useTimer';
 export { useShots } from './useShots';
 
 export { useBeans } from './useBeans';
+
+export { useRecipes } from './useRecipes';
