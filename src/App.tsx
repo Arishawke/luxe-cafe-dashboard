@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
+import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
@@ -83,7 +83,6 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Theme state - supports multiple themes
-  type ThemeType = 'dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon';
   const [theme, setTheme] = useState<ThemeType>(() => {
     const saved = localStorage.getItem('theme');
     const validThemes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
@@ -209,7 +208,7 @@ function App() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
           e.preventDefault();
-          const themes: ('dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon')[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
+          const themes: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
           setTheme(prev => {
             const currentIndex = themes.indexOf(prev);
             return themes[(currentIndex + 1) % themes.length];
