@@ -4,7 +4,8 @@ import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType
 import { COLD_BREW_TYPES, getDaysSinceRoast, getFreshnessStatus } from './types';
 import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
-import { getBaristaTip, getUniqueBeans } from './utils';
+import { getUniqueBeans } from './utils';
+import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS } from './constants';
 import { useToast, useConfirm, useTimer } from './hooks';
 import Icons from './Icons';
@@ -315,59 +316,7 @@ function App() {
     ? shots.filter(s => s.beanName.toLowerCase() === currentBeanKey).slice(0, 5)
     : [];
 
-  // Calculate suggested settings based on last shot
-  const getSuggestedSettings = () => {
-    if (!lastShotForBean) return null;
-
-    const currentGrind = lastShotForBean.grindSize;
-    const currentTemp = lastShotForBean.temperature || 'Med';
-    const rating = lastShotForBean.rating;
-
-    // Temperature order for adjustments
-    const tempOrder: Temperature[] = ['Low', 'Med', 'High'];
-    const tempIndex = tempOrder.indexOf(currentTemp);
-
-    let suggestedGrind = currentGrind;
-    let suggestedTemp = currentTemp;
-    let adjustmentType: 'grind' | 'temp' | 'both' = 'grind';
-
-    switch (rating) {
-      case 'Very Sour':
-        // Major under-extraction: grind finer by 2-3
-        suggestedGrind = Math.max(1, currentGrind - 3);
-        if (tempIndex < 2) suggestedTemp = tempOrder[tempIndex + 1];
-        adjustmentType = 'both';
-        break;
-      case 'Sour':
-        // Minor under-extraction: grind finer by 1
-        suggestedGrind = Math.max(1, currentGrind - 1);
-        adjustmentType = 'grind';
-        break;
-      case 'Balanced':
-        // Perfect - no changes needed
-        return null;
-      case 'Bitter':
-        // Minor over-extraction: grind coarser by 1
-        suggestedGrind = Math.min(25, currentGrind + 1);
-        adjustmentType = 'grind';
-        break;
-      case 'Very Bitter':
-        // Major over-extraction: grind coarser by 2-3
-        suggestedGrind = Math.min(25, currentGrind + 3);
-        if (tempIndex > 0) suggestedTemp = tempOrder[tempIndex - 1];
-        adjustmentType = 'both';
-        break;
-    }
-
-    return {
-      grindSize: suggestedGrind,
-      temperature: suggestedTemp as Temperature,
-      adjustmentType,
-      grindDiff: suggestedGrind - currentGrind,
-    };
-  };
-
-  const suggestedSettings = getSuggestedSettings();
+  const suggestedSettings = getSuggestedSettings(lastShotForBean);
 
   // Apply suggested settings to form
   const applySuggestedSettings = () => {
