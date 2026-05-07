@@ -6,3 +6,5 @@ export { useConfirm } from './useConfirm';
 export type { ConfirmDialog } from './useConfirm';
 
 export { useTimer } from './useTimer';
+
+export { useShots } from './useShots';
