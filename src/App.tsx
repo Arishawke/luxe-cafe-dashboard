@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
+import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel, ThemeType } from './types';
 import { COLD_BREW_TYPES } from './types';
-import { loadFavorites, saveFavorites } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -20,9 +19,6 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 };
 
 function App() {
-  // Shot history, favorites, recipes, beans
-  const [favorites, setFavorites] = useState<FavoritesMap>({});
-
   // Form state
   const [beanName, setBeanName] = useState('');
   const [brewType, setBrewType] = useState<BrewType>('Espresso');
@@ -110,6 +106,7 @@ function App() {
   const { shots, addShot, updateShot: replaceShot, deleteShot: removeShot, replaceAll: setShots } = useShots();
   const { beans, addBean, updateBean: replaceBean, deleteBean: removeBean, toggleActive: toggleBeanActiveHook, replaceAll: setBeans } = useBeans();
   const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe: replaceRecipe, deleteRecipe: removeRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
+  const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
 
   // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -130,16 +127,6 @@ function App() {
   // Derived state
   const rating = RATINGS[ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(brewType);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    setFavorites(loadFavorites());
-  }, []);
-
-  // Save favorites when changed
-  useEffect(() => {
-    saveFavorites(favorites);
-  }, [favorites]);
 
   // Apply theme to document and save to localStorage
   useEffect(() => {
@@ -296,18 +283,6 @@ function App() {
     setGrindSize(suggestedSettings.grindSize);
     setTemperature(suggestedSettings.temperature);
     setRatingIndex(BALANCED_RATING_INDEX); // Reset to Balanced
-  };
-
-  // Toggle favorite for a shot
-  const toggleFavorite = (shot: ShotLog) => {
-    const beanKey = shot.beanName.toLowerCase();
-    if (favorites[beanKey] === shot.id) {
-      const updated = { ...favorites };
-      delete updated[beanKey];
-      setFavorites(updated);
-    } else {
-      setFavorites({ ...favorites, [beanKey]: shot.id });
-    }
   };
 
   // Apply a saved recipe to the form
@@ -2964,7 +2939,6 @@ function App() {
                         'Clear All Data',
                         `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
                         () => {
-                          saveFavorites({});
                           setShots([]);
                           setRecipes([]);
                           setBeans([]);
