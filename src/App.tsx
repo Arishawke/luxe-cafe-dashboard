@@ -6,7 +6,7 @@ import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -66,8 +66,6 @@ function App() {
   // Recipe Library modal
   const [showRecipeLibrary, setShowRecipeLibrary] = useState(false);
 
-  // Data Management modal
-  const [showDataModal, setShowDataModal] = useState(false);
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,63 +111,29 @@ function App() {
   const rating = RATINGS[ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(brewType);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+Enter to log shot (when not in modal)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        if (!showRecipeModal && !showBeanLibrary && !showStats && !showDataModal && !showCaffeine && !selectedShot && !editingRecipe) {
-          e.preventDefault();
-          if (beanName.trim()) {
-            // Trigger form submit
-            const form = document.querySelector('.shot-form') as HTMLFormElement;
-            if (form) form.requestSubmit();
-          }
-        }
-      }
-      // Ctrl+D to cycle themes (when not typing)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-          e.preventDefault();
-          cycleTheme();
-        }
-      }
-      // Escape to close any open modal
-      if (e.key === 'Escape') {
-        if (confirmDialog) {
-          closeConfirm();
-        } else if (selectedShot) {
-          setSelectedShot(null);
-        } else if (editingRecipe) {
-          setEditingRecipe(null);
-        } else if (showHistoryModal) {
-          setShowHistoryModal(false);
-          setPreviewShot(null);
-        } else if (showBeanLibrary) {
-          setShowBeanLibrary(false);
-        } else if (showStats) {
-          setShowStats(false);
-        } else if (showCaffeine) {
-          setShowCaffeine(false);
-        } else if (showDataModal) {
-          setShowDataModal(false);
-        } else if (showRecipeModal) {
-          setShowRecipeModal(false);
-        } else if (showThemePicker) {
-          setShowThemePicker(false);
-        }
-      }
-      // Ctrl+B to open Bean Library
-      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-          e.preventDefault();
-          setShowBeanLibrary(prev => !prev);
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [beanName, showRecipeModal, showBeanLibrary, showStats, showDataModal, showCaffeine, selectedShot, editingRecipe, showHistoryModal, previewShot, confirmDialog, showThemePicker]);
+  useKeyboardShortcuts({
+    canSubmit: () =>
+      !showRecipeModal && !showBeanLibrary && !showStats && !showCaffeine
+      && !showThemePicker && !selectedShot && !editingRecipe
+      && beanName.trim() !== '',
+    onSubmit: () => {
+      const f = document.querySelector('.shot-form') as HTMLFormElement | null;
+      f?.requestSubmit();
+    },
+    onCycleTheme: cycleTheme,
+    onToggleBeanLibrary: () => setShowBeanLibrary(prev => !prev),
+    onEscape: () => {
+      if (confirmDialog) closeConfirm();
+      else if (selectedShot) setSelectedShot(null);
+      else if (editingRecipe) setEditingRecipe(null);
+      else if (showHistoryModal) { setShowHistoryModal(false); setPreviewShot(null); }
+      else if (showBeanLibrary) setShowBeanLibrary(false);
+      else if (showStats) setShowStats(false);
+      else if (showCaffeine) setShowCaffeine(false);
+      else if (showRecipeModal) setShowRecipeModal(false);
+      else if (showThemePicker) setShowThemePicker(false);
+    },
+  });
 
   // Handle click outside to close suggestions
   useEffect(() => {

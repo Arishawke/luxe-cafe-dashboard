@@ -18,3 +18,5 @@ export { useFavorites } from './useFavorites';
 export { useTheme } from './useTheme';
 
 export { useShotForm } from './useShotForm';
+
+export { useKeyboardShortcuts } from './useKeyboardShortcuts';
