@@ -25,3 +25,5 @@ export const MILK_TYPES: MilkType[] = ['Dairy', 'Plant'];
 export const MILK_STYLES: MilkStyle[] = ['Steamed', 'Thin', 'Thick', 'Cold Foam'];
 export const PROCESS_METHODS: ProcessMethod[] = ['Washed', 'Natural', 'Honey', 'Anaerobic', 'Other'];
 export const ROAST_LEVELS: RoastLevel[] = ['Light', 'Medium', 'Medium-Dark', 'Dark'];
+
+export const BALANCED_RATING_INDEX = 2; // index of 'Balanced' in RATINGS

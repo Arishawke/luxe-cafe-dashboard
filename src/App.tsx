@@ -6,7 +6,7 @@ import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRe
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
-import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS } from './constants';
+import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer } from './hooks';
 import Icons from './Icons';
 
@@ -33,7 +33,7 @@ function App() {
   const [grindSize, setGrindSize] = useState(12);
   const [temperature, setTemperature] = useState<Temperature>('Med');
   const [strength, setStrength] = useState<Strength>(2);
-  const [ratingIndex, setRatingIndex] = useState(2); // 0-4 index, default Balanced
+  const [ratingIndex, setRatingIndex] = useState(BALANCED_RATING_INDEX); // 0-4 index, default Balanced
   const [notes, setNotes] = useState('');
 
   // Milk settings
@@ -338,7 +338,7 @@ function App() {
     // Apply suggested adjustments
     setGrindSize(suggestedSettings.grindSize);
     setTemperature(suggestedSettings.temperature);
-    setRatingIndex(2); // Reset to Balanced
+    setRatingIndex(BALANCED_RATING_INDEX); // Reset to Balanced
   };
 
   // Toggle favorite for a shot
@@ -510,7 +510,7 @@ function App() {
     }
     setNotes(shot.notes || '');
     // Reset rating to Balanced for new shot
-    setRatingIndex(2);
+    setRatingIndex(BALANCED_RATING_INDEX);
     setSelectedShot(null);
   };
 
