@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
+import type { ShotLog, Rating, BrewType, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm } from './hooks';
 import Icons from './Icons';
 
 // Rating config with icons (kept here since it references Icons)
@@ -19,32 +19,28 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 };
 
 function App() {
-  // Form state
-  const [beanName, setBeanName] = useState('');
-  const [brewType, setBrewType] = useState<BrewType>('Espresso');
-  const [basket, setBasket] = useState<Basket>('Double');
-  const [grindSize, setGrindSize] = useState(12);
-  const [temperature, setTemperature] = useState<Temperature>('Med');
-  const [strength, setStrength] = useState<Strength>(2);
-  const [ratingIndex, setRatingIndex] = useState(BALANCED_RATING_INDEX); // 0-4 index, default Balanced
-  const [notes, setNotes] = useState('');
-
-  // Milk settings
-  const [showMilk, setShowMilk] = useState(false);
-  const [milkType, setMilkType] = useState<MilkType>('Dairy');
-  const [milkStyle, setMilkStyle] = useState<MilkStyle>('Steamed');
-
-  // Advanced section toggles
-  const [showTimer, setShowTimer] = useState(false);
-  const [showDose, setShowDose] = useState(false);
-
-  // Manual timer input mode
-  const [manualTimeInput, setManualTimeInput] = useState(false);
-  const [manualTimerValue, setManualTimerValue] = useState<string>('');
-
-  // Dose/Yield inputs
-  const [doseIn, setDoseIn] = useState<string>('');
-  const [doseOut, setDoseOut] = useState<string>('');
+  const {
+    beanName, setBeanName,
+    brewType, setBrewType,
+    basket, setBasket,
+    grindSize, setGrindSize,
+    temperature, setTemperature,
+    strength, setStrength,
+    ratingIndex, setRatingIndex,
+    notes, setNotes,
+    showMilk, setShowMilk,
+    milkType, setMilkType,
+    milkStyle, setMilkStyle,
+    showTimer, setShowTimer,
+    showDose, setShowDose,
+    manualTimeInput, setManualTimeInput,
+    manualTimerValue, setManualTimerValue,
+    doseIn, setDoseIn,
+    doseOut, setDoseOut,
+    reset: resetForm,
+    applyFromShot,
+    applyFromRecipe,
+  } = useShotForm();
 
   // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
@@ -240,46 +236,12 @@ function App() {
 
   const suggestedSettings = getSuggestedSettings(lastShotForBean);
 
-  // Apply suggested settings to form
   const applySuggestedSettings = () => {
     if (!suggestedSettings || !lastShotForBean) return;
-
-    // Copy all settings from last shot
-    setBeanName(lastShotForBean.beanName);
-    setBrewType(lastShotForBean.brewType);
-    setBasket(lastShotForBean.basket);
-    setStrength(lastShotForBean.strength);
-    if (lastShotForBean.milk) {
-      setShowMilk(true);
-      setMilkType(lastShotForBean.milk.type);
-      setMilkStyle(lastShotForBean.milk.style);
-    } else {
-      setShowMilk(false);
-    }
-    setNotes(lastShotForBean.notes || '');
-
-    // Apply suggested adjustments
+    applyFromShot(lastShotForBean);
     setGrindSize(suggestedSettings.grindSize);
     setTemperature(suggestedSettings.temperature);
-    setRatingIndex(BALANCED_RATING_INDEX); // Reset to Balanced
-  };
-
-  // Apply a saved recipe to the form
-  const applyRecipe = (recipe: SavedRecipe) => {
-    setBeanName(recipe.beanName);
-    setBrewType(recipe.brewType);
-    setBasket(recipe.basket);
-    setGrindSize(recipe.grindSize);
-    if (recipe.temperature) setTemperature(recipe.temperature);
-    setStrength(recipe.strength);
-    if (recipe.milk) {
-      setShowMilk(true);
-      setMilkType(recipe.milk.type);
-      setMilkStyle(recipe.milk.style);
-    } else {
-      setShowMilk(false);
-    }
-    setNotes(recipe.notes || '');
+    setRatingIndex(BALANCED_RATING_INDEX);
   };
 
   // Save current form as recipe
@@ -404,47 +366,16 @@ function App() {
     );
   };
 
-  // Duplicate a shot (copy settings to form)
   const duplicateShot = (shot: ShotLog) => {
-    setBeanName(shot.beanName);
-    setBrewType(shot.brewType);
-    setGrindSize(shot.grindSize);
-    setBasket(shot.basket);
-    setStrength(shot.strength);
-    if (shot.temperature) setTemperature(shot.temperature);
-    if (shot.milk) {
-      setShowMilk(true);
-      setMilkType(shot.milk.type);
-      setMilkStyle(shot.milk.style);
-    } else {
-      setShowMilk(false);
-    }
-    setNotes(shot.notes || '');
-    // Reset rating to Balanced for new shot
+    applyFromShot(shot);
     setRatingIndex(BALANCED_RATING_INDEX);
     setSelectedShot(null);
   };
 
-  // Open edit shot mode (populate form with shot data)
   const openEditShot = (shot: ShotLog) => {
-    setBeanName(shot.beanName);
-    setBrewType(shot.brewType);
-    setGrindSize(shot.grindSize);
-    setBasket(shot.basket);
-    setStrength(shot.strength);
-    // Set rating index from rating value
+    applyFromShot(shot);
     const ratingIdx = RATINGS.indexOf(shot.rating);
-    setRatingIndex(ratingIdx >= 0 ? ratingIdx : 2);
-    if (shot.temperature) setTemperature(shot.temperature);
-    if (shot.milk) {
-      setShowMilk(true);
-      setMilkType(shot.milk.type);
-      setMilkStyle(shot.milk.style);
-    } else {
-      setShowMilk(false);
-    }
-    setNotes(shot.notes || '');
-    // Set dose/yield if present
+    setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
     if (shot.doseIn) {
       setShowDose(true);
       setDoseIn(shot.doseIn.toString());
@@ -452,11 +383,9 @@ function App() {
     if (shot.doseOut) {
       setDoseOut(shot.doseOut.toString());
     }
-    // Set extraction time if present
     if (shot.extractionTime) {
       setShowTimer(true);
     }
-    // Set editing state
     setEditingShot(shot);
     setSelectedShot(null);
     setShowHistoryModal(false);
@@ -705,15 +634,11 @@ function App() {
     e.preventDefault();
     if (!beanName.trim()) return;
 
-    // If editing an existing shot, update it instead of creating new
     if (editingShot) {
       updateShot();
-      setBeanName('');
-      setNotes('');
+      resetForm();
       setShowSuggestions(false);
       resetTimer();
-      setDoseIn('');
-      setDoseOut('');
       return;
     }
 
@@ -744,13 +669,9 @@ function App() {
     };
 
     addShot(newShot);
-    setBeanName('');
-    setNotes('');
+    resetForm();
     setShowSuggestions(false);
-    resetTimer(); // Reset timer after logging
-    setManualTimerValue(''); // Reset manual timer value
-    setDoseIn(''); // Reset dose fields
-    setDoseOut('');
+    resetTimer();
     showToast('Shot logged!', 'success');
   };
 
@@ -851,7 +772,7 @@ function App() {
                   <button
                     className="recipe-chip__btn"
                     onClick={() => {
-                      applyRecipe(recipe);
+                      applyFromRecipe(recipe);
                       showToast(`Applied "${recipe.name}"`, 'success');
                     }}
                     title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
