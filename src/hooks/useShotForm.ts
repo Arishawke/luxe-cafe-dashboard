@@ -25,10 +25,7 @@ export function useShotForm() {
 
     const reset = () => {
         setBeanName('');
-        setRatingIndex(BALANCED_RATING_INDEX);
         setNotes('');
-        setShowMilk(false);
-        setManualTimeInput(false);
         setManualTimerValue('');
         setDoseIn('');
         setDoseOut('');
