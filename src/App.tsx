@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import type { ShotLog, Basket, Temperature, Strength, Rating, BrewType, MilkType, MilkStyle, FavoritesMap, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
-import { COLD_BREW_TYPES, getDaysSinceRoast, getFreshnessStatus } from './types';
+import { COLD_BREW_TYPES } from './types';
 import { loadShots, saveShots, loadFavorites, saveFavorites, loadRecipes, saveRecipes, loadBeans, saveBeans } from './lib/storage';
 import { generateId, formatDate } from './lib/format';
-import { getUniqueBeans } from './utils';
+import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS } from './constants';
 import { useToast, useConfirm, useTimer } from './hooks';
