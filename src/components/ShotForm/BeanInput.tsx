@@ -1,38 +1,37 @@
 import { useEffect } from 'react';
 import type { ShotLog, BeanProfile } from '../../types';
+import type { useBeanAutocomplete } from '../../hooks/useBeanAutocomplete';
 import Icons from '../Icons';
 
 interface BeanInputProps {
     beanName: string;
-    onBeanInput: (v: string) => void;
-    onBeanFocus: () => void;
-    onSelectBean: (b: string) => void;
-    suggestions: string[];
-    showSuggestions: boolean;
-    setShowSuggestions: (v: boolean) => void;
-    onToggleDropdown: () => void;
+    setBeanName: (v: string) => void;
+    autocomplete: ReturnType<typeof useBeanAutocomplete>;
     hasAnyBeans: boolean;
     beans: BeanProfile[];
     favoriteShot: ShotLog | null;
-    inputRef: React.RefObject<HTMLInputElement | null>;
-    suggestionsRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function BeanInput({
     beanName,
-    onBeanInput,
-    onBeanFocus,
-    onSelectBean,
-    suggestions,
-    showSuggestions,
-    setShowSuggestions,
-    onToggleDropdown,
+    setBeanName,
+    autocomplete,
     hasAnyBeans,
     beans,
     favoriteShot,
-    inputRef,
-    suggestionsRef,
 }: BeanInputProps) {
+    const {
+        showSuggestions,
+        setShowSuggestions,
+        filteredBeans,
+        inputRef,
+        suggestionsRef,
+        handleInput,
+        handleFocus,
+        select,
+        toggleDropdown,
+    } = autocomplete;
+
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (
@@ -60,30 +59,30 @@ export default function BeanInput({
                             className="form-input"
                             placeholder="e.g. Ethiopian Yirgacheffe"
                             value={beanName}
-                            onChange={(e) => onBeanInput(e.target.value)}
-                            onFocus={onBeanFocus}
+                            onChange={(e) => handleInput(e.target.value, setBeanName)}
+                            onFocus={handleFocus}
                             required
                         />
                         {hasAnyBeans && (
                             <button
                                 type="button"
                                 className="autocomplete__toggle"
-                                onClick={onToggleDropdown}
+                                onClick={toggleDropdown}
                             >
                                 <Icons.ChevronDown />
                             </button>
                         )}
                     </div>
-                    {showSuggestions && suggestions.length > 0 && (
+                    {showSuggestions && filteredBeans.length > 0 && (
                         <div ref={suggestionsRef} className="autocomplete__dropdown">
-                            {suggestions.map((name) => {
+                            {filteredBeans.map((name) => {
                                 const libraryBean = beans.find(b => b.name.toLowerCase() === name.toLowerCase() && b.isActive);
                                 return (
                                     <button
                                         key={name}
                                         type="button"
                                         className={`autocomplete__option ${libraryBean ? 'autocomplete__option--library' : ''}`}
-                                        onClick={() => onSelectBean(name)}
+                                        onClick={() => select(name, setBeanName)}
                                     >
                                         {libraryBean && <Icons.Bean />}
                                         <span className="autocomplete__option-name">{name}</span>
