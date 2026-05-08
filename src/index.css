@@ -4052,6 +4052,77 @@ body {
   color: var(--color-cream);
 }
 
+/* ============================================
+   MAINTENANCE ALERTS
+   ============================================ */
+
+.maintenance-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.maintenance-alert--approaching {
+  background: rgba(232, 160, 69, 0.1);
+  border-color: rgba(232, 160, 69, 0.3);
+}
+
+.maintenance-alert--due {
+  background: rgba(212, 145, 92, 0.12);
+  border-color: rgba(212, 145, 92, 0.35);
+}
+
+.maintenance-alert--overdue {
+  background: rgba(192, 69, 69, 0.1);
+  border-color: rgba(192, 69, 69, 0.3);
+}
+
+.maintenance-alert__badge {
+  flex-shrink: 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.maintenance-alert--approaching .maintenance-alert__badge { background: #E8A045; }
+.maintenance-alert--due .maintenance-alert__badge { background: #D4915C; }
+.maintenance-alert--overdue .maintenance-alert__badge { background: #C04545; }
+
+.maintenance-alert__text {
+  flex: 1;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-cream);
+}
+
+.maintenance-alert__action {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border-radius: 6px;
+  border: 1px solid var(--color-mocha);
+  background: transparent;
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.maintenance-alert__action:hover {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: var(--color-caramel);
+  color: var(--color-caramel);
+}
+
 /* Grind History Mini Chart */
 .grind-history {
   display: flex;
