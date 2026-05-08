@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ShotLog, FavoritesMap, Rating } from '../../types';
 import { formatDate } from '../../lib/format';
+import { filterShots } from '../../lib/shots';
 import Icons from '../Icons';
 
 interface HistoryModalProps {
@@ -48,16 +49,7 @@ export default function HistoryModal({
 
     if (!open) return null;
 
-    let filteredShots = beanFilter
-        ? sortedShots.filter(s => s.beanName === beanFilter)
-        : sortedShots;
-
-    if (notesSearch.trim()) {
-        const searchLower = notesSearch.toLowerCase();
-        filteredShots = filteredShots.filter(s =>
-            s.notes?.toLowerCase().includes(searchLower)
-        );
-    }
+    const filteredShots = filterShots(sortedShots, beanFilter, notesSearch);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
