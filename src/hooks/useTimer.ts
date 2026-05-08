@@ -5,7 +5,6 @@ export function useTimer() {
     const [timerSeconds, setTimerSeconds] = useState(0);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    // Timer interval logic
     useEffect(() => {
         if (timerRunning) {
             timerRef.current = setInterval(() => {

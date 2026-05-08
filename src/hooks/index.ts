@@ -1,4 +1,3 @@
-// Custom hooks barrel export
 export { useToast } from './useToast';
 export type { Toast } from './useToast';
 
