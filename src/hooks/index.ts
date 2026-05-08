@@ -21,3 +21,5 @@ export { useShotForm } from './useShotForm';
 export { useKeyboardShortcuts } from './useKeyboardShortcuts';
 
 export { useBeanAutocomplete } from './useBeanAutocomplete';
+
+export { useMaintenance } from './useMaintenance';

@@ -1,4 +1,4 @@
-import type { ShotLog, SavedRecipe, BeanProfile, FavoritesMap } from '../types';
+import type { ShotLog, SavedRecipe, BeanProfile, FavoritesMap, MaintenanceEvent } from '../types';
 
 export interface BackupPayload {
     version: number;
@@ -7,6 +7,7 @@ export interface BackupPayload {
     favorites: FavoritesMap;
     recipes: SavedRecipe[];
     beans: BeanProfile[];
+    maintenance: MaintenanceEvent[];
 }
 
 export interface ImportResult {
@@ -14,6 +15,7 @@ export interface ImportResult {
     recipes: SavedRecipe[];
     beans: BeanProfile[];
     favorites: FavoritesMap;
+    maintenance: MaintenanceEvent[];
 }
 
 export function buildJSONBackup(
@@ -21,14 +23,16 @@ export function buildJSONBackup(
     recipes: SavedRecipe[],
     beans: BeanProfile[],
     favorites: FavoritesMap,
+    maintenance: MaintenanceEvent[],
 ): string {
     const data: BackupPayload = {
-        version: 1,
+        version: 2,
         exportedAt: new Date().toISOString(),
         shots,
         favorites,
         recipes,
         beans,
+        maintenance,
     };
     return JSON.stringify(data, null, 2);
 }
@@ -106,7 +110,12 @@ export function parseImportFile(file: File): Promise<ImportResult> {
 
                 const favorites: FavoritesMap = data.favorites ?? {};
 
-                resolve({ shots, recipes, beans, favorites });
+                // older backups predate maintenance, default to empty
+                const maintenance: MaintenanceEvent[] = Array.isArray(data.maintenance)
+                    ? data.maintenance
+                    : [];
+
+                resolve({ shots, recipes, beans, favorites, maintenance });
             } catch (err) {
                 reject(err instanceof Error ? err : new Error('Failed to import file'));
             }
