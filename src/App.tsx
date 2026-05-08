@@ -4,7 +4,7 @@ import type { ShotLog, Rating, SavedRecipe, BeanProfile, ProcessMethod, RoastLev
 import { COLD_BREW_TYPES } from './types';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
-import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
+import { getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BASKETS, TEMPERATURES, STRENGTHS, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './components/Icons';
@@ -12,6 +12,7 @@ import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
 import Toast from './components/Toast';
+import SuggestionCard from './components/SuggestionCard';
 
 // Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
@@ -744,123 +745,15 @@ function App() {
               );
             })()}
 
-            {lastShotForBean ? (() => {
-              const config = RATING_CONFIG[lastShotForBean.rating];
-              const tip = getBaristaTip(lastShotForBean.rating);
-              const TipIcon = config.icon;
-              return (
-                <>
-                  {/* Current Rating & Tip */}
-                  <div className={`barista-tip barista-tip--${config.colorClass}`}>
-                    <span className="barista-tip__icon">
-                      <TipIcon />
-                    </span>
-                    <div className="barista-tip__content">
-                      <h4>
-                        Tip for "{lastShotForBean.beanName}"
-                        {tip.adjustment !== 'none' && (
-                          <span className={`adjustment-badge adjustment-badge--${tip.adjustment}`}>
-                            {tip.adjustment === 'large' ? 'Major Adj.' : 'Minor Adj.'}
-                          </span>
-                        )}
-                      </h4>
-                      <p>{tip.message}</p>
-                    </div>
-                  </div>
-
-                  {/* Suggested Next Settings */}
-                  {suggestedSettings && (
-                    <div className="suggested-settings">
-                      <div className="suggested-settings__header">
-                        <Icons.Target />
-                        <span>Suggested Next Shot</span>
-                      </div>
-                      <div className="suggested-settings__values">
-                        <div className="suggested-setting">
-                          <span className="suggested-setting__label">Grind</span>
-                          <span className="suggested-setting__value">
-                            {suggestedSettings.grindSize}
-                            <span className={`suggested-setting__diff ${suggestedSettings.grindDiff > 0 ? 'diff--coarser' : 'diff--finer'}`}>
-                              ({suggestedSettings.grindDiff > 0 ? '+' : ''}{suggestedSettings.grindDiff})
-                            </span>
-                          </span>
-                        </div>
-                        {suggestedSettings.adjustmentType === 'both' && (
-                          <div className="suggested-setting">
-                            <span className="suggested-setting__label">Temp</span>
-                            <span className="suggested-setting__value">{suggestedSettings.temperature}</span>
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        className="btn-apply-suggestion"
-                        onClick={applySuggestedSettings}
-                        title="Apply suggested settings to form"
-                      >
-                        <Icons.Zap /> Apply to Form
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Dial-in Journey */}
-                  {shotsForBean.length > 1 && (() => {
-                    const displayShots = shotsForBean.slice(0, 5).reverse();
-                    const grindSizes = displayShots.map(s => s.grindSize);
-                    const minGrind = Math.min(...grindSizes);
-                    const maxGrind = Math.max(...grindSizes);
-                    const grindRange = maxGrind - minGrind || 1;
-
-                    return (
-                      <div className="dialin-journey">
-                        <div className="dialin-journey__label">
-                          <Icons.TrendingUp /> Recent Journey
-                        </div>
-                        <div className="dialin-journey__timeline">
-                          {displayShots.map((shot, idx) => {
-                            const shotConfig = RATING_CONFIG[shot.rating];
-                            const ShotIcon = shotConfig.icon;
-                            return (
-                              <div
-                                key={shot.id}
-                                className={`journey-step journey-step--${shotConfig.colorClass}`}
-                                title={`Grind ${shot.grindSize} • ${shot.rating}`}
-                              >
-                                <ShotIcon />
-                                <span className="journey-step__grind">G{shot.grindSize}</span>
-                                {idx < displayShots.length - 1 && <span className="journey-step__arrow">→</span>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        {/* Grind History Chart */}
-                        <div className="grind-history" title="Grind size trend">
-                          {displayShots.map((shot, idx) => (
-                            <div
-                              key={shot.id}
-                              className={`grind-history__bar ${idx === displayShots.length - 1 ? 'grind-history__bar--current' : ''}`}
-                              style={{
-                                height: `${20 + ((shot.grindSize - minGrind) / grindRange) * 80}%`,
-                                background: RATING_COLORS[shot.rating]
-                              }}
-                              title={`G${shot.grindSize}`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </>
-              );
-            })() : (
-              <div className="empty-state">
-                <Icons.Lightbulb />
-                <p className="empty-state__text">
-                  {form.beanName.trim()
-                    ? `No history for "${form.beanName}" yet. Log a shot to get tips!`
-                    : 'Enter a bean name to see calibration tips.'}
-                </p>
-              </div>
-            )}
+            <SuggestionCard
+              lastShot={lastShotForBean ?? null}
+              suggestion={suggestedSettings}
+              shotsForBean={shotsForBean}
+              beanName={form.beanName}
+              ratingConfig={RATING_CONFIG}
+              ratingColors={RATING_COLORS}
+              onApply={applySuggestedSettings}
+            />
           </div>
 
           {/* History Log */}
