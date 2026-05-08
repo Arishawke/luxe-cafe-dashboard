@@ -51,7 +51,6 @@ function App() {
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
   const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
 
   const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
@@ -94,7 +93,7 @@ function App() {
       if (confirmDialog) closeConfirm();
       else if (selectedShot) setSelectedShot(null);
       else if (editingRecipe) setEditingRecipe(null);
-      else if (showHistoryModal) { setShowHistoryModal(false); setPreviewShot(null); }
+      else if (showHistoryModal) setShowHistoryModal(false);
       else if (showBeanLibrary) setShowBeanLibrary(false);
       else if (showRecipeLibrary) setShowRecipeLibrary(false);
       else if (showStats) setShowStats(false);
@@ -654,8 +653,6 @@ function App() {
         shots={shots}
         sortedShots={sortedShots}
         favorites={favorites}
-        previewShot={previewShot}
-        setPreviewShot={setPreviewShot}
         beanFilter={beanFilter}
         setBeanFilter={setBeanFilter}
         notesSearch={notesSearch}
@@ -663,7 +660,7 @@ function App() {
         use24Hour={use24Hour}
         ratingConfig={RATING_CONFIG}
         compareShots={compareShots}
-        onClose={() => { setShowHistoryModal(false); setPreviewShot(null); }}
+        onClose={() => setShowHistoryModal(false)}
         onSelectShot={(shot) => setSelectedShot(shot)}
         onToggleFavorite={toggleFavorite}
         onToggleCompare={(id) => {
