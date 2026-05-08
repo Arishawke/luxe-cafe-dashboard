@@ -14,14 +14,16 @@ import ConfirmDialog from './components/modals/ConfirmDialog';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
+import ShotComparison from './components/ShotComparison';
+import { RATING_COLOR_CLASS } from './lib/ratings';
 
 // Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
-  'Very Sour': { icon: Icons.DoubleChevronLeft, colorClass: 'very-sour' },
-  'Sour': { icon: Icons.Citrus, colorClass: 'sour' },
-  'Balanced': { icon: Icons.Sparkles, colorClass: 'balanced' },
-  'Bitter': { icon: Icons.Flame, colorClass: 'bitter' },
-  'Very Bitter': { icon: Icons.DoubleChevronRight, colorClass: 'very-bitter' },
+  'Very Sour': { icon: Icons.DoubleChevronLeft, colorClass: RATING_COLOR_CLASS['Very Sour'] },
+  'Sour': { icon: Icons.Citrus, colorClass: RATING_COLOR_CLASS.Sour },
+  'Balanced': { icon: Icons.Sparkles, colorClass: RATING_COLOR_CLASS.Balanced },
+  'Bitter': { icon: Icons.Flame, colorClass: RATING_COLOR_CLASS.Bitter },
+  'Very Bitter': { icon: Icons.DoubleChevronRight, colorClass: RATING_COLOR_CLASS['Very Bitter'] },
 };
 
 function App() {
@@ -2113,66 +2115,12 @@ function App() {
       )}
 
       {/* Shot Comparison Panel */}
-      {(shot1 || shot2) && (
-        <div className="compare-panel">
-          <div className="compare-panel__header">
-            <h3><Icons.BarChart /> Compare Shots</h3>
-            <button className="compare-panel__close" onClick={() => setCompareShots([null, null])}>
-              <Icons.X />
-            </button>
-          </div>
-          <div className="compare-panel__content">
-            {[shot1, shot2].map((shot, idx) => (
-              <div key={idx} className={`compare-panel__shot ${!shot ? 'compare-panel__shot--empty' : ''}`}>
-                {shot ? (
-                  <>
-                    <div className="compare-panel__shot-header">
-                      <span className="compare-panel__bean">{shot.beanName}</span>
-                      <span className={`compare-panel__rating compare-panel__rating--${RATING_CONFIG[shot.rating].colorClass}`}>
-                        {shot.rating}
-                      </span>
-                    </div>
-                    <div className="compare-panel__details">
-                      <div className="compare-panel__detail">
-                        <span className="compare-panel__label">Grind</span>
-                        <span className="compare-panel__value">{shot.grindSize}</span>
-                      </div>
-                      <div className="compare-panel__detail">
-                        <span className="compare-panel__label">Temp</span>
-                        <span className="compare-panel__value">{shot.temperature || '-'}</span>
-                      </div>
-                      <div className="compare-panel__detail">
-                        <span className="compare-panel__label">Basket</span>
-                        <span className="compare-panel__value">{shot.basket}</span>
-                      </div>
-                      <div className="compare-panel__detail">
-                        <span className="compare-panel__label">Strength</span>
-                        <span className="compare-panel__value">{shot.strength}</span>
-                      </div>
-                    </div>
-                    <button
-                      className="compare-panel__remove"
-                      onClick={() => setCompareShots(prev => idx === 0 ? [null, prev[1]] : [prev[0], null])}
-                    >
-                      Remove
-                    </button>
-                  </>
-                ) : (
-                  <span className="compare-panel__placeholder">Select a shot to compare</span>
-                )}
-              </div>
-            ))}
-          </div>
-          {shot1 && shot2 && (
-            <div className="compare-panel__diff">
-              <span className="compare-panel__diff-label">Grind Difference:</span>
-              <span className={`compare-panel__diff-value ${shot2.grindSize > shot1.grindSize ? 'diff--coarser' : shot2.grindSize < shot1.grindSize ? 'diff--finer' : ''}`}>
-                {shot2.grindSize - shot1.grindSize > 0 ? '+' : ''}{shot2.grindSize - shot1.grindSize}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
+      <ShotComparison
+        shot1={shot1}
+        shot2={shot2}
+        onClear={() => setCompareShots([null, null])}
+        onRemoveAt={(idx) => setCompareShots(prev => idx === 0 ? [null, prev[1]] : [prev[0], null])}
+      />
       <ConfirmDialog
         dialog={confirmDialog}
         onConfirm={() => {
