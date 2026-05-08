@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Rating, BrewType, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
+import type { ShotLog, Rating, SavedRecipe, BeanProfile, ProcessMethod, RoastLevel } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
-import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
+import { RATINGS, RATING_COLORS, BASKETS, TEMPERATURES, STRENGTHS, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
+import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
 import Toast from './components/Toast';
 
@@ -22,28 +23,7 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 };
 
 function App() {
-  const {
-    beanName, setBeanName,
-    brewType, setBrewType,
-    basket, setBasket,
-    grindSize, setGrindSize,
-    temperature, setTemperature,
-    strength, setStrength,
-    ratingIndex, setRatingIndex,
-    notes, setNotes,
-    showMilk, setShowMilk,
-    milkType, setMilkType,
-    milkStyle, setMilkStyle,
-    showTimer, setShowTimer,
-    showDose, setShowDose,
-    manualTimeInput, setManualTimeInput,
-    manualTimerValue, setManualTimerValue,
-    doseIn, setDoseIn,
-    doseOut, setDoseOut,
-    reset: resetForm,
-    applyFromShot,
-    applyFromRecipe,
-  } = useShotForm();
+  const form = useShotForm();
 
   // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
@@ -111,14 +91,14 @@ function App() {
   });
 
   // Derived state
-  const rating = RATINGS[ratingIndex];
-  const isColdBrew = COLD_BREW_TYPES.includes(brewType);
+  const rating = RATINGS[form.ratingIndex];
+  const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
 
   useKeyboardShortcuts({
     canSubmit: () =>
       !showRecipeModal && !showBeanLibrary && !showStats && !showCaffeine
       && !showThemePicker && !selectedShot && !editingRecipe
-      && beanName.trim() !== '',
+      && form.beanName.trim() !== '',
     onSubmit: () => {
       const f = document.querySelector('.shot-form') as HTMLFormElement | null;
       f?.requestSubmit();
@@ -138,22 +118,6 @@ function App() {
     },
   });
 
-  // Handle click outside to close suggestions
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        inputRef.current &&
-        !inputRef.current.contains(e.target as Node) &&
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(e.target as Node)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   // Filter beans for autocomplete - combine bean library + shot history
   const getAllBeanSuggestions = () => {
     const libraryBeans = beans.filter(b => b.isActive).map(b => b.name);
@@ -164,7 +128,7 @@ function App() {
   };
 
   const handleBeanInput = (value: string) => {
-    setBeanName(value);
+    form.setBeanName(value);
     const allBeans = getAllBeanSuggestions();
     if (value.trim()) {
       const filtered = allBeans.filter(b =>
@@ -182,22 +146,22 @@ function App() {
   };
 
   const selectBean = (bean: string) => {
-    setBeanName(bean);
+    form.setBeanName(bean);
     setShowSuggestions(false);
   };
 
   // Get favorite shot for current bean
-  const currentBeanKey = beanName.trim().toLowerCase();
+  const currentBeanKey = form.beanName.trim().toLowerCase();
   const favoriteId = favorites[currentBeanKey];
   const favoriteShot = favoriteId ? shots.find(s => s.id === favoriteId) : null;
 
   // Get last shot for current bean (for tips) - prefer favorite if available
-  const lastShotForBean = favoriteShot || (beanName.trim()
+  const lastShotForBean = favoriteShot || (form.beanName.trim()
     ? shots.find(s => s.beanName.toLowerCase() === currentBeanKey)
     : null);
 
   // Get all shots for current bean (for journey view)
-  const shotsForBean = beanName.trim()
+  const shotsForBean = form.beanName.trim()
     ? shots.filter(s => s.beanName.toLowerCase() === currentBeanKey).slice(0, 5)
     : [];
 
@@ -205,27 +169,27 @@ function App() {
 
   const applySuggestedSettings = () => {
     if (!suggestedSettings || !lastShotForBean) return;
-    applyFromShot(lastShotForBean);
-    setGrindSize(suggestedSettings.grindSize);
-    setTemperature(suggestedSettings.temperature);
-    setRatingIndex(BALANCED_RATING_INDEX);
+    form.applyFromShot(lastShotForBean);
+    form.setGrindSize(suggestedSettings.grindSize);
+    form.setTemperature(suggestedSettings.temperature);
+    form.setRatingIndex(BALANCED_RATING_INDEX);
   };
 
   // Save current form as recipe
   const saveAsRecipe = () => {
-    if (!recipeName.trim() || !beanName.trim()) return;
+    if (!recipeName.trim() || !form.beanName.trim()) return;
 
     const newRecipe: SavedRecipe = {
       id: generateId(),
       name: recipeName.trim(),
-      beanName: beanName.trim(),
-      brewType,
-      basket,
-      grindSize,
-      temperature: isColdBrew ? undefined : temperature,
-      strength,
-      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
-      notes: notes.trim() || undefined,
+      beanName: form.beanName.trim(),
+      brewType: form.brewType,
+      basket: form.basket,
+      grindSize: form.grindSize,
+      temperature: isColdBrew ? undefined : form.temperature,
+      strength: form.strength,
+      milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
+      notes: form.notes.trim() || undefined,
       createdAt: new Date(),
     };
 
@@ -253,20 +217,20 @@ function App() {
   const openEditRecipe = (recipe: SavedRecipe) => {
     setEditingRecipe(recipe);
     setRecipeName(recipe.name);
-    setBeanName(recipe.beanName);
-    setBrewType(recipe.brewType);
-    setBasket(recipe.basket);
-    setGrindSize(recipe.grindSize);
-    setStrength(recipe.strength);
-    if (recipe.temperature) setTemperature(recipe.temperature);
+    form.setBeanName(recipe.beanName);
+    form.setBrewType(recipe.brewType);
+    form.setBasket(recipe.basket);
+    form.setGrindSize(recipe.grindSize);
+    form.setStrength(recipe.strength);
+    if (recipe.temperature) form.setTemperature(recipe.temperature);
     if (recipe.milk) {
-      setShowMilk(true);
-      setMilkType(recipe.milk.type);
-      setMilkStyle(recipe.milk.style);
+      form.setShowMilk(true);
+      form.setMilkType(recipe.milk.type);
+      form.setMilkStyle(recipe.milk.style);
     } else {
-      setShowMilk(false);
+      form.setShowMilk(false);
     }
-    setNotes(recipe.notes || '');
+    form.setNotes(recipe.notes || '');
     // Close library and open edit modal
     setShowRecipeLibrary(false);
     setShowRecipeModal(true);
@@ -279,14 +243,14 @@ function App() {
     const updated: SavedRecipe = {
       ...editingRecipe,
       name: recipeName.trim(),
-      beanName,
-      brewType,
-      basket,
-      grindSize,
-      temperature: isColdBrew ? undefined : temperature,
-      strength,
-      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
-      notes: notes.trim() || undefined,
+      beanName: form.beanName,
+      brewType: form.brewType,
+      basket: form.basket,
+      grindSize: form.grindSize,
+      temperature: isColdBrew ? undefined : form.temperature,
+      strength: form.strength,
+      milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
+      notes: form.notes.trim() || undefined,
     };
 
     replaceRecipe(updated);
@@ -334,24 +298,24 @@ function App() {
   };
 
   const duplicateShot = (shot: ShotLog) => {
-    applyFromShot(shot);
-    setRatingIndex(BALANCED_RATING_INDEX);
+    form.applyFromShot(shot);
+    form.setRatingIndex(BALANCED_RATING_INDEX);
     setSelectedShot(null);
   };
 
   const openEditShot = (shot: ShotLog) => {
-    applyFromShot(shot);
+    form.applyFromShot(shot);
     const ratingIdx = RATINGS.indexOf(shot.rating);
-    setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
+    form.setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
     if (shot.doseIn) {
-      setShowDose(true);
-      setDoseIn(shot.doseIn.toString());
+      form.setShowDose(true);
+      form.setDoseIn(shot.doseIn.toString());
     }
     if (shot.doseOut) {
-      setDoseOut(shot.doseOut.toString());
+      form.setDoseOut(shot.doseOut.toString());
     }
     if (shot.extractionTime) {
-      setShowTimer(true);
+      form.setShowTimer(true);
     }
     setEditingShot(shot);
     setSelectedShot(null);
@@ -361,21 +325,21 @@ function App() {
 
   // Update existing shot
   const updateShot = () => {
-    if (!editingShot || !beanName.trim()) return;
+    if (!editingShot || !form.beanName.trim()) return;
 
     const updated: ShotLog = {
       ...editingShot,
-      beanName: beanName.trim(),
-      brewType,
-      basket,
-      grindSize,
-      temperature: isColdBrew ? undefined : temperature,
-      strength,
+      beanName: form.beanName.trim(),
+      brewType: form.brewType,
+      basket: form.basket,
+      grindSize: form.grindSize,
+      temperature: isColdBrew ? undefined : form.temperature,
+      strength: form.strength,
       rating,
-      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
-      notes: notes.trim() || undefined,
-      doseIn: doseIn ? parseFloat(doseIn) : undefined,
-      doseOut: doseOut ? parseFloat(doseOut) : undefined,
+      milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
+      notes: form.notes.trim() || undefined,
+      doseIn: form.doseIn ? parseFloat(form.doseIn) : undefined,
+      doseOut: form.doseOut ? parseFloat(form.doseOut) : undefined,
       // Preserve original timestamp and id
     };
 
@@ -384,7 +348,7 @@ function App() {
 
     // Update favorites if bean name changed
     const oldBeanKey = editingShot.beanName.toLowerCase();
-    const newBeanKey = beanName.trim().toLowerCase();
+    const newBeanKey = form.beanName.trim().toLowerCase();
     if (oldBeanKey !== newBeanKey && favorites[oldBeanKey] === editingShot.id) {
       const updatedFavorites = { ...favorites };
       delete updatedFavorites[oldBeanKey];
@@ -593,17 +557,17 @@ function App() {
   };
 
   // Grind size controls
-  const decrementGrind = () => setGrindSize(prev => Math.max(1, prev - 1));
-  const incrementGrind = () => setGrindSize(prev => Math.min(25, prev + 1));
+  const decrementGrind = () => form.setGrindSize(Math.max(1, form.grindSize - 1));
+  const incrementGrind = () => form.setGrindSize(Math.min(25, form.grindSize + 1));
 
   // Handle form submission
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!beanName.trim()) return;
+    if (!form.beanName.trim()) return;
 
     if (editingShot) {
       updateShot();
-      resetForm();
+      form.reset();
       setShowSuggestions(false);
       resetTimer();
       return;
@@ -611,8 +575,8 @@ function App() {
 
     // Get extraction time from either manual input or stopwatch
     const getExtractionTime = (): number | undefined => {
-      if (manualTimeInput) {
-        const parsed = parseFloat(manualTimerValue);
+      if (form.manualTimeInput) {
+        const parsed = parseFloat(form.manualTimerValue);
         return parsed > 0 ? Math.round(parsed * 10) / 10 : undefined;
       }
       return timerSeconds > 0 ? Math.round(timerSeconds * 10) / 10 : undefined;
@@ -620,23 +584,23 @@ function App() {
 
     const newShot: ShotLog = {
       id: generateId(),
-      beanName: beanName.trim(),
-      brewType,
-      basket,
-      grindSize,
-      temperature: isColdBrew ? undefined : temperature,
-      strength,
+      beanName: form.beanName.trim(),
+      brewType: form.brewType,
+      basket: form.basket,
+      grindSize: form.grindSize,
+      temperature: isColdBrew ? undefined : form.temperature,
+      strength: form.strength,
       rating,
-      milk: showMilk ? { type: milkType, style: milkStyle } : undefined,
-      notes: notes.trim() || undefined,
+      milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
+      notes: form.notes.trim() || undefined,
       extractionTime: getExtractionTime(),
-      doseIn: doseIn ? parseFloat(doseIn) : undefined,
-      doseOut: doseOut ? parseFloat(doseOut) : undefined,
+      doseIn: form.doseIn ? parseFloat(form.doseIn) : undefined,
+      doseOut: form.doseOut ? parseFloat(form.doseOut) : undefined,
       timestamp: new Date(),
     };
 
     addShot(newShot);
-    resetForm();
+    form.reset();
     setShowSuggestions(false);
     resetTimer();
     showToast('Shot logged!', 'success');
@@ -679,7 +643,7 @@ function App() {
                   <button
                     className="recipe-chip__btn"
                     onClick={() => {
-                      applyFromRecipe(recipe);
+                      form.applyFromRecipe(recipe);
                       showToast(`Applied "${recipe.name}"`, 'success');
                     }}
                     title={`${recipe.beanName} • ${recipe.brewType}${recipe.notes ? ` • ${recipe.notes}` : ''}`}
@@ -710,435 +674,39 @@ function App() {
             <Icons.Edit /> {editingShot ? 'Edit Shot' : 'Log New Shot'}
           </h2>
 
-          <form className="shot-form" onSubmit={handleSubmit}>
-            {/* Brew Type Selector */}
-            <div className="form-group">
-              <label className="form-label">Brew Type</label>
-              <div className="select-wrap">
-                <select
-                  className="form-select"
-                  value={brewType}
-                  onChange={(e) => setBrewType(e.target.value as BrewType)}
-                >
-                  {BREW_TYPES.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-                <Icons.ChevronDown />
-              </div>
-            </div>
-
-            {/* Bean Name with Autocomplete */}
-            <div className="form-group">
-              <label className="form-label">Bean Name</label>
-              <div className="autocomplete">
-                <div className="autocomplete__input-wrap">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Ethiopian Yirgacheffe"
-                    value={beanName}
-                    onChange={(e) => handleBeanInput(e.target.value)}
-                    onFocus={handleBeanFocus}
-                    required
-                  />
-                  {(shots.length > 0 || beans.length > 0) && (
-                    <button
-                      type="button"
-                      className="autocomplete__toggle"
-                      onClick={() => {
-                        setFilteredBeans(getAllBeanSuggestions());
-                        setShowSuggestions(!showSuggestions);
-                      }}
-                    >
-                      <Icons.ChevronDown />
-                    </button>
-                  )}
-                </div>
-                {showSuggestions && filteredBeans.length > 0 && (
-                  <div ref={suggestionsRef} className="autocomplete__dropdown">
-                    {filteredBeans.map((beanName) => {
-                      const libraryBean = beans.find(b => b.name.toLowerCase() === beanName.toLowerCase() && b.isActive);
-                      return (
-                        <button
-                          key={beanName}
-                          type="button"
-                          className={`autocomplete__option ${libraryBean ? 'autocomplete__option--library' : ''}`}
-                          onClick={() => selectBean(beanName)}
-                        >
-                          {libraryBean && <Icons.Bean />}
-                          <span className="autocomplete__option-name">{beanName}</span>
-                          {libraryBean?.roaster && (
-                            <span className="autocomplete__option-roaster">{libraryBean.roaster}</span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Target Recipe Box - Shows when a favorite exists */}
-            {favoriteShot && (
-              <div className="target-recipe">
-                <div className="target-recipe__header">
-                  <Icons.Target />
-                  <span>Target Recipe for {favoriteShot.beanName}</span>
-                </div>
-                <div className="target-recipe__settings">
-                  <span className="setting-tag setting-tag--gold">Grind {favoriteShot.grindSize}</span>
-                  {favoriteShot.temperature && <span className="setting-tag setting-tag--gold">{favoriteShot.temperature}</span>}
-                  <span className="setting-tag setting-tag--gold">{favoriteShot.basket}</span>
-                  <span className="setting-tag setting-tag--gold">S{favoriteShot.strength}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Basket Size */}
-            <div className="form-group">
-              <label className="form-label">Basket Size</label>
-              <div className="pill-group">
-                {BASKETS.map((b) => (
-                  <button
-                    key={b}
-                    type="button"
-                    className={`pill-btn ${basket === b ? 'pill-btn--active' : ''}`}
-                    onClick={() => setBasket(b)}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Grind Size with +/- Controls */}
-            <div className="form-group">
-              <label className="form-label">Grind Size</label>
-              <div className="grind-control">
-                <button
-                  type="button"
-                  className="grind-control__btn"
-                  onClick={decrementGrind}
-                  disabled={grindSize <= 1}
-                >
-                  <Icons.Minus />
-                </button>
-                <div className="grind-control__slider-wrap">
-                  <input
-                    type="range"
-                    className="slider slider--thick"
-                    min={1}
-                    max={25}
-                    value={grindSize}
-                    onChange={(e) => setGrindSize(Number(e.target.value))}
-                  />
-                  <span className="grind-control__value">{grindSize}</span>
-                </div>
-                <button
-                  type="button"
-                  className="grind-control__btn"
-                  onClick={incrementGrind}
-                  disabled={grindSize >= 25}
-                >
-                  <Icons.Plus />
-                </button>
-              </div>
-              <div className="slider-labels">
-                <span>1 Fine</span>
-                <span>25 Coarse</span>
-              </div>
-            </div>
-
-            {/* Temperature - Hidden for cold brews */}
-            {!isColdBrew && (
-              <div className="form-group">
-                <label className="form-label">Temperature</label>
-                <div className="pill-group">
-                  {TEMPERATURES.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      className={`pill-btn ${temperature === t ? 'pill-btn--active' : ''}`}
-                      onClick={() => setTemperature(t)}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Strength */}
-            <div className="form-group">
-              <label className="form-label">Strength</label>
-              <div className="pill-group">
-                {STRENGTHS.map((s) => (
-                  <button
-                    key={s.value}
-                    type="button"
-                    className={`pill-btn ${strength === s.value ? 'pill-btn--active' : ''}`}
-                    onClick={() => setStrength(s.value)}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Discrete Rating Slider */}
-            <div className="form-group">
-              <label className="form-label">Taste Rating</label>
-              <div className="rating-slider">
-                <div
-                  className="rating-slider__label"
-                  style={{ color: RATING_COLORS[rating] }}
-                >
-                  {rating}
-                </div>
-                <div className="rating-slider__track">
-                  <input
-                    type="range"
-                    className="rating-slider__input"
-                    min={0}
-                    max={4}
-                    step={1}
-                    value={ratingIndex}
-                    onChange={(e) => setRatingIndex(Number(e.target.value))}
-                    style={{
-                      '--rating-color': RATING_COLORS[rating],
-                    } as React.CSSProperties}
-                  />
-                  <div className="rating-slider__markers">
-                    {RATINGS.map((_, i) => (
-                      <span
-                        key={i}
-                        className={`rating-slider__marker ${i === ratingIndex ? 'rating-slider__marker--active' : ''}`}
-                        style={i === ratingIndex ? { background: RATING_COLORS[rating] } : {}}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="rating-slider__scale">
-                  <span>Sour</span>
-                  <span>Bitter</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Froth Lab - Collapsible Milk Settings */}
-            <div className="advanced-tools">
-              <button
-                type="button"
-                className={`advanced-toggle ${showMilk ? 'advanced-toggle--active' : ''}`}
-                onClick={() => setShowMilk(!showMilk)}
-              >
-                <Icons.Milk />
-                <span>Froth Lab</span>
-                <span className="advanced-toggle__badge">{showMilk ? 'On' : 'Off'}</span>
-                {showMilk ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
-              </button>
-
-              {showMilk && (
-                <div className="froth-panel">
-                  <div className="froth-panel__row">
-                    <label className="form-label">Milk Type</label>
-                    <div className="pill-group pill-group--wrap">
-                      {MILK_TYPES.map((type) => (
-                        <button
-                          key={type}
-                          type="button"
-                          className={`pill-btn pill-btn--sm ${milkType === type ? 'pill-btn--active' : ''}`}
-                          onClick={() => setMilkType(type)}
-                        >
-                          {type}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="froth-panel__row">
-                    <label className="form-label">Style</label>
-                    <div className="pill-group pill-group--wrap">
-                      {MILK_STYLES.map((style) => (
-                        <button
-                          key={style}
-                          type="button"
-                          className={`pill-btn pill-btn--sm ${milkStyle === style ? 'pill-btn--active' : ''}`}
-                          onClick={() => setMilkStyle(style)}
-                        >
-                          {style}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Advanced Tools Section */}
-            <div className="advanced-tools">
-              {/* Shot Timer Toggle */}
-              <button
-                type="button"
-                className={`advanced-toggle ${showTimer ? 'advanced-toggle--active' : ''}`}
-                onClick={() => setShowTimer(!showTimer)}
-              >
-                <Icons.Zap />
-                <span>Shot Timer</span>
-                <span className="advanced-toggle__badge">{showTimer ? 'On' : 'Off'}</span>
-                {showTimer ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
-              </button>
-              {showTimer && (
-                <div className="shot-timer">
-                  <div className="shot-timer__mode-toggle">
-                    <button
-                      type="button"
-                      className={`shot-timer__mode-btn ${!manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
-                      onClick={() => setManualTimeInput(false)}
-                    >
-                      Stopwatch
-                    </button>
-                    <button
-                      type="button"
-                      className={`shot-timer__mode-btn ${manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
-                      onClick={() => setManualTimeInput(true)}
-                    >
-                      Manual
-                    </button>
-                  </div>
-                  {manualTimeInput ? (
-                    <div className="shot-timer__manual">
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="120"
-                        placeholder="0.0"
-                        value={manualTimerValue}
-                        onChange={(e) => setManualTimerValue(e.target.value)}
-                        className="shot-timer__input"
-                      />
-                      <span className="shot-timer__unit">seconds</span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="shot-timer__display">
-                        <span className="shot-timer__time">{timerSeconds.toFixed(1)}s</span>
-                      </div>
-                      <div className="shot-timer__controls">
-                        {timerRunning ? (
-                          <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
-                            ⏸
-                          </button>
-                        ) : (
-                          <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
-                            ▶
-                          </button>
-                        )}
-                        <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
-                          ↺
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Dose/Yield Toggle */}
-              <button
-                type="button"
-                className={`advanced-toggle ${showDose ? 'advanced-toggle--active' : ''}`}
-                onClick={() => setShowDose(!showDose)}
-              >
-                <Icons.Scale />
-                <span>Dose & Yield</span>
-                <span className="advanced-toggle__badge">{showDose ? 'On' : 'Off'}</span>
-                {showDose ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
-              </button>
-              {showDose && (
-                <div className="dose-yield">
-                  <div className="dose-yield__inputs">
-                    <div className="dose-yield__field">
-                      <label>In (g)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        placeholder="18.0"
-                        value={doseIn}
-                        onChange={(e) => setDoseIn(e.target.value)}
-                      />
-                    </div>
-                    <span className="dose-yield__arrow">→</span>
-                    <div className="dose-yield__field">
-                      <label>Out (g)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        placeholder="36.0"
-                        value={doseOut}
-                        onChange={(e) => setDoseOut(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  {doseIn && doseOut && parseFloat(doseIn) > 0 && (
-                    <div className="dose-yield__ratio">
-                      <span className="dose-yield__ratio-label">Ratio</span>
-                      <span className="dose-yield__ratio-value">
-                        1:{(parseFloat(doseOut) / parseFloat(doseIn)).toFixed(1)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Add-ins / Notes */}
-            <div className="form-group">
-              <label className="form-label">Add-ins / Notes</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Vanilla syrup, Cinnamon, Extra hot"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="form-actions">
-              <button type="submit" className={editingShot ? 'btn-submit btn-submit--edit' : 'btn-submit'}>
-                {editingShot ? 'Update Shot' : 'Log Shot'}
-              </button>
-              {editingShot ? (
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={() => {
-                    setEditingShot(null);
-                    setBeanName('');
-                    setNotes('');
-                    setDoseIn('');
-                    setDoseOut('');
-                    showToast('Edit cancelled', 'info');
-                  }}
-                >
-                  Cancel Edit
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-save-recipe"
-                  onClick={() => setShowRecipeModal(true)}
-                  disabled={!beanName.trim()}
-                >
-                  <Icons.Save /> Save as Recipe
-                </button>
-              )}
-            </div>
-          </form>
+          <ShotForm
+            form={form}
+            timer={{ timerRunning, timerSeconds, startTimer, stopTimer, resetTimer }}
+            isColdBrew={isColdBrew}
+            onSubmit={handleSubmit}
+            onIncrementGrind={incrementGrind}
+            onDecrementGrind={decrementGrind}
+            beans={beans}
+            hasAnyBeans={shots.length > 0 || beans.length > 0}
+            suggestions={filteredBeans}
+            showSuggestions={showSuggestions}
+            setShowSuggestions={setShowSuggestions}
+            onBeanInput={handleBeanInput}
+            onBeanFocus={handleBeanFocus}
+            onSelectBean={selectBean}
+            onToggleDropdown={() => {
+              setFilteredBeans(getAllBeanSuggestions());
+              setShowSuggestions(!showSuggestions);
+            }}
+            inputRef={inputRef}
+            suggestionsRef={suggestionsRef}
+            favoriteShot={favoriteShot ?? null}
+            editingShot={editingShot}
+            onCancelEdit={() => {
+              setEditingShot(null);
+              form.setBeanName('');
+              form.setNotes('');
+              form.setDoseIn('');
+              form.setDoseOut('');
+              showToast('Edit cancelled', 'info');
+            }}
+            onOpenRecipeModal={() => setShowRecipeModal(true)}
+          />
         </div>
 
         {/* Right Column */}
@@ -1151,8 +719,8 @@ function App() {
 
             {/* Bean Freshness Alert */}
             {(() => {
-              if (!beanName.trim()) return null;
-              const beanProfile = beans.find(b => b.name.toLowerCase() === beanName.toLowerCase());
+              if (!form.beanName.trim()) return null;
+              const beanProfile = beans.find(b => b.name.toLowerCase() === form.beanName.toLowerCase());
               if (!beanProfile?.roastDate) return null;
 
               const days = getDaysSinceRoast(beanProfile.roastDate);
@@ -1287,8 +855,8 @@ function App() {
               <div className="empty-state">
                 <Icons.Lightbulb />
                 <p className="empty-state__text">
-                  {beanName.trim()
-                    ? `No history for "${beanName}" yet. Log a shot to get tips!`
+                  {form.beanName.trim()
+                    ? `No history for "${form.beanName}" yet. Log a shot to get tips!`
                     : 'Enter a bean name to see calibration tips.'}
                 </p>
               </div>
@@ -1455,7 +1023,7 @@ function App() {
             </div>
             <div className="modal__body">
               <p className="modal__desc">
-                Save your current settings as a quick recipe for "{beanName}"
+                Save your current settings as a quick recipe for "{form.beanName}"
               </p>
               <div className="form-group">
                 <label className="form-label">Recipe Name</label>
@@ -1471,14 +1039,14 @@ function App() {
               <div className="modal__preview">
                 <div className="modal__preview-label">Will save:</div>
                 <div className="setting-tags-wrap">
-                  <span className="setting-tag">{brewType}</span>
-                  <span className="setting-tag">{beanName}</span>
-                  <span className="setting-tag">Grind {grindSize}</span>
-                  {!isColdBrew && <span className="setting-tag">{temperature}</span>}
-                  <span className="setting-tag">{basket}</span>
-                  <span className="setting-tag">S{strength}</span>
-                  {showMilk && <span className="setting-tag setting-tag--milk">{milkType} {milkStyle}</span>}
-                  {notes && <span className="setting-tag">{notes}</span>}
+                  <span className="setting-tag">{form.brewType}</span>
+                  <span className="setting-tag">{form.beanName}</span>
+                  <span className="setting-tag">Grind {form.grindSize}</span>
+                  {!isColdBrew && <span className="setting-tag">{form.temperature}</span>}
+                  <span className="setting-tag">{form.basket}</span>
+                  <span className="setting-tag">S{form.strength}</span>
+                  {form.showMilk && <span className="setting-tag setting-tag--milk">{form.milkType} {form.milkStyle}</span>}
+                  {form.notes && <span className="setting-tag">{form.notes}</span>}
                 </div>
               </div>
             </div>
@@ -1526,8 +1094,8 @@ function App() {
                 <input
                   type="text"
                   className="form-input"
-                  value={beanName}
-                  onChange={(e) => setBeanName(e.target.value)}
+                  value={form.beanName}
+                  onChange={(e) => form.setBeanName(e.target.value)}
                 />
               </div>
 
@@ -1539,8 +1107,8 @@ function App() {
                     className="form-input form-input--sm"
                     min={1}
                     max={25}
-                    value={grindSize}
-                    onChange={(e) => setGrindSize(Number(e.target.value))}
+                    value={form.grindSize}
+                    onChange={(e) => form.setGrindSize(Number(e.target.value))}
                   />
                 </div>
                 <div className="form-group">
@@ -1550,8 +1118,8 @@ function App() {
                       <button
                         key={s.value}
                         type="button"
-                        className={`pill-btn pill-btn--sm ${strength === s.value ? 'pill-btn--active' : ''}`}
-                        onClick={() => setStrength(s.value)}
+                        className={`pill-btn pill-btn--sm ${form.strength === s.value ? 'pill-btn--active' : ''}`}
+                        onClick={() => form.setStrength(s.value)}
                         title={s.label}
                       >
                         {s.value}
@@ -1569,8 +1137,8 @@ function App() {
                       <button
                         key={b}
                         type="button"
-                        className={`pill-btn pill-btn--sm ${basket === b ? 'pill-btn--active' : ''}`}
-                        onClick={() => setBasket(b)}
+                        className={`pill-btn pill-btn--sm ${form.basket === b ? 'pill-btn--active' : ''}`}
+                        onClick={() => form.setBasket(b)}
                       >
                         {b}
                       </button>
@@ -1585,8 +1153,8 @@ function App() {
                         <button
                           key={t}
                           type="button"
-                          className={`pill-btn pill-btn--sm ${temperature === t ? 'pill-btn--active' : ''}`}
-                          onClick={() => setTemperature(t)}
+                          className={`pill-btn pill-btn--sm ${form.temperature === t ? 'pill-btn--active' : ''}`}
+                          onClick={() => form.setTemperature(t)}
                         >
                           {t}
                         </button>
@@ -1602,8 +1170,8 @@ function App() {
                 <textarea
                   className="form-input form-input--textarea"
                   placeholder="e.g. Vanilla syrup, extra foam, specific techniques..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={form.notes}
+                  onChange={(e) => form.setNotes(e.target.value)}
                   rows={2}
                 />
               </div>
@@ -1611,14 +1179,14 @@ function App() {
               <div className="modal__preview">
                 <div className="modal__preview-label">Updated recipe:</div>
                 <div className="setting-tags-wrap">
-                  <span className="setting-tag">{brewType}</span>
-                  <span className="setting-tag">{beanName}</span>
-                  <span className="setting-tag">Grind {grindSize}</span>
-                  {!isColdBrew && <span className="setting-tag">{temperature}</span>}
-                  <span className="setting-tag">{basket}</span>
-                  <span className="setting-tag">S{strength}</span>
-                  {showMilk && <span className="setting-tag setting-tag--milk">{milkType} {milkStyle}</span>}
-                  {notes && <span className="setting-tag">{notes}</span>}
+                  <span className="setting-tag">{form.brewType}</span>
+                  <span className="setting-tag">{form.beanName}</span>
+                  <span className="setting-tag">Grind {form.grindSize}</span>
+                  {!isColdBrew && <span className="setting-tag">{form.temperature}</span>}
+                  <span className="setting-tag">{form.basket}</span>
+                  <span className="setting-tag">S{form.strength}</span>
+                  {form.showMilk && <span className="setting-tag setting-tag--milk">{form.milkType} {form.milkStyle}</span>}
+                  {form.notes && <span className="setting-tag">{form.notes}</span>}
                 </div>
               </div>
             </div>
@@ -1992,18 +1560,18 @@ function App() {
                               className="recipe-library__action-btn"
                               onClick={() => {
                                 // Apply recipe to form
-                                setBeanName(recipe.beanName);
-                                setBrewType(recipe.brewType);
-                                setBasket(recipe.basket);
-                                setGrindSize(recipe.grindSize);
-                                if (recipe.temperature) setTemperature(recipe.temperature);
-                                setStrength(recipe.strength);
+                                form.setBeanName(recipe.beanName);
+                                form.setBrewType(recipe.brewType);
+                                form.setBasket(recipe.basket);
+                                form.setGrindSize(recipe.grindSize);
+                                if (recipe.temperature) form.setTemperature(recipe.temperature);
+                                form.setStrength(recipe.strength);
                                 if (recipe.milk) {
-                                  setMilkType(recipe.milk.type);
-                                  setMilkStyle(recipe.milk.style);
-                                  setShowMilk(true);
+                                  form.setMilkType(recipe.milk.type);
+                                  form.setMilkStyle(recipe.milk.style);
+                                  form.setShowMilk(true);
                                 }
-                                if (recipe.notes) setNotes(recipe.notes);
+                                if (recipe.notes) form.setNotes(recipe.notes);
                                 setShowRecipeLibrary(false);
                                 showToast(`Applied "${recipe.name}"`, 'success');
                               }}
