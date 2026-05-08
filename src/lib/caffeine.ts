@@ -1,12 +1,9 @@
 import type { ShotLog } from '../types';
 
-// caffeine amounts per basket type (mg)
 const CAFFEINE_MG: Record<string, number> = { 'Single': 32, 'Double': 63, 'Luxe': 80 };
-// actual espresso shots per basket type
 const SHOTS_PER_BASKET: Record<string, number> = { 'Single': 1, 'Double': 2, 'Luxe': 4 };
 
-// recommended daily caffeine limit (mg)
-export const DAILY_LIMIT = 400;
+export const DAILY_LIMIT = 400; // mg
 
 export type CaffeineStatus = 'low' | 'moderate' | 'high';
 
