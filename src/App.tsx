@@ -14,6 +14,7 @@ import ConfirmDialog from './components/modals/ConfirmDialog';
 import RecipeEditorModal from './components/modals/RecipeEditorModal';
 import ShotDetailModal from './components/modals/ShotDetailModal';
 import BeanLibraryModal from './components/modals/BeanLibraryModal';
+import RecipeLibraryModal from './components/modals/RecipeLibraryModal';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
@@ -756,114 +757,28 @@ function App() {
         onClose={() => setShowBeanLibrary(false)}
       />
 
-      {/* Recipe Library Modal */}
-      {showRecipeLibrary && (
-        <div className="modal-overlay" onClick={() => setShowRecipeLibrary(false)}>
-          <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h3><Icons.Book /> Recipe Library</h3>
-              <button className="modal__close" onClick={() => setShowRecipeLibrary(false)}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              {recipes.length === 0 ? (
-                <div className="empty-state">
-                  <Icons.Book />
-                  <p>No recipes saved yet</p>
-                  <small>Save a recipe after logging a shot to quickly recall your favorite settings</small>
-                </div>
-              ) : (
-                <div className="recipe-library">
-                  {recipes.map((recipe) => {
-                    const isStarred = pinnedRecipes.has(recipe.id);
-                    return (
-                      <div key={recipe.id} className={`recipe-library__item ${isStarred ? 'recipe-library__item--starred' : ''}`}>
-                        <div className="recipe-library__header">
-                          <h4 className="recipe-library__name">{recipe.name}</h4>
-                          <div className="recipe-library__actions">
-                            <button
-                              className={`recipe-library__action-btn ${isStarred ? 'recipe-library__action-btn--starred' : ''}`}
-                              onClick={() => {
-                                togglePinRecipe(recipe.id);
-                                if (isStarred) {
-                                  showToast(`Removed "${recipe.name}" from quick recipes`, 'info');
-                                } else {
-                                  showToast(`Added "${recipe.name}" to quick recipes`, 'success');
-                                }
-                              }}
-                              title={isStarred ? 'Remove from quick recipes' : 'Add to quick recipes'}
-                            >
-                              <Icons.Star filled={isStarred} />
-                            </button>
-                            <button
-                              className="recipe-library__action-btn"
-                              onClick={() => {
-                                // Apply recipe to form
-                                form.setBeanName(recipe.beanName);
-                                form.setBrewType(recipe.brewType);
-                                form.setBasket(recipe.basket);
-                                form.setGrindSize(recipe.grindSize);
-                                if (recipe.temperature) form.setTemperature(recipe.temperature);
-                                form.setStrength(recipe.strength);
-                                if (recipe.milk) {
-                                  form.setMilkType(recipe.milk.type);
-                                  form.setMilkStyle(recipe.milk.style);
-                                  form.setShowMilk(true);
-                                }
-                                if (recipe.notes) form.setNotes(recipe.notes);
-                                setShowRecipeLibrary(false);
-                                showToast(`Applied "${recipe.name}"`, 'success');
-                              }}
-                              title="Apply Recipe"
-                            >
-                              <Icons.Check />
-                            </button>
-                            <button
-                              className="recipe-library__action-btn"
-                              onClick={() => openEditRecipe(recipe)}
-                              title="Edit Recipe"
-                            >
-                              <Icons.Edit />
-                            </button>
-                            <button
-                              className="recipe-library__action-btn recipe-library__action-btn--danger"
-                              onClick={() => deleteRecipe(recipe.id)}
-                              title="Delete Recipe"
-                            >
-                              <Icons.Trash />
-                            </button>
-                          </div>
-                        </div>
-                        <div className="recipe-library__details">
-                          <span className="recipe-library__bean">
-                            <Icons.Bean /> {recipe.beanName}
-                          </span>
-                          <div className="recipe-library__settings">
-                            <span className="setting-tag">{recipe.brewType}</span>
-                            <span className="setting-tag">Grind {recipe.grindSize}</span>
-                            {recipe.temperature && <span className="setting-tag">{recipe.temperature}</span>}
-                            <span className="setting-tag">{recipe.basket}</span>
-                            <span className="setting-tag">S{recipe.strength}</span>
-                            {recipe.milk && (
-                              <span className="setting-tag setting-tag--milk">
-                                🥛 {recipe.milk.type} {recipe.milk.style}
-                              </span>
-                            )}
-                          </div>
-                          {recipe.notes && (
-                            <p className="recipe-library__notes">{recipe.notes}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <RecipeLibraryModal
+        open={showRecipeLibrary}
+        recipes={recipes}
+        pinnedRecipes={pinnedRecipes}
+        onApply={(recipe) => {
+          form.applyFromRecipe(recipe);
+          setShowRecipeLibrary(false);
+          showToast(`Applied "${recipe.name}"`, 'success');
+        }}
+        onEdit={openEditRecipe}
+        onDelete={deleteRecipe}
+        onTogglePin={(recipe, wasStarred) => {
+          togglePinRecipe(recipe.id);
+          showToast(
+            wasStarred
+              ? `Removed "${recipe.name}" from quick recipes`
+              : `Added "${recipe.name}" to quick recipes`,
+            wasStarred ? 'info' : 'success'
+          );
+        }}
+        onClose={() => setShowRecipeLibrary(false)}
+      />
 
       {/* Statistics Modal */}
       {showStats && (() => {
