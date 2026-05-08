@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { ShotLog, FavoritesMap, Rating } from '../../types';
 import { formatDate } from '../../lib/format';
 import Icons from '../Icons';
@@ -7,8 +8,6 @@ interface HistoryModalProps {
     shots: ShotLog[];
     sortedShots: ShotLog[];
     favorites: FavoritesMap;
-    previewShot: ShotLog | null;
-    setPreviewShot: (s: ShotLog | null) => void;
     beanFilter: string;
     setBeanFilter: (v: string) => void;
     notesSearch: string;
@@ -30,8 +29,6 @@ export default function HistoryModal({
     shots,
     sortedShots,
     favorites,
-    previewShot,
-    setPreviewShot,
     beanFilter,
     setBeanFilter,
     notesSearch,
@@ -47,6 +44,8 @@ export default function HistoryModal({
     onDuplicateShot,
     onDeleteShot,
 }: HistoryModalProps) {
+    const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
+
     if (!open) return null;
 
     let filteredShots = beanFilter
