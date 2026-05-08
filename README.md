@@ -17,6 +17,7 @@ A small web app for logging espresso shots and dialing in beans.
 - Quick Recipes for one-click form auto-fill
 - Stats: rating distribution, top beans, weekly success rate
 - Caffeine tracker with daily total and 400 mg limit warning
+- Maintenance reminders for cleaning (every 200 shots) and descaling (every 90 days)
 - Optional shot timer and dose/yield ratio
 - Tips based on your last shot for the same bean
 - Export to JSON or CSV; import from JSON
