@@ -33,7 +33,6 @@ export function computeStats(shots: ShotLog[]): ShotStats {
     }, {} as Record<Rating, number>);
     const maxRatingCount = Math.max(...Object.values(ratingCounts), 1);
 
-    // top 5 beans by shot count
     const beanCounts = shots.reduce((acc, s) => {
         acc[s.beanName] = (acc[s.beanName] || 0) + 1;
         return acc;
@@ -43,7 +42,6 @@ export function computeStats(shots: ShotLog[]): ShotStats {
         .slice(0, 5);
     const maxBeanCount = Math.max(...topBeans.map(([, c]) => c), 1);
 
-    // avg grind for balanced shots
     const balancedShots = shots.filter(s => s.rating === 'Balanced');
     const avgGrind = balancedShots.length > 0
         ? Math.round(balancedShots.reduce((sum, s) => sum + s.grindSize, 0) / balancedShots.length * 10) / 10
@@ -57,7 +55,6 @@ export function computeStats(shots: ShotLog[]): ShotStats {
     weekAgo.setDate(weekAgo.getDate() - 7);
     const shotsThisWeek = shots.filter(s => s.timestamp >= weekAgo).length;
 
-    // last 7 days breakdown
     const days: DayStat[] = [];
     for (let i = 6; i >= 0; i--) {
         const date = new Date();
@@ -76,7 +73,6 @@ export function computeStats(shots: ShotLog[]): ShotStats {
     const maxDayTotal = Math.max(...days.map(d => d.total), 1);
     const hasWeekData = !days.every(d => d.total === 0);
 
-    // brew type breakdown
     const brewCounts = shots.reduce((acc, s) => {
         acc[s.brewType] = (acc[s.brewType] || 0) + 1;
         return acc;
