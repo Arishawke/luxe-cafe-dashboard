@@ -2,6 +2,7 @@ import type { FormEvent } from 'react';
 import type { BrewType, ShotLog, BeanProfile } from '../../types';
 import type { useShotForm } from '../../hooks/useShotForm';
 import type { useTimer } from '../../hooks/useTimer';
+import type { useBeanAutocomplete } from '../../hooks/useBeanAutocomplete';
 import { BREW_TYPES } from '../../constants';
 import Icons from '../Icons';
 import BeanInput from './BeanInput';
@@ -19,15 +20,7 @@ interface ShotFormProps {
     onDecrementGrind: () => void;
     beans: BeanProfile[];
     hasAnyBeans: boolean;
-    suggestions: string[];
-    showSuggestions: boolean;
-    setShowSuggestions: (v: boolean) => void;
-    onBeanInput: (v: string) => void;
-    onBeanFocus: () => void;
-    onSelectBean: (b: string) => void;
-    onToggleDropdown: () => void;
-    inputRef: React.RefObject<HTMLInputElement | null>;
-    suggestionsRef: React.RefObject<HTMLDivElement | null>;
+    autocomplete: ReturnType<typeof useBeanAutocomplete>;
     favoriteShot: ShotLog | null;
     editingShot: ShotLog | null;
     onCancelEdit: () => void;
@@ -43,15 +36,7 @@ export default function ShotForm({
     onDecrementGrind,
     beans,
     hasAnyBeans,
-    suggestions,
-    showSuggestions,
-    setShowSuggestions,
-    onBeanInput,
-    onBeanFocus,
-    onSelectBean,
-    onToggleDropdown,
-    inputRef,
-    suggestionsRef,
+    autocomplete,
     favoriteShot,
     editingShot,
     onCancelEdit,
@@ -77,18 +62,11 @@ export default function ShotForm({
 
             <BeanInput
                 beanName={form.beanName}
-                onBeanInput={onBeanInput}
-                onBeanFocus={onBeanFocus}
-                onSelectBean={onSelectBean}
-                suggestions={suggestions}
-                showSuggestions={showSuggestions}
-                setShowSuggestions={setShowSuggestions}
-                onToggleDropdown={onToggleDropdown}
+                setBeanName={form.setBeanName}
+                autocomplete={autocomplete}
                 hasAnyBeans={hasAnyBeans}
                 beans={beans}
                 favoriteShot={favoriteShot}
-                inputRef={inputRef}
-                suggestionsRef={suggestionsRef}
             />
 
             <BrewControls

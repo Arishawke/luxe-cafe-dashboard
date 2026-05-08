@@ -3,10 +3,10 @@ import type { FormEvent } from 'react';
 import type { ShotLog, Rating, SavedRecipe } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
-import { getFreshnessAlert, getUniqueBeans } from './lib/beans';
+import { getFreshnessAlert } from './lib/beans';
 import { getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
@@ -62,10 +62,7 @@ function App() {
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
   const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
 
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredBeans, setFilteredBeans] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const autocomplete = useBeanAutocomplete(beans, shots);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -102,36 +99,6 @@ function App() {
       else if (showSettings) setShowSettings(false);
     },
   });
-
-  const getAllBeanSuggestions = () => {
-    const libraryBeans = beans.filter(b => b.isActive).map(b => b.name);
-    const historyBeans = getUniqueBeans(shots);
-    const combined = [...new Set([...libraryBeans, ...historyBeans])];
-    return combined.sort((a, b) => a.localeCompare(b));
-  };
-
-  const handleBeanInput = (value: string) => {
-    form.setBeanName(value);
-    const allBeans = getAllBeanSuggestions();
-    if (value.trim()) {
-      const filtered = allBeans.filter(b =>
-        b.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredBeans(filtered);
-    } else {
-      setFilteredBeans(allBeans);
-    }
-  };
-
-  const handleBeanFocus = () => {
-    setFilteredBeans(getAllBeanSuggestions());
-    setShowSuggestions(true);
-  };
-
-  const selectBean = (bean: string) => {
-    form.setBeanName(bean);
-    setShowSuggestions(false);
-  };
 
   const currentBeanKey = form.beanName.trim().toLowerCase();
   const favoriteId = favorites[currentBeanKey];
@@ -390,7 +357,7 @@ function App() {
     if (editingShot) {
       submitShotEdits();
       form.reset();
-      setShowSuggestions(false);
+      autocomplete.setShowSuggestions(false);
       resetTimer();
       return;
     }
@@ -422,7 +389,7 @@ function App() {
 
     addShot(newShot);
     form.reset();
-    setShowSuggestions(false);
+    autocomplete.setShowSuggestions(false);
     resetTimer();
     showToast('Shot logged!', 'success');
   };
@@ -499,18 +466,7 @@ function App() {
             onDecrementGrind={decrementGrind}
             beans={beans}
             hasAnyBeans={shots.length > 0 || beans.length > 0}
-            suggestions={filteredBeans}
-            showSuggestions={showSuggestions}
-            setShowSuggestions={setShowSuggestions}
-            onBeanInput={handleBeanInput}
-            onBeanFocus={handleBeanFocus}
-            onSelectBean={selectBean}
-            onToggleDropdown={() => {
-              setFilteredBeans(getAllBeanSuggestions());
-              setShowSuggestions(!showSuggestions);
-            }}
-            inputRef={inputRef}
-            suggestionsRef={suggestionsRef}
+            autocomplete={autocomplete}
             favoriteShot={favoriteShot ?? null}
             editingShot={editingShot}
             onCancelEdit={() => {
