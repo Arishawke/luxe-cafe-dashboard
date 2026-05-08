@@ -70,3 +70,18 @@ export interface BeanProfile {
   createdAt: Date;
 }
 
+export type MaintenanceTask = 'cleaning' | 'descaling';
+
+export interface MaintenanceEvent {
+  task: MaintenanceTask;
+  performedAt: string; // ISO date
+  shotCountAtTime: number;
+}
+
+export interface MaintenanceAlert {
+  task: MaintenanceTask;
+  variant: 'approaching' | 'due' | 'overdue';
+  label: string;
+  text: string;
+}
+

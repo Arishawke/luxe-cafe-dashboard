@@ -5,8 +5,9 @@ import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
 import { getFreshnessAlert } from './lib/beans';
 import { getSuggestedSettings } from './lib/suggestions';
+import { getMaintenanceAlerts } from './lib/maintenance';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete, useMaintenance } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
@@ -61,6 +62,7 @@ function App() {
   const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe, deleteRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
   const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
+  const { events: maintenanceEvents, recordCleaning, recordDescaling, lastEventFor: lastMaintenanceFor, replaceAll: setMaintenance } = useMaintenance();
 
   const autocomplete = useBeanAutocomplete(beans, shots);
 
@@ -309,7 +311,7 @@ function App() {
   };
 
   const exportData = () => {
-    const json = buildJSONBackup(shots, recipes, beans, favorites);
+    const json = buildJSONBackup(shots, recipes, beans, favorites, maintenanceEvents);
     const date = new Date().toISOString().slice(0, 10);
     downloadFile(`luxe-cafe-backup-${date}.json`, json, 'application/json');
     showToast('Backup exported', 'success');
@@ -335,6 +337,7 @@ function App() {
       setRecipes(data.recipes);
       setBeans(data.beans);
       setFavorites(data.favorites);
+      setMaintenance(data.maintenance);
       setImportStatus({
         type: 'success',
         message: `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`,
@@ -500,6 +503,27 @@ function App() {
               );
             })()}
 
+            {getMaintenanceAlerts(maintenanceEvents, shots.length).map(alert => (
+              <div key={alert.task} className={`maintenance-alert maintenance-alert--${alert.variant}`}>
+                <span className="maintenance-alert__badge">{alert.label}</span>
+                <span className="maintenance-alert__text">{alert.text}</span>
+                <button
+                  className="maintenance-alert__action"
+                  onClick={() => {
+                    if (alert.task === 'cleaning') {
+                      recordCleaning(shots.length);
+                      showToast('Cleaning logged', 'success');
+                    } else {
+                      recordDescaling(shots.length);
+                      showToast('Descale logged', 'success');
+                    }
+                  }}
+                >
+                  Mark done
+                </button>
+              </div>
+            ))}
+
             <SuggestionCard
               lastShot={lastShotForBean ?? null}
               suggestion={suggestedSettings}
@@ -652,12 +676,23 @@ function App() {
               setRecipes([]);
               setBeans([]);
               setFavorites({});
+              setMaintenance([]);
               showToast('All data cleared', 'success');
               setShowSettings(false);
             }
           );
         }}
         onClose={() => { setShowSettings(false); setImportStatus(null); }}
+        lastCleaning={lastMaintenanceFor('cleaning')}
+        lastDescaling={lastMaintenanceFor('descaling')}
+        onRecordCleaning={() => {
+          recordCleaning(shots.length);
+          showToast('Cleaning logged', 'success');
+        }}
+        onRecordDescaling={() => {
+          recordDescaling(shots.length);
+          showToast('Descale logged', 'success');
+        }}
       />
 
       <ShotComparison

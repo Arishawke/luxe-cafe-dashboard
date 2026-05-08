@@ -1,5 +1,5 @@
 import type { ChangeEvent, RefObject } from 'react';
-import type { ThemeType } from '../../types';
+import type { ThemeType, MaintenanceEvent } from '../../types';
 import Icons from '../Icons';
 
 interface SettingsModalProps {
@@ -18,6 +18,19 @@ interface SettingsModalProps {
     onImport: (e: ChangeEvent<HTMLInputElement>) => void;
     onClearAll: () => void;
     onClose: () => void;
+    lastCleaning: MaintenanceEvent | null;
+    lastDescaling: MaintenanceEvent | null;
+    onRecordCleaning: () => void;
+    onRecordDescaling: () => void;
+}
+
+function formatLastDone(event: MaintenanceEvent | null): string {
+    if (!event) return 'Never';
+    return new Date(event.performedAt).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
 }
 
 const THEME_OPTIONS: { value: ThemeType; label: string; emoji: string }[] = [
@@ -44,6 +57,10 @@ export default function SettingsModal({
     onImport,
     onClearAll,
     onClose,
+    lastCleaning,
+    lastDescaling,
+    onRecordCleaning,
+    onRecordDescaling,
 }: SettingsModalProps) {
     if (!open) return null;
 
@@ -91,6 +108,37 @@ export default function SettingsModal({
                                     onClick={() => setUse24Hour(true)}
                                 >
                                     🕒 24-hour
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="settings-section">
+                        <h4 className="settings-section__title">Maintenance</h4>
+
+                        <div className="maintenance-rows">
+                            <div className="maintenance-row">
+                                <div className="maintenance-row__info">
+                                    <span className="maintenance-row__label">Cleaning cycle</span>
+                                    <span className="maintenance-row__last">
+                                        Last: {formatLastDone(lastCleaning)}
+                                        {lastCleaning && ` (at ${lastCleaning.shotCountAtTime} shots)`}
+                                    </span>
+                                </div>
+                                <button className="maintenance-row__btn" onClick={onRecordCleaning}>
+                                    Mark done now
+                                </button>
+                            </div>
+
+                            <div className="maintenance-row">
+                                <div className="maintenance-row__info">
+                                    <span className="maintenance-row__label">Descale cycle</span>
+                                    <span className="maintenance-row__last">
+                                        Last: {formatLastDone(lastDescaling)}
+                                    </span>
+                                </div>
+                                <button className="maintenance-row__btn" onClick={onRecordDescaling}>
+                                    Mark done now
                                 </button>
                             </div>
                         </div>
