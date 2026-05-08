@@ -8,6 +8,7 @@ import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './components/Icons';
+import Header from './components/Header';
 
 // Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
@@ -651,76 +652,16 @@ function App() {
   return (
     <div className="dashboard">
       {/* Header */}
-      <header className="header">
-        <Icons.Coffee />
-        <h1 className="header__title">Luxe Cafe Dial-In</h1>
-        <p className="header__subtitle">Ninja Luxe Cafe Pro Calibration Dashboard</p>
-
-        {/* Hamburger button for mobile */}
-        <button
-          className="header__hamburger"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <Icons.X /> : <Icons.Menu />}
-        </button>
-
-        {/* Navigation buttons */}
-        <div className={`header__btns ${mobileMenuOpen ? 'header__btns--open' : ''}`}>
-          <button
-            className="header__btn"
-            onClick={() => { setShowBeanLibrary(true); setMobileMenuOpen(false); }}
-            title="Manage Bean Library"
-          >
-            <Icons.Bean /> Bean Library
-          </button>
-          <button
-            className="header__btn"
-            onClick={() => { setShowRecipeLibrary(true); setMobileMenuOpen(false); }}
-            title="Manage Recipes"
-          >
-            <Icons.Book /> Recipes
-          </button>
-          <button
-            className="header__btn"
-            onClick={() => { setShowStats(true); setMobileMenuOpen(false); }}
-            title="View Statistics"
-          >
-            <Icons.PieChart /> Stats
-          </button>
-          <button
-            className="header__btn"
-            onClick={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
-            title="Caffeine Tracker"
-          >
-            <Icons.Caffeine /> Caffeine
-          </button>
-          {/* Settings button for desktop */}
-          <button
-            className="header__btn header__btn--icon header__prefs-btn"
-            onClick={() => setShowThemePicker(true)}
-            title="Settings"
-          >
-            <Icons.Sliders />
-          </button>
-          {/* Settings button for mobile */}
-          <button
-            className="header__btn header__theme-btn"
-            onClick={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
-            title="Settings"
-          >
-            <Icons.Sliders /> Settings
-          </button>
-        </div>
-
-        {/* Mobile menu overlay */}
-        {mobileMenuOpen && (
-          <div
-            className="header__overlay"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-        )}
-      </header>
+      <Header
+        mobileMenuOpen={mobileMenuOpen}
+        onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
+        onCloseMobileMenu={() => setMobileMenuOpen(false)}
+        onOpenBeanLibrary={() => { setShowBeanLibrary(true); setMobileMenuOpen(false); }}
+        onOpenRecipes={() => { setShowRecipeLibrary(true); setMobileMenuOpen(false); }}
+        onOpenStats={() => { setShowStats(true); setMobileMenuOpen(false); }}
+        onOpenCaffeine={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
+        onOpenSettings={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
+      />
 
       {/* Quick Recipe Hotbar - Only shows starred/pinned recipes */}
       {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
