@@ -5,12 +5,13 @@ import { COLD_BREW_TYPES } from './types';
 import { generateId, formatDate } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
 import { getSuggestedSettings } from './lib/suggestions';
-import { RATINGS, RATING_COLORS, BASKETS, TEMPERATURES, STRENGTHS, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
+import { RATINGS, RATING_COLORS, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
+import RecipeEditorModal from './components/modals/RecipeEditorModal';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
@@ -779,200 +780,15 @@ function App() {
         </div>
       </div>
 
-      {/* Save Recipe Modal */}
-      {showRecipeModal && (
-        <div className="modal-overlay" onClick={() => setShowRecipeModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h3>Save as Recipe</h3>
-              <button className="modal__close" onClick={() => setShowRecipeModal(false)}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              <p className="modal__desc">
-                Save your current settings as a quick recipe for "{form.beanName}"
-              </p>
-              <div className="form-group">
-                <label className="form-label">Recipe Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. My Sunday Vanilla Latte"
-                  value={recipeName}
-                  onChange={(e) => setRecipeName(e.target.value)}
-                  autoFocus
-                />
-              </div>
-              <div className="modal__preview">
-                <div className="modal__preview-label">Will save:</div>
-                <div className="setting-tags-wrap">
-                  <span className="setting-tag">{form.brewType}</span>
-                  <span className="setting-tag">{form.beanName}</span>
-                  <span className="setting-tag">Grind {form.grindSize}</span>
-                  {!isColdBrew && <span className="setting-tag">{form.temperature}</span>}
-                  <span className="setting-tag">{form.basket}</span>
-                  <span className="setting-tag">S{form.strength}</span>
-                  {form.showMilk && <span className="setting-tag setting-tag--milk">{form.milkType} {form.milkStyle}</span>}
-                  {form.notes && <span className="setting-tag">{form.notes}</span>}
-                </div>
-              </div>
-            </div>
-            <div className="modal__footer">
-              <button className="btn-cancel" onClick={() => setShowRecipeModal(false)}>
-                Cancel
-              </button>
-              <button
-                className="btn-submit"
-                onClick={saveAsRecipe}
-                disabled={!recipeName.trim()}
-              >
-                Save Recipe
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Recipe Modal */}
-      {editingRecipe && (
-        <div className="modal-overlay" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h3><Icons.Edit /> Edit Recipe</h3>
-              <button className="modal__close" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              <div className="form-group">
-                <label className="form-label">Recipe Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. My Sunday Vanilla Latte"
-                  value={recipeName}
-                  onChange={(e) => setRecipeName(e.target.value)}
-                  autoFocus
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Bean Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={form.beanName}
-                  onChange={(e) => form.setBeanName(e.target.value)}
-                />
-              </div>
-
-              <div className="edit-recipe__grid">
-                <div className="form-group">
-                  <label className="form-label">Grind Size</label>
-                  <input
-                    type="number"
-                    className="form-input form-input--sm"
-                    min={1}
-                    max={25}
-                    value={form.grindSize}
-                    onChange={(e) => form.setGrindSize(Number(e.target.value))}
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Strength</label>
-                  <div className="pill-group pill-group--sm">
-                    {STRENGTHS.map((s) => (
-                      <button
-                        key={s.value}
-                        type="button"
-                        className={`pill-btn pill-btn--sm ${form.strength === s.value ? 'pill-btn--active' : ''}`}
-                        onClick={() => form.setStrength(s.value)}
-                        title={s.label}
-                      >
-                        {s.value}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="edit-recipe__grid">
-                <div className="form-group">
-                  <label className="form-label">Basket</label>
-                  <div className="pill-group pill-group--sm">
-                    {BASKETS.map((b) => (
-                      <button
-                        key={b}
-                        type="button"
-                        className={`pill-btn pill-btn--sm ${form.basket === b ? 'pill-btn--active' : ''}`}
-                        onClick={() => form.setBasket(b)}
-                      >
-                        {b}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {!isColdBrew && (
-                  <div className="form-group">
-                    <label className="form-label">Temperature</label>
-                    <div className="pill-group pill-group--sm">
-                      {TEMPERATURES.map((t) => (
-                        <button
-                          key={t}
-                          type="button"
-                          className={`pill-btn pill-btn--sm ${form.temperature === t ? 'pill-btn--active' : ''}`}
-                          onClick={() => form.setTemperature(t)}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Notes/Add-ins */}
-              <div className="form-group">
-                <label className="form-label">Add-Ins / Notes</label>
-                <textarea
-                  className="form-input form-input--textarea"
-                  placeholder="e.g. Vanilla syrup, extra foam, specific techniques..."
-                  value={form.notes}
-                  onChange={(e) => form.setNotes(e.target.value)}
-                  rows={2}
-                />
-              </div>
-
-              <div className="modal__preview">
-                <div className="modal__preview-label">Updated recipe:</div>
-                <div className="setting-tags-wrap">
-                  <span className="setting-tag">{form.brewType}</span>
-                  <span className="setting-tag">{form.beanName}</span>
-                  <span className="setting-tag">Grind {form.grindSize}</span>
-                  {!isColdBrew && <span className="setting-tag">{form.temperature}</span>}
-                  <span className="setting-tag">{form.basket}</span>
-                  <span className="setting-tag">S{form.strength}</span>
-                  {form.showMilk && <span className="setting-tag setting-tag--milk">{form.milkType} {form.milkStyle}</span>}
-                  {form.notes && <span className="setting-tag">{form.notes}</span>}
-                </div>
-              </div>
-            </div>
-            <div className="modal__footer">
-              <button className="btn-cancel" onClick={() => { setEditingRecipe(null); setRecipeName(''); }}>
-                Cancel
-              </button>
-              <button
-                className="btn-submit"
-                onClick={updateRecipe}
-                disabled={!recipeName.trim()}
-              >
-                Update Recipe
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <RecipeEditorModal
+        open={showRecipeModal || editingRecipe !== null}
+        form={form}
+        recipeName={recipeName}
+        setRecipeName={setRecipeName}
+        editingRecipe={editingRecipe}
+        onSave={() => editingRecipe ? updateRecipe() : saveAsRecipe()}
+        onCancel={() => { setShowRecipeModal(false); setEditingRecipe(null); setRecipeName(''); }}
+      />
 
       {/* Shot Details Modal */}
       {selectedShot && (() => {
