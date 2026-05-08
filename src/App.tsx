@@ -16,6 +16,7 @@ import ShotDetailModal from './components/modals/ShotDetailModal';
 import BeanLibraryModal from './components/modals/BeanLibraryModal';
 import RecipeLibraryModal from './components/modals/RecipeLibraryModal';
 import StatsModal from './components/modals/StatsModal';
+import CaffeineModal from './components/modals/CaffeineModal';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
@@ -789,141 +790,11 @@ function App() {
 
 
 
-      {/* Caffeine Tracker Modal */}
-      {showCaffeine && (
-        <div className="modal-overlay" onClick={() => setShowCaffeine(false)}>
-          <div className="modal modal--caffeine" onClick={e => e.stopPropagation()}>
-            <div className="modal__header">
-              <h2><Icons.Caffeine /> Caffeine Tracker</h2>
-              <button className="modal__close" onClick={() => setShowCaffeine(false)}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              {(() => {
-                // Caffeine amounts per basket type (mg)
-                const CAFFEINE_MG: Record<string, number> = { 'Single': 32, 'Double': 63, 'Luxe': 80 };
-                // Actual espresso shots per basket type
-                const SHOTS_PER_BASKET: Record<string, number> = { 'Single': 1, 'Double': 2, 'Luxe': 4 };
-
-                // Get today's date (start of day)
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                // Calculate today's caffeine
-                const todayShots = shots.filter(s => {
-                  const shotDate = new Date(s.timestamp);
-                  shotDate.setHours(0, 0, 0, 0);
-                  return shotDate.getTime() === today.getTime();
-                });
-
-                const todayCaffeine = todayShots.reduce((sum, s) =>
-                  sum + (CAFFEINE_MG[s.basket] || 63), 0);
-
-                // Calculate actual shot count (not entries)
-                const todayShotCount = todayShots.reduce((sum, s) =>
-                  sum + (SHOTS_PER_BASKET[s.basket] || 2), 0);
-
-                // Calculate 7-day stats
-                const weekAgo = new Date(today);
-                weekAgo.setDate(weekAgo.getDate() - 7);
-
-                const weekShots = shots.filter(s => {
-                  const shotDate = new Date(s.timestamp);
-                  return shotDate >= weekAgo;
-                });
-
-                const weekCaffeine = weekShots.reduce((sum, s) =>
-                  sum + (CAFFEINE_MG[s.basket] || 63), 0);
-                const avgDaily = Math.round(weekCaffeine / 7);
-
-                // Calculate actual shot count for the week
-                const weekShotCount = weekShots.reduce((sum, s) =>
-                  sum + (SHOTS_PER_BASKET[s.basket] || 2), 0);
-
-                // Recommended daily limit is ~400mg
-                const dailyLimit = 400;
-                const percentage = Math.min((todayCaffeine / dailyLimit) * 100, 100);
-
-                // Determine status
-                let status = 'low';
-                let statusText = 'Feeling fresh';
-                if (todayCaffeine > 300) {
-                  status = 'high';
-                  statusText = 'Consider slowing down';
-                } else if (todayCaffeine > 200) {
-                  status = 'moderate';
-                  statusText = 'Nicely caffeinated';
-                } else if (todayCaffeine > 0) {
-                  status = 'low';
-                  statusText = 'Room for more';
-                }
-
-                return (
-                  <>
-                    <div className={`caffeine-gauge caffeine-gauge--${status}`}>
-                      <div className="caffeine-gauge__circle">
-                        <svg viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="45" className="caffeine-gauge__bg" />
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="45"
-                            className="caffeine-gauge__fill"
-                            strokeDasharray={`${percentage * 2.83} 283`}
-                            transform="rotate(-90 50 50)"
-                          />
-                        </svg>
-                        <div className="caffeine-gauge__value">
-                          <span className="caffeine-gauge__number">{todayCaffeine}</span>
-                          <span className="caffeine-gauge__unit">mg</span>
-                        </div>
-                      </div>
-                      <p className="caffeine-gauge__status">{statusText}</p>
-                    </div>
-
-                    <div className="caffeine-stats">
-                      <div className="caffeine-stat">
-                        <span className="caffeine-stat__value">{todayShotCount}</span>
-                        <span className="caffeine-stat__label">Shots Today</span>
-                      </div>
-                      <div className="caffeine-stat">
-                        <span className="caffeine-stat__value">{avgDaily}</span>
-                        <span className="caffeine-stat__label">Daily Avg (mg)</span>
-                      </div>
-                      <div className="caffeine-stat">
-                        <span className="caffeine-stat__value">{weekShotCount}</span>
-                        <span className="caffeine-stat__label">Shots This Week</span>
-                      </div>
-                    </div>
-
-                    <div className="caffeine-info">
-                      <h3>Caffeine by Basket</h3>
-                      <div className="caffeine-breakdown">
-                        <div className="caffeine-breakdown__item">
-                          <span className="caffeine-breakdown__basket">Single</span>
-                          <span className="caffeine-breakdown__mg">~32mg per shot</span>
-                        </div>
-                        <div className="caffeine-breakdown__item">
-                          <span className="caffeine-breakdown__basket">Double</span>
-                          <span className="caffeine-breakdown__mg">~63mg per shot</span>
-                        </div>
-                        <div className="caffeine-breakdown__item">
-                          <span className="caffeine-breakdown__basket">Luxe</span>
-                          <span className="caffeine-breakdown__mg">~80mg per shot</span>
-                        </div>
-                      </div>
-                      <p className="caffeine-limit">
-                        Recommended daily limit: <strong>400mg</strong>
-                      </p>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-          </div>
-        </div>
-      )}
+      <CaffeineModal
+        open={showCaffeine}
+        shots={shots}
+        onClose={() => setShowCaffeine(false)}
+      />
 
       {/* Expanded Shot History Modal */}
       {showHistoryModal && (
