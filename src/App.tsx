@@ -62,7 +62,7 @@ function App() {
   const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe, deleteRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
   const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
-  const { events: maintenanceEvents, recordCleaning, recordDescaling } = useMaintenance();
+  const { events: maintenanceEvents, recordCleaning, recordDescaling, lastEventFor: lastMaintenanceFor, replaceAll: setMaintenance } = useMaintenance();
 
   const autocomplete = useBeanAutocomplete(beans, shots);
 
@@ -311,7 +311,7 @@ function App() {
   };
 
   const exportData = () => {
-    const json = buildJSONBackup(shots, recipes, beans, favorites);
+    const json = buildJSONBackup(shots, recipes, beans, favorites, maintenanceEvents);
     const date = new Date().toISOString().slice(0, 10);
     downloadFile(`luxe-cafe-backup-${date}.json`, json, 'application/json');
     showToast('Backup exported', 'success');
@@ -337,6 +337,7 @@ function App() {
       setRecipes(data.recipes);
       setBeans(data.beans);
       setFavorites(data.favorites);
+      setMaintenance(data.maintenance);
       setImportStatus({
         type: 'success',
         message: `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`,
@@ -675,12 +676,23 @@ function App() {
               setRecipes([]);
               setBeans([]);
               setFavorites({});
+              setMaintenance([]);
               showToast('All data cleared', 'success');
               setShowSettings(false);
             }
           );
         }}
         onClose={() => { setShowSettings(false); setImportStatus(null); }}
+        lastCleaning={lastMaintenanceFor('cleaning')}
+        lastDescaling={lastMaintenanceFor('descaling')}
+        onRecordCleaning={() => {
+          recordCleaning(shots.length);
+          showToast('Cleaning logged', 'success');
+        }}
+        onRecordDescaling={() => {
+          recordDescaling(shots.length);
+          showToast('Descale logged', 'success');
+        }}
       />
 
       <ShotComparison
