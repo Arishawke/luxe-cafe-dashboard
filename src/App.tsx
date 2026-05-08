@@ -7,7 +7,7 @@ import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/bea
 import { getBaristaTip, getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, MILK_TYPES, MILK_STYLES, PROCESS_METHODS, ROAST_LEVELS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
-import Icons from './Icons';
+import Icons from './components/Icons';
 
 // Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
