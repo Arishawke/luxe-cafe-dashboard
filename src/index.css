@@ -4123,6 +4123,61 @@ body {
   color: var(--color-caramel);
 }
 
+.maintenance-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.maintenance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--color-mocha);
+  border-radius: 8px;
+  background: rgba(166, 123, 91, 0.05);
+}
+
+.maintenance-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.maintenance-row__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-cream);
+}
+
+.maintenance-row__last {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.maintenance-row__btn {
+  flex-shrink: 0;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border-radius: 6px;
+  border: 1px solid var(--color-mocha);
+  background: transparent;
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.maintenance-row__btn:hover {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: var(--color-caramel);
+  color: var(--color-caramel);
+}
+
 /* Grind History Mini Chart */
 .grind-history {
   display: flex;
