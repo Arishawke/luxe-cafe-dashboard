@@ -1,4 +1,4 @@
-import type { ShotLog } from '../types';
+import type { ShotLog, BeanProfile } from '../types';
 
 export function getDaysSinceRoast(roastDate: string | undefined): number | null {
     if (!roastDate) return null;
@@ -17,4 +17,34 @@ export function getFreshnessStatus(days: number | null): { label: string; color:
 
 export function getUniqueBeans(shots: ShotLog[]): string[] {
     return Array.from(new Set(shots.map(s => s.beanName))).sort();
+}
+
+export interface FreshnessAlert {
+    variant: 'fading' | 'stale';
+    label: string;
+    color: string;
+    text: string;
+}
+
+export function getFreshnessAlert(beanName: string, beans: BeanProfile[]): FreshnessAlert | null {
+    if (!beanName.trim()) return null;
+    const profile = beans.find(b => b.name.toLowerCase() === beanName.toLowerCase());
+    if (!profile?.roastDate) return null;
+
+    const days = getDaysSinceRoast(profile.roastDate);
+    if (days === null || days <= 21) return null; // only fading or stale
+
+    const freshness = getFreshnessStatus(days);
+    const text = `${profile.name} was roasted ${days} days ago${
+        days > 35
+            ? '. Consider adjusting grind finer to compensate.'
+            : '. Still good, but best to use soon.'
+    }`;
+
+    return {
+        variant: days > 35 ? 'stale' : 'fading',
+        label: freshness.label,
+        color: freshness.color,
+        text,
+    };
 }
