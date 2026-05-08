@@ -17,7 +17,6 @@ interface ShotFormProps {
     onSubmit: (e: FormEvent) => void;
     onIncrementGrind: () => void;
     onDecrementGrind: () => void;
-    // bean autocomplete
     beans: BeanProfile[];
     hasAnyBeans: boolean;
     suggestions: string[];
@@ -30,10 +29,8 @@ interface ShotFormProps {
     inputRef: React.RefObject<HTMLInputElement | null>;
     suggestionsRef: React.RefObject<HTMLDivElement | null>;
     favoriteShot: ShotLog | null;
-    // editing context
     editingShot: ShotLog | null;
     onCancelEdit: () => void;
-    // save-as-recipe button
     onOpenRecipeModal: () => void;
 }
 

@@ -24,7 +24,6 @@ export default function BeanLibraryModal({
     onToggleActive,
     onClose,
 }: BeanLibraryModalProps) {
-    // form state owned by modal — purely UI state, no value when closed
     const [name, setName] = useState('');
     const [roaster, setRoaster] = useState('');
     const [origin, setOrigin] = useState('');
@@ -90,7 +89,6 @@ export default function BeanLibraryModal({
 
     const handleDelete = (id: string) => {
         onDelete(id);
-        // clear editor if user was editing the deleted bean
         if (editing?.id === id) reset();
     };
 
@@ -109,7 +107,6 @@ export default function BeanLibraryModal({
                     </button>
                 </div>
                 <div className="modal__body modal__body--split">
-                    {/* Bean Form */}
                     <div className="bean-form">
                         <h4>{editing ? 'Edit Bean' : 'Add New Bean'}</h4>
                         <div className="form-group">
@@ -209,7 +206,6 @@ export default function BeanLibraryModal({
                         </div>
                     </div>
 
-                    {/* Bean List */}
                     <div className="bean-list">
                         <h4>Your Beans ({beans.length})</h4>
                         {beans.length > 0 ? (
