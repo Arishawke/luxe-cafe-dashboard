@@ -11,6 +11,17 @@
   <meta name="description"
     content="Espresso calibration dashboard for the Ninja Luxe Cafe Pro. Track your shots and dial in the perfect espresso." />
   <title>Luxe Cafe Dial-In | Espresso Dashboard</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+  </script>
+  <style>
+    html[data-theme="dark"], html:not([data-theme]) { background: #241C17; }
+    html[data-theme="light"] { background: #F0EBE5; }
+    html[data-theme="catppuccin"] { background: #181825; }
+    html[data-theme="rosepine"] { background: #1f1d2e; }
+    html[data-theme="rosepine-moon"] { background: #2a273f; }
+    body { margin: 0; visibility: hidden; }
+  </style>
 </head>
 
 <body>

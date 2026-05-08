@@ -8,7 +8,6 @@ export interface Toast {
 export function useToast(autoDismissMs: number = 3000) {
     const [toast, setToast] = useState<Toast | null>(null);
 
-    // Auto-dismiss toast after specified time
     useEffect(() => {
         if (toast) {
             const timer = setTimeout(() => setToast(null), autoDismissMs);

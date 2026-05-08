@@ -1,7 +1,5 @@
-// Configuration constants - Extracted from App.tsx for better organization
 import type { Rating, BrewType, Basket, Temperature, Strength, MilkType, MilkStyle, ProcessMethod, RoastLevel } from './types';
 
-// Rating config
 export const RATINGS: Rating[] = ['Very Sour', 'Sour', 'Balanced', 'Bitter', 'Very Bitter'];
 
 export const RATING_COLORS: Record<Rating, string> = {
@@ -12,7 +10,6 @@ export const RATING_COLORS: Record<Rating, string> = {
     'Very Bitter': '#C04545',
 };
 
-// Options for selectors
 export const BREW_TYPES: BrewType[] = ['Espresso', 'Drip Coffee', 'Cold Brew', 'Cold Pressed', 'Over Ice'];
 export const BASKETS: Basket[] = ['Single', 'Double', 'Luxe'];
 export const TEMPERATURES: Temperature[] = ['Low', 'Med', 'High'];
@@ -25,3 +22,5 @@ export const MILK_TYPES: MilkType[] = ['Dairy', 'Plant'];
 export const MILK_STYLES: MilkStyle[] = ['Steamed', 'Thin', 'Thick', 'Cold Foam'];
 export const PROCESS_METHODS: ProcessMethod[] = ['Washed', 'Natural', 'Honey', 'Anaerobic', 'Other'];
 export const ROAST_LEVELS: RoastLevel[] = ['Light', 'Medium', 'Medium-Dark', 'Dark'];
+
+export const BALANCED_RATING_INDEX = 2;
