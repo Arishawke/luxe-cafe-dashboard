@@ -3,6 +3,7 @@ import type { ShotLog, FavoritesMap, Rating } from '../../types';
 import { formatDate } from '../../lib/format';
 import { filterShots } from '../../lib/shots';
 import Icons from '../Icons';
+import ShotDetailView from '../ShotDetailView';
 
 interface HistoryModalProps {
     open: boolean;
@@ -153,107 +154,39 @@ export default function HistoryModal({
                         </div>
 
                         <div className="history-modal__preview">
-                            {previewShot ? (() => {
-                                const config = ratingConfig[previewShot.rating];
-                                const PreviewIcon = config.icon;
-                                const isFavorite = favorites[previewShot.beanName.toLowerCase()] === previewShot.id;
-                                return (
-                                    <>
-                                        <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
-                                            <PreviewIcon />
-                                            <span>{previewShot.rating}</span>
-                                            {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
-                                        </div>
+                            {previewShot ? (
+                                <>
+                                    <ShotDetailView
+                                        shot={previewShot}
+                                        use24Hour={use24Hour}
+                                        isFavorite={favorites[previewShot.beanName.toLowerCase()] === previewShot.id}
+                                        ratingConfig={ratingConfig}
+                                    />
 
-                                        <div className="shot-detail__timestamp">
-                                            {new Intl.DateTimeFormat('en-US', {
-                                                weekday: 'long',
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: 'numeric',
-                                                minute: '2-digit',
-                                                hour12: !use24Hour,
-                                            }).format(previewShot.timestamp)}
-                                        </div>
-
-                                        <div className="shot-detail__grid">
-                                            <div className="shot-detail__item">
-                                                <span className="shot-detail__label">Brew Type</span>
-                                                <span className="shot-detail__value">{previewShot.brewType}</span>
-                                            </div>
-                                            <div className="shot-detail__item">
-                                                <span className="shot-detail__label">Grind Size</span>
-                                                <span className="shot-detail__value">{previewShot.grindSize}</span>
-                                            </div>
-                                            {previewShot.temperature && (
-                                                <div className="shot-detail__item">
-                                                    <span className="shot-detail__label">Temperature</span>
-                                                    <span className="shot-detail__value">{previewShot.temperature}</span>
-                                                </div>
-                                            )}
-                                            <div className="shot-detail__item">
-                                                <span className="shot-detail__label">Basket</span>
-                                                <span className="shot-detail__value">{previewShot.basket}</span>
-                                            </div>
-                                            <div className="shot-detail__item">
-                                                <span className="shot-detail__label">Strength</span>
-                                                <span className="shot-detail__value">{previewShot.strength}</span>
-                                            </div>
-                                            {previewShot.milk && (
-                                                <div className="shot-detail__item">
-                                                    <span className="shot-detail__label">Milk</span>
-                                                    <span className="shot-detail__value">{previewShot.milk.type} {previewShot.milk.style}</span>
-                                                </div>
-                                            )}
-                                            {previewShot.extractionTime && (
-                                                <div className="shot-detail__item">
-                                                    <span className="shot-detail__label">Extraction Time</span>
-                                                    <span className="shot-detail__value">{previewShot.extractionTime}s</span>
-                                                </div>
-                                            )}
-                                            {previewShot.doseIn && previewShot.doseOut && (
-                                                <div className="shot-detail__item">
-                                                    <span className="shot-detail__label">Dose / Yield</span>
-                                                    <span className="shot-detail__value">
-                                                        {previewShot.doseIn}g → {previewShot.doseOut}g (1:{(previewShot.doseOut / previewShot.doseIn).toFixed(1)})
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {previewShot.notes && (
-                                            <div className="shot-detail__notes">
-                                                <span className="shot-detail__label">Notes</span>
-                                                <p>{previewShot.notes}</p>
-                                            </div>
-                                        )}
-
-                                        <div className="history-modal__preview-actions">
-                                            <button
-                                                className="btn-action"
-                                                onClick={() => onEditShot(previewShot)}
-                                                title="Edit shot details"
-                                            >
-                                                <Icons.Edit /> Edit
-                                            </button>
-                                            <button
-                                                className="btn-action"
-                                                onClick={() => onDuplicateShot(previewShot)}
-                                                title="Copy settings to form"
-                                            >
-                                                <Icons.Copy /> Brew Again
-                                            </button>
-                                            <button
-                                                className={`btn-action ${compareShots.includes(previewShot.id) ? 'btn-action--active' : 'btn-action--primary'}`}
-                                                onClick={() => onToggleCompare(previewShot.id)}
-                                            >
-                                                <Icons.BarChart /> {compareShots.includes(previewShot.id) ? 'In Compare' : 'Add to Compare'}
-                                            </button>
-                                        </div>
-                                    </>
-                                );
-                            })() : (
+                                    <div className="history-modal__preview-actions">
+                                        <button
+                                            className="btn-action"
+                                            onClick={() => onEditShot(previewShot)}
+                                            title="Edit shot details"
+                                        >
+                                            <Icons.Edit /> Edit
+                                        </button>
+                                        <button
+                                            className="btn-action"
+                                            onClick={() => onDuplicateShot(previewShot)}
+                                            title="Copy settings to form"
+                                        >
+                                            <Icons.Copy /> Brew Again
+                                        </button>
+                                        <button
+                                            className={`btn-action ${compareShots.includes(previewShot.id) ? 'btn-action--active' : 'btn-action--primary'}`}
+                                            onClick={() => onToggleCompare(previewShot.id)}
+                                        >
+                                            <Icons.BarChart /> {compareShots.includes(previewShot.id) ? 'In Compare' : 'Add to Compare'}
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
                                 <div className="history-modal__preview-empty">
                                     <Icons.Coffee />
                                     <p>Select a shot to preview details</p>
