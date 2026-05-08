@@ -1,262 +1,49 @@
-# ☕ Luxe Cafe Dashboard
+# Luxe Cafe Dashboard
 
-**Espresso Calibration Dashboard for the Ninja Luxe Cafe Pro**
+**DISCLAIMER:** This is a simple personal web app built with heavy AI assistance. It's a hobby project for tracking espresso shots on the Ninja Luxe Cafe Pro, not production software. Use at your own discretion.
 
-A premium React-based dashboard for tracking and perfecting your espresso shots. Log your brews, get smart calibration tips, save favorite recipes, and dial in the perfect cup every time.
+A small web app for logging espresso shots and dialing in beans.
 
-![Dashboard Preview](https://img.shields.io/badge/React-18+-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript) ![Vite](https://img.shields.io/badge/Vite-5+-646CFF?logo=vite)
+**Live:** [luxe-cafe-dashboard.vercel.app](https://luxe-cafe-dashboard.vercel.app/)
 
-**☕ [Use it Now](https://luxe-cafe-dashboard.vercel.app/)** — Start tracking your espresso shots!
-
-> **📱 Note:** Your data is saved in your browser's storage. If you switch browsers or clear your browser data, your shots will be lost. Use the **Export Backup** feature in Settings to save your data!
+> Your data is saved in your browser's localStorage. Clearing browser data or switching browsers will erase it. Use Export Backup in Settings to save a copy.
 
 ![Dashboard Overview](docs/screenshots/dashboard_overview.png)
 
----
+## Features
 
-## ✨ Features
+- Log shots with bean, brew type, grind, basket, temperature, strength, and a 5-point taste rating
+- Bean Library with roaster, origin, roast level, process, roast date, and flavor notes
+- Quick Recipes for one-click form auto-fill
+- Stats: rating distribution, top beans, weekly success rate
+- Caffeine tracker with daily total and 400 mg limit warning
+- Optional shot timer and dose/yield ratio
+- Tips based on your last shot for the same bean
+- Export to JSON or CSV; import from JSON
+- 5 themes; 12 or 24-hour time format
 
-### 📝 Shot Logging
-- **Bean Name Autocomplete** — Quickly select from previously used beans
-- **Brew Type Selector** — Espresso, Drip Coffee, Cold Brew, Cold Pressed, Over Ice
-- **Hardware-Accurate Controls** — Grind size 1-25, Basket (Single/Double/Luxe), Temperature, Strength
-- **5-Point Taste Rating** — Discrete slider from Very Sour → Balanced → Very Bitter
-
-### 🔍 Shot Details & Actions
-Click any shot in history to view full details with actionable buttons:
-- **Compare** — Compare current shot against your target recipe
-- **Brew Again** — Instantly reload all settings to log another shot
-- **Delete** — Remove shots with one-click trash icon
-
-![Shot Detail Modal](docs/screenshots/shot_detail.png)
-
----
-
-### 📊 Expanded Shot History (Desktop)
-On desktop, click the expand icon next to "Shot History" to open a full split-view modal:
-- **Left Panel** — Scrollable list of all shots with filters (bean, notes search)
-- **Right Panel** — Live preview of selected shot details
-- **Quick Actions** — "Brew Again" to copy settings, "Add to Compare" to queue for comparison
-- **Smart Filtering** — Filter by bean name or search notes instantly
-
-![Expanded Shot History](docs/screenshots/expanded_history.png)
-
----
-
-### 🎨 5 Beautiful Themes
-Switch between 5 carefully crafted color themes using the dropdown in the header or press **Ctrl+D** to cycle:
-
-| Theme | Description |
-|-------|-------------|
-| ☕ **Coffee Dark** | Original warm espresso tones |
-| 🥛 **Coffee Light** | Bright cream/latte aesthetic |
-| 🍵 **Catppuccin Mocha** | Pastel accents on navy-purple |
-| 🌹 **Rose Pine** | Muted elegant rose tones |
-| 🌙 **Rose Pine Moon** | Darker Rose Pine variant |
-
-#### ☕ Coffee Dark
-![Coffee Dark Theme](docs/screenshots/dashboard_overview.png)
-
-#### 🥛 Coffee Light
-![Coffee Light Theme](docs/screenshots/theme_coffee_light.png)
-
-#### 🍵 Catppuccin Mocha
-![Catppuccin Mocha Theme](docs/screenshots/theme_catppuccin.png)
-
-#### 🌹 Rose Pine
-![Rose Pine Theme](docs/screenshots/theme_rosepine.png)
-
-#### 🌙 Rose Pine Moon
-![Rose Pine Moon Theme](docs/screenshots/theme_rosepine_moon.png)
-
----
-
-### 📚 Bean Library
-Manage your coffee bean collection with detailed metadata:
-- **Bean Name & Roaster** — Track origin and supplier
-- **Roast Level** — Light, Medium, Medium-Dark, Dark
-- **Process Method** — Washed, Natural, Honey, Anaerobic
-- **Roast Date** — Track freshness
-- **Flavor Notes** — Record tasting notes (e.g., "Blueberry, Chocolate, Citrus")
-
-![Bean Library](docs/screenshots/bean_library.png)
-
----
-
-### 📊 Statistics Dashboard
-View your brewing analytics with the Stats modal:
-- **Total Shots Logged** — Track your espresso journey
-- **Balanced Rate** — Percentage of perfectly dialed shots
-- **Top Beans** — See which beans you use most
-- **Taste Distribution** — Color-coded histogram of your ratings
-- **Success Rate Chart** — Weekly breakdown of balanced shots
-- **Brew Types** — Distribution of espresso, cold brew, etc.
-
-![Statistics Dashboard](docs/screenshots/stats_modal.png)
-
----
-
-### ☕ Caffeine Tracker
-Monitor your daily caffeine intake:
-- **Live Caffeine Count** — Circular progress ring showing mg consumed
-- **Daily Stats** — Shots today, daily average, weekly count
-- **Caffeine by Basket** — ~32mg (Single), ~63mg (Double), ~80mg (Luxe) per shot
-- **Recommended Limit** — Visual warning at 400mg daily limit
-
-![Caffeine Tracker](docs/screenshots/caffeine_tracker.png)
-
----
-
-### 🧪 Advanced Tools
-
-Collapsible sections for pro-level espresso tracking:
-
-![Advanced Tools](docs/screenshots/advanced-tools.png)
-
-#### 🥛 Froth Lab
-- **Milk Type** — Dairy or Plant-based
-- **Style** — Steamed, Thin, Thick, Cold Foam
-
-#### ⏱ Shot Timer
-- Start/stop/reset timer for extraction timing
-- Auto-saves with shot (only if timer was used)
-- Ideal espresso extraction: 25-30 seconds
-
-#### ⚖️ Dose & Yield
-- Enter dose (grams in) and yield (grams out)
-- **Auto-calculates ratio** (e.g., `1:2.0`)
-- Displayed in shot history and exports
-
-### 📋 Add-ins & Notes
-- Record extras like "Vanilla syrup, Cinnamon, Extra hot"
-- Notes display on history cards for easy reference
-
-### ⭐ Pin Best Shot
-- Star any shot as your "Target Recipe" for that bean
-- Favorites get a gold border and sort to the top
-- Target Recipe box shows ideal settings when selecting a bean
-
-### ⚡ Quick Recipes
-- Save complete drink configurations with one click
-- Recipe chips at dashboard top for instant form auto-fill
-- Saves: Bean, Brew Type, Grind, Temp, Basket, Strength, Milk, Notes
-
-### 🤖 Smart Barista
-- Real-time calibration tips based on your last shot
-- Actionable advice: "Grind finer" / "Lower temperature"
-- Visual adjustment badges (Major/Minor)
-
-### 💾 Data Management
-- **Export Backup** — Download all shots, beans, and recipes as JSON
-- **Export to CSV** — Export shot history as a spreadsheet
-- **Import Backup** — Restore data from a JSON file
-
-![Data Management](docs/screenshots/data_management.png)
-
-### 📱 Mobile-Optimized
-- 44px+ touch targets for all interactive elements
-- Thick sliders easy to grab on touchscreens
-- Responsive layout for phones and tablets
-
----
-
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| **Ctrl+Enter** | Log the current shot |
-| **Ctrl+B** | Open/close Bean Library |
-| **Ctrl+D** | Cycle through themes |
-| **Escape** | Close any open modal |
+| Ctrl+Enter | Log the current shot |
+| Ctrl+B | Toggle Bean Library |
+| Ctrl+D | Cycle theme |
+| Esc | Close any open modal |
 
----
-
-## 🚀 Quick Start
+## Run Locally
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
-
-# Build for production
-npm run build
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Then open http://localhost:5173.
 
----
+## Tech
 
-## 🛠️ Tech Stack
+React 19, TypeScript, Vite. Data is persisted in browser localStorage.
 
-| Technology | Purpose |
-|------------|---------|
-| **React 18** | UI Components |
-| **TypeScript** | Type Safety |
-| **Vite** | Build Tool & Dev Server |
-| **Vanilla CSS** | Custom Theme System |
-| **localStorage** | Data Persistence |
+## License
 
----
-
-## 📁 Project Structure
-
-```
-luxe_cafe_dashboard/
-├── src/
-│   ├── App.tsx          # Main dashboard component
-│   ├── types.ts         # TypeScript interfaces
-│   ├── utils.ts         # Storage & helper functions
-│   ├── index.css        # Complete design system with themes
-│   └── main.tsx         # React entry point
-├── docs/
-│   └── screenshots/     # README screenshots
-├── index.html
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
-```
-
----
-
-## 🎨 Design System
-
-5 themes with CSS custom properties for easy customization:
-
-**Coffee Dark (Default)**
-- Background: `#1a1512` → Cards: `#2a221d`
-- Text: `#f5f0e8` (cream) + `#a67b5b` (caramel accents)
-
-**Coffee Light**
-- Background: `#f5f0e8` → Cards: `#ffffff`
-- Text: `#2a221d` (espresso brown)
-
-**Catppuccin Mocha**
-- Background: `#1e1e2e` → Cards: `#313244`
-- Pastel accents: mauve, peach, pink
-
-**Rose Pine** / **Rose Pine Moon**
-- Muted elegant palette with rose and gold highlights
-
-Typography: **Playfair Display** (headings) + **Inter** (body)
-
----
-
-## 💾 Data Storage
-
-All data persists in `localStorage`:
-
-| Key | Contents |
-|-----|----------|
-| `espresso-shots` | Shot history with timestamps |
-| `espresso-favorites` | Bean → Shot ID mapping |
-| `espresso-recipes` | Saved quick recipes |
-| `espresso-beans` | Bean library with metadata |
-| `espresso-theme` | Selected theme preference |
-
----
-
-## 📄 License
-
-MIT © 2026
+MIT

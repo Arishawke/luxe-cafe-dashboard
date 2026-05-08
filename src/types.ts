@@ -1,17 +1,15 @@
+export type ThemeType = 'dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon';
+
 export type Basket = 'Single' | 'Double' | 'Luxe';
 export type Temperature = 'Low' | 'Med' | 'High';
 export type Strength = 1 | 2 | 3;
 
-// Expanded 5-point rating scale
 export type Rating = 'Very Sour' | 'Sour' | 'Balanced' | 'Bitter' | 'Very Bitter';
 
-// Brew types
 export type BrewType = 'Espresso' | 'Drip Coffee' | 'Cold Brew' | 'Cold Pressed' | 'Over Ice';
 
-// Cold brew types that don't need temperature control
-export const COLD_BREW_TYPES: BrewType[] = ['Cold Brew', 'Cold Pressed', 'Over Ice'];
+export const COLD_BREW_TYPES: BrewType[] = ['Cold Brew', 'Cold Pressed', 'Over Ice']; // skip temperature
 
-// Milk settings
 export type MilkType = 'Dairy' | 'Plant';
 export type MilkStyle = 'Steamed' | 'Thin' | 'Thick' | 'Cold Foam';
 
@@ -25,25 +23,23 @@ export interface ShotLog {
   beanName: string;
   brewType: BrewType;
   basket: Basket;
-  grindSize: number; // 1 (Fine) to 25 (Coarse)
-  temperature?: Temperature; // Optional for cold brews
+  grindSize: number; // 1 fine, 25 coarse
+  temperature?: Temperature;
   strength: Strength;
   rating: Rating;
-  milk?: MilkSettings; // Optional milk settings
-  notes?: string; // Add-ins / Notes
-  extractionTime?: number; // Shot timer in seconds
-  doseIn?: number; // Grams of coffee in
-  doseOut?: number; // Grams of espresso out (yield)
+  milk?: MilkSettings;
+  notes?: string;
+  extractionTime?: number; // seconds
+  doseIn?: number; // grams in
+  doseOut?: number; // grams out
   timestamp: Date;
-  isFavorite?: boolean; // Starred as favorite for this bean
+  isFavorite?: boolean;
 }
 
-// Favorites storage: maps lowercase bean name to shot ID
 export interface FavoritesMap {
-  [beanName: string]: string; // shot ID
+  [beanName: string]: string; // lowercase bean name -> shot id
 }
 
-// Saved Recipe - stores all settings for quick recall
 export interface SavedRecipe {
   id: string;
   name: string;
@@ -58,7 +54,6 @@ export interface SavedRecipe {
   createdAt: Date;
 }
 
-// Bean Profile - stores bean metadata
 export type ProcessMethod = 'Washed' | 'Natural' | 'Honey' | 'Anaerobic' | 'Other';
 export type RoastLevel = 'Light' | 'Medium' | 'Medium-Dark' | 'Dark';
 
@@ -69,26 +64,9 @@ export interface BeanProfile {
   origin?: string;
   roastLevel?: RoastLevel;
   processMethod?: ProcessMethod;
-  roastDate?: string; // ISO date string
+  roastDate?: string; // ISO date
   flavorNotes?: string;
-  isActive: boolean; // Currently in rotation
+  isActive: boolean;
   createdAt: Date;
 }
 
-// Helper to calculate days since roast
-export function getDaysSinceRoast(roastDate: string | undefined): number | null {
-  if (!roastDate) return null;
-  const roast = new Date(roastDate);
-  const now = new Date();
-  const diff = now.getTime() - roast.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
-
-// Freshness status based on days since roast
-export function getFreshnessStatus(days: number | null): { label: string; color: string } {
-  if (days === null) return { label: 'Unknown', color: '#888' };
-  if (days < 7) return { label: 'Resting', color: '#E8A045' }; // Too fresh
-  if (days <= 21) return { label: 'Peak', color: '#7A9E6D' }; // Sweet spot
-  if (days <= 35) return { label: 'Fading', color: '#D4915C' }; // Still okay
-  return { label: 'Stale', color: '#C04545' }; // Past prime
-}
