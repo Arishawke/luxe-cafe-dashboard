@@ -9,6 +9,8 @@ import { RATINGS, RATING_COLORS, BREW_TYPES, BASKETS, TEMPERATURES, STRENGTHS, M
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
+import ConfirmDialog from './components/modals/ConfirmDialog';
+import Toast from './components/Toast';
 
 // Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
@@ -2837,35 +2839,14 @@ function App() {
           )}
         </div>
       )}
-      {confirmDialog && (
-        <div className="modal-overlay" onClick={closeConfirm}>
-          <div className="modal modal--confirm" onClick={e => e.stopPropagation()}>
-            <div className="modal__header">
-              <h2>{confirmDialog.title}</h2>
-              <button className="modal__close" onClick={closeConfirm}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              <p className="confirm-message">{confirmDialog.message}</p>
-            </div>
-            <div className="modal__footer modal__footer--confirm">
-              <button className="btn btn--secondary" onClick={closeConfirm}>
-                Cancel
-              </button>
-              <button
-                className="btn btn--danger"
-                onClick={() => {
-                  confirmDialog.onConfirm();
-                  closeConfirm();
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        dialog={confirmDialog}
+        onConfirm={() => {
+          confirmDialog?.onConfirm();
+          closeConfirm();
+        }}
+        onClose={closeConfirm}
+      />
 
       {/* Keyboard Shortcuts Panel (Desktop Only) */}
       <div className={`shortcuts-panel ${showShortcuts ? 'shortcuts-panel--open' : ''}`}>
@@ -2918,14 +2899,7 @@ function App() {
       </div>
 
       {/* Toast Notification */}
-      {toast && (
-        <div className={`toast toast--${toast.type} ${showShortcuts ? 'toast--shortcuts-open' : ''}`}>
-          <span className="toast__message">{toast.message}</span>
-          <button className="toast__close" onClick={hideToast}>
-            <Icons.X />
-          </button>
-        </div>
-      )}
+      <Toast toast={toast} onDismiss={hideToast} shortcutsOpen={showShortcuts} />
     </div>
   );
 }
