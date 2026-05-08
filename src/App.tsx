@@ -26,7 +26,6 @@ import ShotHistory from './components/ShotHistory';
 import ShotComparison from './components/ShotComparison';
 import { RATING_COLOR_CLASS } from './lib/ratings';
 
-// Rating config with icons (kept here since it references Icons)
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
   'Very Sour': { icon: Icons.DoubleChevronLeft, colorClass: RATING_COLOR_CLASS['Very Sour'] },
   'Sour': { icon: Icons.Citrus, colorClass: RATING_COLOR_CLASS.Sour },
@@ -38,38 +37,23 @@ const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass:
 function App() {
   const form = useShotForm();
 
-  // Modal state
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [recipeName, setRecipeName] = useState('');
   const [editingRecipe, setEditingRecipe] = useState<SavedRecipe | null>(null);
   const [selectedShot, setSelectedShot] = useState<ShotLog | null>(null);
   const [editingShot, setEditingShot] = useState<ShotLog | null>(null);
-
-  // Bean Library modal
   const [showBeanLibrary, setShowBeanLibrary] = useState(false);
-
-  // Stats modal
   const [showStats, setShowStats] = useState(false);
-
-  // Recipe Library modal
   const [showRecipeLibrary, setShowRecipeLibrary] = useState(false);
-
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Caffeine tracker modal
   const [showCaffeine, setShowCaffeine] = useState(false);
-
-  // History filter
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
-
-  // Shot comparison
   const [compareShots, setCompareShots] = useState<[string | null, string | null]>([null, null]);
 
-  // Custom hooks for UI state
   const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
   const { toast, showToast, hideToast } = useToast(3000);
   const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
@@ -79,23 +63,19 @@ function App() {
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
   const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
 
-  // Autocomplete state
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredBeans, setFilteredBeans] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Keyboard shortcuts panel (desktop only)
   const [showShortcuts, setShowShortcuts] = useState(() => {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
     return stored === null ? true : stored === 'true';
   });
 
-  // Derived state
   const rating = RATINGS[form.ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
 
@@ -124,11 +104,9 @@ function App() {
     },
   });
 
-  // Filter beans for autocomplete - combine bean library + shot history
   const getAllBeanSuggestions = () => {
     const libraryBeans = beans.filter(b => b.isActive).map(b => b.name);
     const historyBeans = getUniqueBeans(shots);
-    // Combine and deduplicate, prioritizing library beans
     const combined = [...new Set([...libraryBeans, ...historyBeans])];
     return combined.sort((a, b) => a.localeCompare(b));
   };
@@ -156,17 +134,14 @@ function App() {
     setShowSuggestions(false);
   };
 
-  // Get favorite shot for current bean
   const currentBeanKey = form.beanName.trim().toLowerCase();
   const favoriteId = favorites[currentBeanKey];
   const favoriteShot = favoriteId ? shots.find(s => s.id === favoriteId) : null;
 
-  // Get last shot for current bean (for tips) - prefer favorite if available
   const lastShotForBean = favoriteShot || (form.beanName.trim()
     ? shots.find(s => s.beanName.toLowerCase() === currentBeanKey)
     : null);
 
-  // Get all shots for current bean (for journey view)
   const shotsForBean = form.beanName.trim()
     ? shots.filter(s => s.beanName.toLowerCase() === currentBeanKey).slice(0, 5)
     : [];
@@ -181,7 +156,6 @@ function App() {
     form.setRatingIndex(BALANCED_RATING_INDEX);
   };
 
-  // Save current form as recipe
   const saveAsRecipe = () => {
     if (!recipeName.trim() || !form.beanName.trim()) return;
 
@@ -204,7 +178,6 @@ function App() {
     setRecipeName('');
   };
 
-  // Delete a recipe (with confirmation)
   const deleteRecipe = (id: string) => {
     const recipe = recipes.find(r => r.id === id);
     if (!recipe) return;
@@ -219,7 +192,6 @@ function App() {
     );
   };
 
-  // Open edit recipe modal
   const openEditRecipe = (recipe: SavedRecipe) => {
     setEditingRecipe(recipe);
     setRecipeName(recipe.name);
@@ -237,12 +209,10 @@ function App() {
       form.setShowMilk(false);
     }
     form.setNotes(recipe.notes || '');
-    // Close library and open edit modal
     setShowRecipeLibrary(false);
     setShowRecipeModal(true);
   };
 
-  // Update existing recipe
   const updateRecipe = () => {
     if (!editingRecipe || !recipeName.trim()) return;
 
@@ -265,22 +235,19 @@ function App() {
     showToast('Recipe updated', 'success');
   };
 
-  // Toggle shot for comparison
   const toggleCompareShot = (id: string) => {
     setCompareShots(prev => {
       if (prev[0] === id) return [null, prev[1]];
       if (prev[1] === id) return [prev[0], null];
       if (prev[0] === null) return [id, prev[1]];
       if (prev[1] === null) return [prev[0], id];
-      return [prev[1], id]; // Replace oldest
+      return [prev[1], id]; // replace oldest
     });
   };
 
-  // Get shots for comparison
   const shot1 = compareShots[0] ? shots.find(s => s.id === compareShots[0]) : null;
   const shot2 = compareShots[1] ? shots.find(s => s.id === compareShots[1]) : null;
 
-  // Delete a shot (with confirmation)
   const deleteShot = (id: string) => {
     const shot = shots.find(s => s.id === id);
     if (!shot) return;
@@ -289,7 +256,6 @@ function App() {
       'Delete Shot',
       `Are you sure you want to delete this shot for "${shot.beanName}"?`,
       () => {
-        // Also remove from favorites if it was a favorite
         const beanKey = shot.beanName.toLowerCase();
         if (favorites[beanKey] === id) {
           const updated = { ...favorites };
@@ -329,7 +295,6 @@ function App() {
     showToast('Editing shot - make changes and click Update Shot', 'info');
   };
 
-  // Update existing shot
   const updateShot = () => {
     if (!editingShot || !form.beanName.trim()) return;
 
@@ -346,13 +311,10 @@ function App() {
       notes: form.notes.trim() || undefined,
       doseIn: form.doseIn ? parseFloat(form.doseIn) : undefined,
       doseOut: form.doseOut ? parseFloat(form.doseOut) : undefined,
-      // Preserve original timestamp and id
     };
 
-    // Update the shot in state
     replaceShot(updated);
 
-    // Update favorites if bean name changed
     const oldBeanKey = editingShot.beanName.toLowerCase();
     const newBeanKey = form.beanName.trim().toLowerCase();
     if (oldBeanKey !== newBeanKey && favorites[oldBeanKey] === editingShot.id) {
@@ -362,12 +324,10 @@ function App() {
       setFavorites(updatedFavorites);
     }
 
-    // Clear editing state
     setEditingShot(null);
     showToast('Shot updated', 'success');
   };
 
-  // wraps removeBean with a confirm dialog (orchestrator-level)
   const deleteBean = (id: string) => {
     const bean = beans.find(b => b.id === id);
     if (!bean) return;
@@ -382,7 +342,6 @@ function App() {
     );
   };
 
-  // delegate to lib/dataIO; thin wrapper for toasts
   const exportData = () => {
     const json = buildJSONBackup(shots, recipes, beans, favorites);
     const date = new Date().toISOString().slice(0, 10);
@@ -417,17 +376,14 @@ function App() {
     } catch (err) {
       setImportStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to import file' });
     }
-    // reset file input so same file can be selected again
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = ''; // allow re-selecting same file
     }
   };
 
-  // Grind size controls
   const decrementGrind = () => form.setGrindSize(Math.max(1, form.grindSize - 1));
   const incrementGrind = () => form.setGrindSize(Math.min(25, form.grindSize + 1));
 
-  // Handle form submission
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!form.beanName.trim()) return;
@@ -440,7 +396,6 @@ function App() {
       return;
     }
 
-    // Get extraction time from either manual input or stopwatch
     const getExtractionTime = (): number | undefined => {
       if (form.manualTimeInput) {
         const parsed = parseFloat(form.manualTimerValue);
@@ -473,7 +428,6 @@ function App() {
     showToast('Shot logged!', 'success');
   };
 
-  // Sort history: favorite for current bean at top, then by date
   const sortedShots = [...shots].sort((a, b) => {
     const aIsFav = favorites[a.beanName.toLowerCase()] === a.id;
     const bIsFav = favorites[b.beanName.toLowerCase()] === b.id;
@@ -484,7 +438,6 @@ function App() {
 
   return (
     <div className="dashboard">
-      {/* Header */}
       <Header
         mobileMenuOpen={mobileMenuOpen}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -496,7 +449,6 @@ function App() {
         onOpenSettings={() => { setShowSettings(true); setMobileMenuOpen(false); }}
       />
 
-      {/* Quick Recipe Hotbar - Only shows starred/pinned recipes */}
       {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
         <div className="recipe-menu">
           <div className="recipe-menu__label">
@@ -533,9 +485,7 @@ function App() {
         </div>
       )}
 
-      {/* Main Grid */}
       <div className="dashboard__grid">
-        {/* Left Column - Shot Logger */}
         <div className="card">
           <h2 className="card__title">
             <Icons.Edit /> {editingShot ? 'Edit Shot' : 'Log New Shot'}
@@ -576,15 +526,12 @@ function App() {
           />
         </div>
 
-        {/* Right Column */}
         <div className="side-panel">
-          {/* Smart Barista Card */}
           <div className="card">
             <h2 className="card__title">
               <Icons.ChefHat /> Smart Barista
             </h2>
 
-            {/* Bean Freshness Alert */}
             {(() => {
               if (!form.beanName.trim()) return null;
               const beanProfile = beans.find(b => b.name.toLowerCase() === form.beanName.toLowerCase());
@@ -593,8 +540,7 @@ function App() {
               const days = getDaysSinceRoast(beanProfile.roastDate);
               const freshness = getFreshnessStatus(days);
 
-              // Only show alert for fading or stale beans
-              if (days === null || days <= 21) return null;
+              if (days === null || days <= 21) return null; // only fading or stale
 
               return (
                 <div className={`freshness-alert freshness-alert--${days > 35 ? 'stale' : 'fading'}`}>
@@ -622,7 +568,6 @@ function App() {
             />
           </div>
 
-          {/* History Log */}
           <ShotHistory
             shots={shots}
             sortedShots={sortedShots}
@@ -774,7 +719,6 @@ function App() {
         onClose={() => { setShowSettings(false); setImportStatus(null); }}
       />
 
-      {/* Shot Comparison Panel */}
       <ShotComparison
         shot1={shot1}
         shot2={shot2}
@@ -790,7 +734,6 @@ function App() {
         onClose={closeConfirm}
       />
 
-      {/* Keyboard Shortcuts Panel (Desktop Only) */}
       <div className={`shortcuts-panel ${showShortcuts ? 'shortcuts-panel--open' : ''}`}>
         {showShortcuts ? (
           <>
@@ -840,7 +783,6 @@ function App() {
         )}
       </div>
 
-      {/* Toast Notification */}
       <Toast toast={toast} onDismiss={hideToast} shortcutsOpen={showShortcuts} />
     </div>
   );
