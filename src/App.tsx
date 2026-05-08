@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Rating, SavedRecipe, BeanProfile } from './types';
+import type { ShotLog, Rating, SavedRecipe } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
 import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
@@ -18,6 +18,8 @@ import RecipeLibraryModal from './components/modals/RecipeLibraryModal';
 import StatsModal from './components/modals/StatsModal';
 import CaffeineModal from './components/modals/CaffeineModal';
 import HistoryModal from './components/modals/HistoryModal';
+import SettingsModal from './components/modals/SettingsModal';
+import { buildJSONBackup, buildCSV, downloadFile, parseImportFile } from './lib/dataIO';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
@@ -85,7 +87,7 @@ function App() {
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showThemePicker, setShowThemePicker] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Keyboard shortcuts panel (desktop only)
   const [showShortcuts, setShowShortcuts] = useState(() => {
@@ -100,7 +102,7 @@ function App() {
   useKeyboardShortcuts({
     canSubmit: () =>
       !showRecipeModal && !showBeanLibrary && !showStats && !showCaffeine
-      && !showThemePicker && !selectedShot && !editingRecipe
+      && !showSettings && !selectedShot && !editingRecipe
       && form.beanName.trim() !== '',
     onSubmit: () => {
       const f = document.querySelector('.shot-form') as HTMLFormElement | null;
@@ -117,7 +119,7 @@ function App() {
       else if (showStats) setShowStats(false);
       else if (showCaffeine) setShowCaffeine(false);
       else if (showRecipeModal) setShowRecipeModal(false);
-      else if (showThemePicker) setShowThemePicker(false);
+      else if (showSettings) setShowSettings(false);
     },
   });
 
@@ -379,126 +381,42 @@ function App() {
     );
   };
 
-  // Export all data as JSON
+  // delegate to lib/dataIO; thin wrapper for toasts
   const exportData = () => {
-    const data = {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      shots: shots,
-      favorites: favorites,
-      recipes: recipes,
-      beans: beans,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `luxe-cafe-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const json = buildJSONBackup(shots, recipes, beans, favorites);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(`luxe-cafe-backup-${date}.json`, json, 'application/json');
     showToast('Backup exported', 'success');
   };
 
-  // Export shots to CSV
   const exportToCSV = () => {
     if (shots.length === 0) {
       showToast('No shots to export', 'error');
       return;
     }
-
-    const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Extraction Time', 'Dose In (g)', 'Dose Out (g)', 'Ratio', 'Milk Type', 'Milk Style', 'Notes'];
-    const csvRows = [headers.join(',')];
-
-    shots.forEach(shot => {
-      const ratio = shot.doseIn && shot.doseOut ? `1:${(shot.doseOut / shot.doseIn).toFixed(1)}` : '';
-      const row = [
-        new Date(shot.timestamp).toLocaleString(),
-        `"${shot.beanName.replace(/"/g, '""')}"`,
-        shot.brewType,
-        shot.basket,
-        shot.grindSize,
-        shot.temperature || '',
-        shot.strength,
-        shot.rating,
-        shot.extractionTime || '',
-        shot.doseIn || '',
-        shot.doseOut || '',
-        ratio,
-        shot.milk?.type || '',
-        shot.milk?.style || '',
-        `"${(shot.notes || '').replace(/"/g, '""')}"`
-      ];
-      csvRows.push(row.join(','));
-    });
-
-    const csvContent = csvRows.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `luxe-cafe-shots-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const csv = buildCSV(shots);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(`luxe-cafe-shots-${date}.csv`, csv, 'text/csv;charset=utf-8;');
     showToast(`Exported ${shots.length} shots to CSV`, 'success');
   };
 
-  // Import data from JSON file
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target?.result as string);
-
-        // Validate structure
-        if (!data.shots || !Array.isArray(data.shots)) {
-          throw new Error('Invalid backup file: missing shots data');
-        }
-
-        // Import shots with date conversion
-        const importedShots = data.shots.map((s: ShotLog) => ({
-          ...s,
-          timestamp: new Date(s.timestamp),
-        }));
-        setShots(importedShots);
-
-        // Import favorites
-        if (data.favorites) {
-          setFavorites(data.favorites);
-        }
-
-        // Import recipes with date conversion
-        if (data.recipes && Array.isArray(data.recipes)) {
-          const importedRecipes = data.recipes.map((r: SavedRecipe) => ({
-            ...r,
-            createdAt: new Date(r.createdAt),
-          }));
-          setRecipes(importedRecipes);
-        }
-
-        // Import beans with date conversion
-        if (data.beans && Array.isArray(data.beans)) {
-          const importedBeans = data.beans.map((b: BeanProfile) => ({
-            ...b,
-            createdAt: new Date(b.createdAt),
-          }));
-          setBeans(importedBeans);
-        }
-
-        setImportStatus({ type: 'success', message: `Imported ${importedShots.length} shots, ${data.recipes?.length || 0} recipes, ${data.beans?.length || 0} beans` });
-      } catch (err) {
-        setImportStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to import file' });
-      }
-    };
-    reader.readAsText(file);
-
-    // Reset file input
+    try {
+      const data = await parseImportFile(file);
+      setShots(data.shots);
+      setRecipes(data.recipes);
+      setBeans(data.beans);
+      setFavorites(data.favorites);
+      setImportStatus({
+        type: 'success',
+        message: `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`,
+      });
+    } catch (err) {
+      setImportStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to import file' });
+    }
+    // reset file input so same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -574,7 +492,7 @@ function App() {
         onOpenRecipes={() => { setShowRecipeLibrary(true); setMobileMenuOpen(false); }}
         onOpenStats={() => { setShowStats(true); setMobileMenuOpen(false); }}
         onOpenCaffeine={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
-        onOpenSettings={() => { setShowThemePicker(true); setMobileMenuOpen(false); }}
+        onOpenSettings={() => { setShowSettings(true); setMobileMenuOpen(false); }}
       />
 
       {/* Quick Recipe Hotbar - Only shows starred/pinned recipes */}
@@ -824,145 +742,36 @@ function App() {
         onDeleteShot={deleteShot}
       />
 
-      {/* Unified Settings Modal */}
-      {showThemePicker && (
-        <div className="modal-overlay" onClick={() => { setShowThemePicker(false); setImportStatus(null); }}>
-          <div className="modal modal--settings" onClick={e => e.stopPropagation()}>
-            <div className="modal__header">
-              <h3><Icons.Sliders /> Settings</h3>
-              <button className="modal__close" onClick={() => { setShowThemePicker(false); setImportStatus(null); }}>
-                <Icons.X />
-              </button>
-            </div>
-            <div className="modal__body">
-              {/* Appearance Section */}
-              <div className="settings-section">
-                <h4 className="settings-section__title">🎨 Appearance</h4>
-
-                <div className="prefs-section">
-                  <label className="prefs-section__label">Theme</label>
-                  <div className="theme-picker__options">
-                    {[
-                      { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
-                      { value: 'light', label: 'Coffee Light', emoji: '🥛' },
-                      { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
-                      { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
-                      { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
-                    ].map((t) => (
-                      <button
-                        key={t.value}
-                        className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
-                        onClick={() => { setTheme(t.value as typeof theme); }}
-                      >
-                        <span className="theme-picker__emoji">{t.emoji}</span>
-                        <span className="theme-picker__label">{t.label}</span>
-                        {theme === t.value && <Icons.Check />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="prefs-section">
-                  <label className="prefs-section__label">Time Format</label>
-                  <div className="prefs-toggle">
-                    <button
-                      className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                      onClick={() => setUse24Hour(false)}
-                    >
-                      🕐 12-hour
-                    </button>
-                    <button
-                      className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
-                      onClick={() => setUse24Hour(true)}
-                    >
-                      🕒 24-hour
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Data Section */}
-              <div className="settings-section">
-                <h4 className="settings-section__title">💾 Data</h4>
-
-                {/* Data Summary */}
-                <div className="data-summary">
-                  <div className="data-summary__item">
-                    <span className="data-summary__count">{shots.length}</span>
-                    <span className="data-summary__label">Shots</span>
-                  </div>
-                  <div className="data-summary__item">
-                    <span className="data-summary__count">{recipes.length}</span>
-                    <span className="data-summary__label">Recipes</span>
-                  </div>
-                  <div className="data-summary__item">
-                    <span className="data-summary__count">{beans.length}</span>
-                    <span className="data-summary__label">Beans</span>
-                  </div>
-                </div>
-
-                {/* Import Status */}
-                {importStatus && (
-                  <div className={`import-status import-status--${importStatus.type}`}>
-                    {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
-                  </div>
-                )}
-
-                {/* Export/Import Buttons */}
-                <div className="data-actions">
-                  <button className="data-action-btn" onClick={exportData}>
-                    <Icons.Download />
-                    <span>Export Backup</span>
-                    <small>Download all data as JSON</small>
-                  </button>
-                  <button className="data-action-btn" onClick={exportToCSV}>
-                    <Icons.BarChart />
-                    <span>Export to CSV</span>
-                    <small>Shot history as spreadsheet</small>
-                  </button>
-                  <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
-                    <Icons.Upload />
-                    <span>Import Backup</span>
-                    <small>Restore from JSON file</small>
-                  </button>
-                  <button
-                    className="data-action-btn data-action-btn--danger"
-                    onClick={() => {
-                      showConfirm(
-                        'Clear All Data',
-                        `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
-                        () => {
-                          setShots([]);
-                          setRecipes([]);
-                          setBeans([]);
-                          setFavorites({});
-                          showToast('All data cleared', 'success');
-                          setShowThemePicker(false);
-                        }
-                      );
-                    }}
-                  >
-                    <Icons.Trash />
-                    <span>Clear All Data</span>
-                    <small>Permanently delete everything</small>
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json"
-                    onChange={handleImport}
-                    style={{ display: 'none' }}
-                  />
-                </div>
-
-                <p className="data-warning">
-                  ⚠️ Importing will replace all existing data
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <SettingsModal
+        open={showSettings}
+        theme={theme}
+        setTheme={setTheme}
+        use24Hour={use24Hour}
+        setUse24Hour={setUse24Hour}
+        shotsCount={shots.length}
+        recipesCount={recipes.length}
+        beansCount={beans.length}
+        importStatus={importStatus}
+        fileInputRef={fileInputRef}
+        onExportJSON={exportData}
+        onExportCSV={exportToCSV}
+        onImport={handleImport}
+        onClearAll={() => {
+          showConfirm(
+            'Clear All Data',
+            `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
+            () => {
+              setShots([]);
+              setRecipes([]);
+              setBeans([]);
+              setFavorites({});
+              showToast('All data cleared', 'success');
+              setShowSettings(false);
+            }
+          );
+        }}
+        onClose={() => { setShowSettings(false); setImportStatus(null); }}
+      />
 
       {/* Shot Comparison Panel */}
       <ShotComparison
