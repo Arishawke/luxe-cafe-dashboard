@@ -19,10 +19,7 @@ export function useFavorites() {
         });
     };
 
-    const isFavorite = (shot: ShotLog) =>
-        favorites[shot.beanName.toLowerCase()] === shot.id;
-
     const replaceAll = (next: FavoritesMap) => setFavorites(next);
 
-    return { favorites, toggleFavorite, isFavorite, replaceAll };
+    return { favorites, toggleFavorite, replaceAll };
 }

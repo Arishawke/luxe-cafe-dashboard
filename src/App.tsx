@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import type { ShotLog, Rating, SavedRecipe } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
-import { getDaysSinceRoast, getFreshnessStatus, getUniqueBeans } from './lib/beans';
+import { getFreshnessAlert, getUniqueBeans } from './lib/beans';
 import { getSuggestedSettings } from './lib/suggestions';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts } from './hooks';
@@ -533,26 +533,14 @@ function App() {
             </h2>
 
             {(() => {
-              if (!form.beanName.trim()) return null;
-              const beanProfile = beans.find(b => b.name.toLowerCase() === form.beanName.toLowerCase());
-              if (!beanProfile?.roastDate) return null;
-
-              const days = getDaysSinceRoast(beanProfile.roastDate);
-              const freshness = getFreshnessStatus(days);
-
-              if (days === null || days <= 21) return null; // only fading or stale
-
+              const alert = getFreshnessAlert(form.beanName, beans);
+              if (!alert) return null;
               return (
-                <div className={`freshness-alert freshness-alert--${days > 35 ? 'stale' : 'fading'}`}>
-                  <span className="freshness-alert__badge" style={{ background: freshness.color }}>
-                    {freshness.label}
+                <div className={`freshness-alert freshness-alert--${alert.variant}`}>
+                  <span className="freshness-alert__badge" style={{ background: alert.color }}>
+                    {alert.label}
                   </span>
-                  <span className="freshness-alert__text">
-                    {beanProfile.name} was roasted {days} days ago
-                    {days > 35
-                      ? '. Consider adjusting grind finer to compensate.'
-                      : '. Still good, but best to use soon.'}
-                  </span>
+                  <span className="freshness-alert__text">{alert.text}</span>
                 </div>
               );
             })()}

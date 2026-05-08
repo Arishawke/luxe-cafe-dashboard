@@ -29,5 +29,5 @@ export function useTheme() {
     const cycleTheme = () =>
         setTheme(prev => VALID_THEMES[(VALID_THEMES.indexOf(prev) + 1) % VALID_THEMES.length]);
 
-    return { theme, setTheme, use24Hour, setUse24Hour, cycleTheme, themes: VALID_THEMES };
+    return { theme, setTheme, use24Hour, setUse24Hour, cycleTheme };
 }
