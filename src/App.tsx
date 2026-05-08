@@ -101,7 +101,7 @@ function App() {
 
   useKeyboardShortcuts({
     canSubmit: () =>
-      !showRecipeModal && !showBeanLibrary && !showStats && !showCaffeine
+      !showRecipeModal && !showRecipeLibrary && !showBeanLibrary && !showStats && !showCaffeine
       && !showSettings && !selectedShot && !editingRecipe
       && form.beanName.trim() !== '',
     onSubmit: () => {
@@ -116,6 +116,7 @@ function App() {
       else if (editingRecipe) setEditingRecipe(null);
       else if (showHistoryModal) { setShowHistoryModal(false); setPreviewShot(null); }
       else if (showBeanLibrary) setShowBeanLibrary(false);
+      else if (showRecipeLibrary) setShowRecipeLibrary(false);
       else if (showStats) setShowStats(false);
       else if (showCaffeine) setShowCaffeine(false);
       else if (showRecipeModal) setShowRecipeModal(false);
