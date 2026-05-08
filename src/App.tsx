@@ -56,9 +56,9 @@ function App() {
   const { confirmDialog, showConfirm, closeConfirm } = useConfirm();
   const { toast, showToast, hideToast } = useToast(3000);
   const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = useTimer();
-  const { shots, addShot, updateShot: replaceShot, deleteShot: removeShot, replaceAll: setShots } = useShots();
-  const { beans, addBean, updateBean: replaceBean, deleteBean: removeBean, toggleActive: toggleBeanActiveHook, replaceAll: setBeans } = useBeans();
-  const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe: replaceRecipe, deleteRecipe: removeRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
+  const { shots, addShot, updateShot, deleteShot, replaceAll: setShots } = useShots();
+  const { beans, addBean, updateBean, deleteBean, toggleActive, replaceAll: setBeans } = useBeans();
+  const { recipes, pinned: pinnedRecipes, addRecipe, updateRecipe, deleteRecipe, togglePin: togglePinRecipe, replaceAll: setRecipes } = useRecipes();
   const { favorites, toggleFavorite, replaceAll: setFavorites } = useFavorites();
   const { theme, setTheme, use24Hour, setUse24Hour, cycleTheme } = useTheme();
 
@@ -177,7 +177,7 @@ function App() {
     setRecipeName('');
   };
 
-  const deleteRecipe = (id: string) => {
+  const confirmDeleteRecipe = (id: string) => {
     const recipe = recipes.find(r => r.id === id);
     if (!recipe) return;
 
@@ -185,7 +185,7 @@ function App() {
       'Delete Recipe',
       `Are you sure you want to delete "${recipe.name}"?`,
       () => {
-        removeRecipe(id);
+        deleteRecipe(id);
         showToast('Recipe deleted', 'info');
       }
     );
@@ -212,7 +212,7 @@ function App() {
     setShowRecipeModal(true);
   };
 
-  const updateRecipe = () => {
+  const submitRecipeEdits = () => {
     if (!editingRecipe || !recipeName.trim()) return;
 
     const updated: SavedRecipe = {
@@ -228,7 +228,7 @@ function App() {
       notes: form.notes.trim() || undefined,
     };
 
-    replaceRecipe(updated);
+    updateRecipe(updated);
     setEditingRecipe(null);
     setRecipeName('');
     showToast('Recipe updated', 'success');
@@ -247,7 +247,7 @@ function App() {
   const shot1 = compareShots[0] ? shots.find(s => s.id === compareShots[0]) : null;
   const shot2 = compareShots[1] ? shots.find(s => s.id === compareShots[1]) : null;
 
-  const deleteShot = (id: string) => {
+  const confirmDeleteShot = (id: string) => {
     const shot = shots.find(s => s.id === id);
     if (!shot) return;
 
@@ -261,7 +261,7 @@ function App() {
           delete updated[beanKey];
           setFavorites(updated);
         }
-        removeShot(id);
+        deleteShot(id);
         setSelectedShot(null);
         showToast('Shot deleted', 'info');
       }
@@ -294,7 +294,7 @@ function App() {
     showToast('Editing shot - make changes and click Update Shot', 'info');
   };
 
-  const updateShot = () => {
+  const submitShotEdits = () => {
     if (!editingShot || !form.beanName.trim()) return;
 
     const updated: ShotLog = {
@@ -312,7 +312,7 @@ function App() {
       doseOut: form.doseOut ? parseFloat(form.doseOut) : undefined,
     };
 
-    replaceShot(updated);
+    updateShot(updated);
 
     const oldBeanKey = editingShot.beanName.toLowerCase();
     const newBeanKey = form.beanName.trim().toLowerCase();
@@ -327,7 +327,7 @@ function App() {
     showToast('Shot updated', 'success');
   };
 
-  const deleteBean = (id: string) => {
+  const confirmDeleteBean = (id: string) => {
     const bean = beans.find(b => b.id === id);
     if (!bean) return;
 
@@ -335,7 +335,7 @@ function App() {
       'Delete Bean',
       `Are you sure you want to delete "${bean.name}"?`,
       () => {
-        removeBean(id);
+        deleteBean(id);
         showToast('Bean deleted', 'info');
       }
     );
@@ -388,7 +388,7 @@ function App() {
     if (!form.beanName.trim()) return;
 
     if (editingShot) {
-      updateShot();
+      submitShotEdits();
       form.reset();
       setShowSuggestions(false);
       resetTimer();
@@ -568,7 +568,7 @@ function App() {
             onSelectShot={setSelectedShot}
             onToggleFavorite={toggleFavorite}
             onEditShot={openEditShot}
-            onDeleteShot={deleteShot}
+            onDeleteShot={confirmDeleteShot}
             onOpenHistoryModal={() => setShowHistoryModal(true)}
           />
         </div>
@@ -580,7 +580,7 @@ function App() {
         recipeName={recipeName}
         setRecipeName={setRecipeName}
         editingRecipe={editingRecipe}
-        onSave={() => editingRecipe ? updateRecipe() : saveAsRecipe()}
+        onSave={() => editingRecipe ? submitRecipeEdits() : saveAsRecipe()}
         onCancel={() => { setShowRecipeModal(false); setEditingRecipe(null); setRecipeName(''); }}
       />
 
@@ -592,7 +592,7 @@ function App() {
         ratingConfig={RATING_CONFIG}
         onClose={() => setSelectedShot(null)}
         onEdit={openEditShot}
-        onDelete={deleteShot}
+        onDelete={confirmDeleteShot}
         onDuplicate={duplicateShot}
         onToggleCompare={(id) => {
           const wasCompared = compareShots.includes(id);
@@ -605,9 +605,9 @@ function App() {
         open={showBeanLibrary}
         beans={beans}
         onAdd={addBean}
-        onUpdate={replaceBean}
-        onDelete={deleteBean}
-        onToggleActive={toggleBeanActiveHook}
+        onUpdate={updateBean}
+        onDelete={confirmDeleteBean}
+        onToggleActive={toggleActive}
         onClose={() => setShowBeanLibrary(false)}
       />
 
@@ -621,7 +621,7 @@ function App() {
           showToast(`Applied "${recipe.name}"`, 'success');
         }}
         onEdit={openEditRecipe}
-        onDelete={deleteRecipe}
+        onDelete={confirmDeleteRecipe}
         onTogglePin={(recipe, wasStarred) => {
           togglePinRecipe(recipe.id);
           showToast(
@@ -670,7 +670,7 @@ function App() {
         }}
         onEditShot={openEditShot}
         onDuplicateShot={duplicateShot}
-        onDeleteShot={deleteShot}
+        onDeleteShot={confirmDeleteShot}
       />
 
       <SettingsModal
