@@ -33,7 +33,6 @@ export default function BeanInput({
     inputRef,
     suggestionsRef,
 }: BeanInputProps) {
-    // close suggestions on outside click
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (

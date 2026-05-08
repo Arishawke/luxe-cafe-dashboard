@@ -27,7 +27,6 @@ export default function Header({
             <h1 className="header__title">Luxe Cafe Dial-In</h1>
             <p className="header__subtitle">Ninja Luxe Cafe Pro Calibration Dashboard</p>
 
-            {/* Hamburger button for mobile */}
             <button
                 className="header__hamburger"
                 onClick={onToggleMobileMenu}
@@ -36,7 +35,6 @@ export default function Header({
                 {mobileMenuOpen ? <Icons.X /> : <Icons.Menu />}
             </button>
 
-            {/* Navigation buttons */}
             <div className={`header__btns ${mobileMenuOpen ? 'header__btns--open' : ''}`}>
                 <button
                     className="header__btn"
@@ -66,7 +64,6 @@ export default function Header({
                 >
                     <Icons.Caffeine /> Caffeine
                 </button>
-                {/* Settings button for desktop */}
                 <button
                     className="header__btn header__btn--icon header__prefs-btn"
                     onClick={onOpenSettings}
@@ -74,7 +71,6 @@ export default function Header({
                 >
                     <Icons.Sliders />
                 </button>
-                {/* Settings button for mobile */}
                 <button
                     className="header__btn header__theme-btn"
                     onClick={onOpenSettings}
@@ -84,7 +80,6 @@ export default function Header({
                 </button>
             </div>
 
-            {/* Mobile menu overlay */}
             {mobileMenuOpen && (
                 <div
                     className="header__overlay"

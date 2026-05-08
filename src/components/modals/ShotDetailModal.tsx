@@ -56,14 +56,12 @@ export default function ShotDetailModal({
                     </div>
                 </div>
                 <div className="modal__body">
-                    {/* Rating Banner */}
                     <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
                         <ShotIcon />
                         <span>{shot.rating}</span>
                         {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
                     </div>
 
-                    {/* Timestamp */}
                     <div className="shot-detail__timestamp">
                         {new Intl.DateTimeFormat('en-US', {
                             weekday: 'long',
@@ -76,7 +74,6 @@ export default function ShotDetailModal({
                         }).format(shot.timestamp)}
                     </div>
 
-                    {/* Settings Grid */}
                     <div className="shot-detail__grid">
                         <div className="shot-detail__item">
                             <span className="shot-detail__label">Brew Type</span>
@@ -122,7 +119,6 @@ export default function ShotDetailModal({
                         )}
                     </div>
 
-                    {/* Notes */}
                     {shot.notes && (
                         <div className="shot-detail__notes">
                             <span className="shot-detail__label">Notes</span>

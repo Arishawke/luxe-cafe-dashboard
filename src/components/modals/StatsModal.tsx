@@ -30,7 +30,6 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                         </div>
                     ) : (
                         <>
-                            {/* Summary Stats */}
                             <div className="stats-summary">
                                 <div className="stat-card">
                                     <div className="stat-card__value">{stats.totalShots}</div>
@@ -52,7 +51,6 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                                 )}
                             </div>
 
-                            {/* Rating Distribution */}
                             <div className="stats-section">
                                 <h4>Rating Distribution</h4>
                                 <div className="bar-chart">
@@ -74,7 +72,6 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                                 </div>
                             </div>
 
-                            {/* Top Beans */}
                             {stats.topBeans.length > 0 && (
                                 <div className="stats-section">
                                     <h4>Top Beans</h4>
@@ -95,7 +92,6 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                                 </div>
                             )}
 
-                            {/* Success Rate Over Time */}
                             {stats.hasWeekData && (
                                 <div className="stats-section">
                                     <h4>Success Rate (Last 7 Days)</h4>
@@ -124,7 +120,6 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                                 </div>
                             )}
 
-                            {/* Brew Type Breakdown */}
                             {stats.showBrewBreakdown && (
                                 <div className="stats-section">
                                     <h4>Brew Types</h4>

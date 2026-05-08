@@ -3,8 +3,8 @@ import { formatDate } from '../lib/format';
 import Icons from './Icons';
 
 interface ShotHistoryProps {
-    shots: ShotLog[];                  // raw shots, used for bean dropdown + empty state
-    sortedShots: ShotLog[];            // sorted, with favorites pinned
+    shots: ShotLog[];
+    sortedShots: ShotLog[];
     favorites: FavoritesMap;
     use24Hour: boolean;
     beanFilter: string;
@@ -39,7 +39,6 @@ export default function ShotHistory({
         ? sortedShots.filter(s => s.beanName === beanFilter)
         : sortedShots;
 
-    // notes search filter
     if (notesSearch.trim()) {
         const searchLower = notesSearch.toLowerCase();
         filteredShots = filteredShots.filter(s =>
@@ -62,7 +61,6 @@ export default function ShotHistory({
                 )}
             </h2>
 
-            {/* Bean Filter & Notes Search */}
             {shots.length > 0 && (
                 <div className="history-filters">
                     <div className="history-filter">

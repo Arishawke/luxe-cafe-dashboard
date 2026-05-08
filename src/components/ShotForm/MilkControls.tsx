@@ -21,7 +21,6 @@ export default function MilkControls({
     setMilkStyle,
     isColdBrew,
 }: MilkControlsProps) {
-    // hide milk for cold brews
     if (isColdBrew) return null;
     return (
         <div className="advanced-tools">

@@ -41,7 +41,6 @@ export default function SuggestionCard({
 
     return (
         <>
-            {/* Current Rating & Tip */}
             <div className={`barista-tip barista-tip--${config.colorClass}`}>
                 <span className="barista-tip__icon">
                     <TipIcon />
@@ -59,7 +58,6 @@ export default function SuggestionCard({
                 </div>
             </div>
 
-            {/* Suggested Next Settings */}
             {suggestion && (
                 <div className="suggested-settings">
                     <div className="suggested-settings__header">
@@ -93,7 +91,6 @@ export default function SuggestionCard({
                 </div>
             )}
 
-            {/* Dial-in Journey */}
             {shotsForBean.length > 1 && (() => {
                 const displayShots = shotsForBean.slice(0, 5).reverse();
                 const grindSizes = displayShots.map(s => s.grindSize);
@@ -123,7 +120,6 @@ export default function SuggestionCard({
                                 );
                             })}
                         </div>
-                        {/* Grind History Chart */}
                         <div className="grind-history" title="Grind size trend">
                             {displayShots.map((shot, idx) => (
                                 <div

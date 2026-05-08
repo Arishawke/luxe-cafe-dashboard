@@ -70,7 +70,6 @@ export default function HistoryModal({
                     </button>
                 </div>
                 <div className="modal__body">
-                    {/* Filters */}
                     <div className="history-modal__filters">
                         <div className="history-filter">
                             <select
@@ -105,9 +104,7 @@ export default function HistoryModal({
                         />
                     </div>
 
-                    {/* Split content area */}
                     <div className="history-modal__content">
-                        {/* Shot List */}
                         <div className="history-modal__list">
                             {filteredShots.length > 0 ? (
                                 filteredShots.map((shot) => {
@@ -164,7 +161,6 @@ export default function HistoryModal({
                             )}
                         </div>
 
-                        {/* Preview Pane (Desktop only) */}
                         <div className="history-modal__preview">
                             {previewShot ? (() => {
                                 const config = ratingConfig[previewShot.rating];
@@ -172,14 +168,12 @@ export default function HistoryModal({
                                 const isFavorite = favorites[previewShot.beanName.toLowerCase()] === previewShot.id;
                                 return (
                                     <>
-                                        {/* Rating Banner */}
                                         <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
                                             <PreviewIcon />
                                             <span>{previewShot.rating}</span>
                                             {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
                                         </div>
 
-                                        {/* Timestamp */}
                                         <div className="shot-detail__timestamp">
                                             {new Intl.DateTimeFormat('en-US', {
                                                 weekday: 'long',
@@ -192,7 +186,6 @@ export default function HistoryModal({
                                             }).format(previewShot.timestamp)}
                                         </div>
 
-                                        {/* Settings Grid */}
                                         <div className="shot-detail__grid">
                                             <div className="shot-detail__item">
                                                 <span className="shot-detail__label">Brew Type</span>
@@ -238,7 +231,6 @@ export default function HistoryModal({
                                             )}
                                         </div>
 
-                                        {/* Notes */}
                                         {previewShot.notes && (
                                             <div className="shot-detail__notes">
                                                 <span className="shot-detail__label">Notes</span>
@@ -246,7 +238,6 @@ export default function HistoryModal({
                                             </div>
                                         )}
 
-                                        {/* Actions */}
                                         <div className="history-modal__preview-actions">
                                             <button
                                                 className="btn-action"

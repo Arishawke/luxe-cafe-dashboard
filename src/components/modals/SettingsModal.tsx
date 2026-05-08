@@ -57,7 +57,6 @@ export default function SettingsModal({
                     </button>
                 </div>
                 <div className="modal__body">
-                    {/* Appearance Section */}
                     <div className="settings-section">
                         <h4 className="settings-section__title">🎨 Appearance</h4>
 
@@ -97,11 +96,9 @@ export default function SettingsModal({
                         </div>
                     </div>
 
-                    {/* Data Section */}
                     <div className="settings-section">
                         <h4 className="settings-section__title">💾 Data</h4>
 
-                        {/* Data Summary */}
                         <div className="data-summary">
                             <div className="data-summary__item">
                                 <span className="data-summary__count">{shotsCount}</span>
@@ -117,14 +114,12 @@ export default function SettingsModal({
                             </div>
                         </div>
 
-                        {/* Import Status */}
                         {importStatus && (
                             <div className={`import-status import-status--${importStatus.type}`}>
                                 {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
                             </div>
                         )}
 
-                        {/* Export/Import Buttons */}
                         <div className="data-actions">
                             <button className="data-action-btn" onClick={onExportJSON}>
                                 <Icons.Download />
