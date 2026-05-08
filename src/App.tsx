@@ -12,6 +12,7 @@ import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
 import RecipeEditorModal from './components/modals/RecipeEditorModal';
+import ShotDetailModal from './components/modals/ShotDetailModal';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
@@ -790,142 +791,22 @@ function App() {
         onCancel={() => { setShowRecipeModal(false); setEditingRecipe(null); setRecipeName(''); }}
       />
 
-      {/* Shot Details Modal */}
-      {selectedShot && (() => {
-        const config = RATING_CONFIG[selectedShot.rating];
-        const ShotIcon = config.icon;
-        const isFavorite = favorites[selectedShot.beanName.toLowerCase()] === selectedShot.id;
-        return (
-          <div className="modal-overlay" onClick={() => setSelectedShot(null)}>
-            <div className="modal modal--wide" onClick={(e) => e.stopPropagation()}>
-              <div className="modal__header">
-                <h3>{selectedShot.beanName}</h3>
-                <div className="modal__header-actions">
-                  <button
-                    className="modal__header-btn"
-                    onClick={() => openEditShot(selectedShot)}
-                    title="Edit shot"
-                  >
-                    <Icons.Edit />
-                  </button>
-                  <button
-                    className="modal__header-btn modal__header-btn--delete"
-                    onClick={(e) => { e.stopPropagation(); deleteShot(selectedShot.id); }}
-                    title="Delete shot"
-                  >
-                    <Icons.Trash />
-                  </button>
-                  <button className="modal__close" onClick={() => setSelectedShot(null)}>
-                    <Icons.X />
-                  </button>
-                </div>
-              </div>
-              <div className="modal__body">
-                {/* Rating Banner */}
-                <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
-                  <ShotIcon />
-                  <span>{selectedShot.rating}</span>
-                  {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
-                </div>
-
-                {/* Timestamp */}
-                <div className="shot-detail__timestamp">
-                  {new Intl.DateTimeFormat('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: !use24Hour,
-                  }).format(selectedShot.timestamp)}
-                </div>
-
-                {/* Settings Grid */}
-                <div className="shot-detail__grid">
-                  <div className="shot-detail__item">
-                    <span className="shot-detail__label">Brew Type</span>
-                    <span className="shot-detail__value">{selectedShot.brewType}</span>
-                  </div>
-                  <div className="shot-detail__item">
-                    <span className="shot-detail__label">Grind Size</span>
-                    <span className="shot-detail__value">{selectedShot.grindSize}</span>
-                  </div>
-                  {selectedShot.temperature && (
-                    <div className="shot-detail__item">
-                      <span className="shot-detail__label">Temperature</span>
-                      <span className="shot-detail__value">{selectedShot.temperature}</span>
-                    </div>
-                  )}
-                  <div className="shot-detail__item">
-                    <span className="shot-detail__label">Basket</span>
-                    <span className="shot-detail__value">{selectedShot.basket}</span>
-                  </div>
-                  <div className="shot-detail__item">
-                    <span className="shot-detail__label">Strength</span>
-                    <span className="shot-detail__value">{selectedShot.strength}</span>
-                  </div>
-                  {selectedShot.milk && (
-                    <div className="shot-detail__item">
-                      <span className="shot-detail__label">Milk</span>
-                      <span className="shot-detail__value">{selectedShot.milk.type} {selectedShot.milk.style}</span>
-                    </div>
-                  )}
-                  {selectedShot.extractionTime && (
-                    <div className="shot-detail__item">
-                      <span className="shot-detail__label">Extraction Time</span>
-                      <span className="shot-detail__value">{selectedShot.extractionTime}s</span>
-                    </div>
-                  )}
-                  {selectedShot.doseIn && selectedShot.doseOut && (
-                    <div className="shot-detail__item">
-                      <span className="shot-detail__label">Dose / Yield</span>
-                      <span className="shot-detail__value">
-                        {selectedShot.doseIn}g → {selectedShot.doseOut}g (1:{(selectedShot.doseOut / selectedShot.doseIn).toFixed(1)})
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Notes */}
-                {selectedShot.notes && (
-                  <div className="shot-detail__notes">
-                    <span className="shot-detail__label">Notes</span>
-                    <p>{selectedShot.notes}</p>
-                  </div>
-                )}
-              </div>
-              <div className="modal__footer">
-                <button
-                  className={`btn-action ${compareShots.includes(selectedShot.id) ? 'btn-action--active' : ''}`}
-                  onClick={() => {
-                    toggleCompareShot(selectedShot.id);
-                    showToast(
-                      compareShots.includes(selectedShot.id)
-                        ? 'Removed from comparison'
-                        : 'Added to comparison',
-                      'info'
-                    );
-                  }}
-                  title="Add to comparison"
-                >
-                  <Icons.BarChart /> Compare
-                </button>
-                <button
-                  className="btn-action"
-                  onClick={() => duplicateShot(selectedShot)}
-                  title="Copy settings to form"
-                >
-                  <Icons.Copy /> Brew Again
-                </button>
-                <button className="btn-action btn-action--primary" onClick={() => setSelectedShot(null)}>
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      <ShotDetailModal
+        shot={selectedShot}
+        use24Hour={use24Hour}
+        isFavorite={!!selectedShot && favorites[selectedShot.beanName.toLowerCase()] === selectedShot.id}
+        isCompared={!!selectedShot && compareShots.includes(selectedShot.id)}
+        ratingConfig={RATING_CONFIG}
+        onClose={() => setSelectedShot(null)}
+        onEdit={openEditShot}
+        onDelete={deleteShot}
+        onDuplicate={duplicateShot}
+        onToggleCompare={(id) => {
+          const wasCompared = compareShots.includes(id);
+          toggleCompareShot(id);
+          showToast(wasCompared ? 'Removed from comparison' : 'Added to comparison', 'info');
+        }}
+      />
 
       {/* Bean Library Modal */}
       {showBeanLibrary && (
