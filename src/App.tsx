@@ -408,7 +408,7 @@ function App() {
   };
 
   return (
-    <div className="dashboard">
+    <main className="dashboard">
       <Header
         mobileMenuOpen={mobileMenuOpen}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -762,7 +762,7 @@ function App() {
       </div>
 
       <Toast toast={toast} onDismiss={hideToast} shortcutsOpen={showShortcuts} />
-    </div>
+    </main>
   );
 }
 
