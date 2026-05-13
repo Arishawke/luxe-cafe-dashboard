@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.1] - 2026-05-13
+
+### Changed
+- Shot detail modal now closes immediately when you click Edit, Delete, or Brew Again, so the confirm dialog or the form is no longer covered by the detail behind it.
+
 ## [1.4.0] - 2026-05-13
 
 ### Changed
