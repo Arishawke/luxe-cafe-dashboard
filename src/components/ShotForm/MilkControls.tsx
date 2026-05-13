@@ -38,14 +38,15 @@ export default function MilkControls({
             {showMilk && (
                 <div className="froth-panel">
                     <div className="froth-panel__row">
-                        <label className="form-label">Milk Type</label>
-                        <div className="pill-group pill-group--wrap">
+                        <span className="form-label" id="shot-milk-type-label">Milk Type</span>
+                        <div className="pill-group pill-group--wrap" role="group" aria-labelledby="shot-milk-type-label">
                             {MILK_TYPES.map((type) => (
                                 <button
                                     key={type}
                                     type="button"
                                     className={`pill-btn pill-btn--sm ${milkType === type ? 'pill-btn--active' : ''}`}
                                     onClick={() => setMilkType(type)}
+                                    aria-pressed={milkType === type}
                                 >
                                     {type}
                                 </button>
@@ -53,14 +54,15 @@ export default function MilkControls({
                         </div>
                     </div>
                     <div className="froth-panel__row">
-                        <label className="form-label">Style</label>
-                        <div className="pill-group pill-group--wrap">
+                        <span className="form-label" id="shot-milk-style-label">Style</span>
+                        <div className="pill-group pill-group--wrap" role="group" aria-labelledby="shot-milk-style-label">
                             {MILK_STYLES.map((style) => (
                                 <button
                                     key={style}
                                     type="button"
                                     className={`pill-btn pill-btn--sm ${milkStyle === style ? 'pill-btn--active' : ''}`}
                                     onClick={() => setMilkStyle(style)}
+                                    aria-pressed={milkStyle === style}
                                 >
                                     {style}
                                 </button>

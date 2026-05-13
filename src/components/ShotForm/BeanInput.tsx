@@ -50,11 +50,12 @@ export default function BeanInput({
     return (
         <>
             <div className="form-group">
-                <label className="form-label">Bean Name</label>
+                <label className="form-label" htmlFor="shot-bean-name">Bean Name</label>
                 <div className="autocomplete">
                     <div className="autocomplete__input-wrap">
                         <input
                             ref={inputRef}
+                            id="shot-bean-name"
                             type="text"
                             className="form-input"
                             placeholder="e.g. Ethiopian Yirgacheffe"
