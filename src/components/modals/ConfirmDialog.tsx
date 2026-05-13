@@ -1,4 +1,5 @@
 import type { ConfirmDialog as ConfirmState } from '../../hooks/useConfirm';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface ConfirmDialogProps {
@@ -8,13 +9,21 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({ dialog, onConfirm, onClose }: ConfirmDialogProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!dialog) return null;
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--confirm" onClick={e => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--confirm"
+                onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="confirm-dialog-title"
+            >
                 <div className="modal__header">
-                    <h2>{dialog.title}</h2>
-                    <button className="modal__close" onClick={onClose}>
+                    <h2 id="confirm-dialog-title">{dialog.title}</h2>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>

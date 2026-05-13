@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ShotLog, FavoritesMap, Rating } from '../../types';
 import { formatDate } from '../../lib/format';
 import { filterShots } from '../../lib/shots';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 import ShotDetailView from '../ShotDetailView';
 
@@ -47,6 +48,7 @@ export default function HistoryModal({
     onDeleteShot,
 }: HistoryModalProps) {
     const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
+    const modalRef = useFocusTrap<HTMLDivElement>();
 
     if (!open) return null;
 
@@ -54,10 +56,17 @@ export default function HistoryModal({
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--history" onClick={e => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--history"
+                onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="history-modal-title"
+            >
                 <div className="modal__header">
-                    <h3><Icons.BarChart /> Shot History ({shots.length})</h3>
-                    <button className="modal__close" onClick={onClose}>
+                    <h3 id="history-modal-title"><Icons.BarChart /> Shot History ({shots.length})</h3>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>
@@ -82,8 +91,9 @@ export default function HistoryModal({
                                     className="history-filter__clear"
                                     onClick={() => setBeanFilter('')}
                                     title="Clear filter"
+                                    aria-label="Clear bean filter"
                                 >
-                                    ×
+                                    <span aria-hidden="true">×</span>
                                 </button>
                             )}
                         </div>
@@ -125,6 +135,8 @@ export default function HistoryModal({
                                                     className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
                                                     onClick={(e) => { e.stopPropagation(); onToggleFavorite(shot); }}
                                                     title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                                    aria-label={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                                    aria-pressed={isFavorite}
                                                 >
                                                     <Icons.Star filled={isFavorite} />
                                                 </button>
@@ -136,6 +148,7 @@ export default function HistoryModal({
                                                         if (previewShot?.id === shot.id) setPreviewShot(null);
                                                     }}
                                                     title="Delete shot"
+                                                    aria-label="Delete shot"
                                                 >
                                                     <Icons.Trash />
                                                 </button>

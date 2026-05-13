@@ -45,9 +45,10 @@ export default function ShotForm({
     return (
         <form className="shot-form" onSubmit={onSubmit}>
             <div className="form-group">
-                <label className="form-label">Brew Type</label>
+                <label className="form-label" htmlFor="shot-brew-type">Brew Type</label>
                 <div className="select-wrap">
                     <select
+                        id="shot-brew-type"
                         className="form-select"
                         value={form.brewType}
                         onChange={(e) => form.setBrewType(e.target.value as BrewType)}
@@ -115,8 +116,9 @@ export default function ShotForm({
             />
 
             <div className="form-group">
-                <label className="form-label">Add-ins / Notes</label>
+                <label className="form-label" htmlFor="shot-notes">Add-ins / Notes</label>
                 <input
+                    id="shot-notes"
                     type="text"
                     className="form-input"
                     placeholder="e.g. Vanilla syrup, Cinnamon, Extra hot"
