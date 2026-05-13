@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.3] - 2026-05-13
+
+### Changed
+- Faster first paint: Google Fonts now load via preconnect from the HTML head instead of a CSS import. Lighthouse mobile LCP estimated ~1s faster.
+- Initial JavaScript bundle is ~5 KB smaller (gzip) because Bean Library, Recipe Library, Stats, Caffeine, History, Settings, and Recipe Editor modals now lazy-load their code only when first opened.
+
+### Fixed
+- Dashboard root is now a semantic `<main>` element, giving screen reader users proper landmark navigation.
+- Muted text in the dark theme is slightly lighter so it meets WCAG AA (4.5:1) contrast on all background tones.
+
 ## [1.4.2] - 2026-05-13
 
 ### Changed
