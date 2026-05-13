@@ -46,7 +46,7 @@ export default function ShotDetailModal({
                     <div className="modal__header-actions">
                         <button
                             className="modal__header-btn"
-                            onClick={() => onEdit(shot)}
+                            onClick={() => { onClose(); onEdit(shot); }}
                             title="Edit shot"
                             aria-label="Edit shot"
                         >
@@ -54,7 +54,7 @@ export default function ShotDetailModal({
                         </button>
                         <button
                             className="modal__header-btn modal__header-btn--delete"
-                            onClick={(e) => { e.stopPropagation(); onDelete(shot.id); }}
+                            onClick={(e) => { e.stopPropagation(); onClose(); onDelete(shot.id); }}
                             title="Delete shot"
                             aria-label="Delete shot"
                         >
@@ -83,7 +83,7 @@ export default function ShotDetailModal({
                     </button>
                     <button
                         className="btn-action"
-                        onClick={() => onDuplicate(shot)}
+                        onClick={() => { onClose(); onDuplicate(shot); }}
                         title="Copy settings to form"
                     >
                         <Icons.Copy /> Brew Again
