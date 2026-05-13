@@ -5075,3 +5075,48 @@ textarea:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* Touch target minimums: every interactive button should be at least 44x44px */
+.pill-btn,
+.header__btn,
+.header__hamburger,
+.btn-action,
+.modal__close,
+.modal__header-btn,
+.grind-control__btn,
+.shot-timer__btn,
+.shot-timer__mode-btn,
+.star-btn,
+.history-item__edit-btn,
+.history-item__delete-btn,
+.history-filter__clear,
+.card__expand-btn,
+.autocomplete__toggle,
+.toast__close,
+.compare-panel__close,
+.bean-card__delete,
+.bean-card__toggle,
+.recipe-library__action-btn,
+.maintenance-row__btn,
+.maintenance-alert__action {
+  min-height: 44px;
+}
+
+.modal__close,
+.modal__header-btn,
+.grind-control__btn,
+.shot-timer__btn,
+.star-btn,
+.history-item__edit-btn,
+.history-item__delete-btn,
+.history-filter__clear,
+.card__expand-btn,
+.autocomplete__toggle,
+.toast__close,
+.compare-panel__close,
+.bean-card__delete,
+.bean-card__toggle,
+.recipe-library__action-btn,
+.header__hamburger {
+  min-width: 44px;
+}
