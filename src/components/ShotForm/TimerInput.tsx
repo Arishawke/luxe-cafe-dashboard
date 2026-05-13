@@ -87,16 +87,16 @@ export default function TimerInput({
                             </div>
                             <div className="shot-timer__controls">
                                 {timerRunning ? (
-                                    <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop">
-                                        ⏸
+                                    <button type="button" className="shot-timer__btn shot-timer__btn--stop" onClick={stopTimer} title="Stop" aria-label="Stop timer">
+                                        <span aria-hidden="true">⏸</span>
                                     </button>
                                 ) : (
-                                    <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start">
-                                        ▶
+                                    <button type="button" className="shot-timer__btn shot-timer__btn--start" onClick={startTimer} title="Start" aria-label="Start timer">
+                                        <span aria-hidden="true">▶</span>
                                     </button>
                                 )}
-                                <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0}>
-                                    ↺
+                                <button type="button" className="shot-timer__btn shot-timer__btn--reset" onClick={resetTimer} title="Reset" disabled={timerSeconds === 0} aria-label="Reset timer">
+                                    <span aria-hidden="true">↺</span>
                                 </button>
                             </div>
                         </>

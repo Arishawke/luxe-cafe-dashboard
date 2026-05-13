@@ -15,7 +15,7 @@ export default function ShotComparison({ shot1, shot2, onClear, onRemoveAt }: Sh
         <div className="compare-panel">
             <div className="compare-panel__header">
                 <h3><Icons.BarChart /> Compare Shots</h3>
-                <button className="compare-panel__close" onClick={onClear}>
+                <button className="compare-panel__close" onClick={onClear} aria-label="Clear comparison">
                     <Icons.X />
                 </button>
             </div>

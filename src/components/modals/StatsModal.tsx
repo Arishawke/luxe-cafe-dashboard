@@ -18,7 +18,7 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
             <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
                 <div className="modal__header">
                     <h3><Icons.PieChart /> Statistics</h3>
-                    <button className="modal__close" onClick={onClose}>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>

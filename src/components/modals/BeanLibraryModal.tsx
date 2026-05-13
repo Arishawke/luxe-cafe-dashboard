@@ -102,7 +102,7 @@ export default function BeanLibraryModal({
             <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
                 <div className="modal__header">
                     <h3><Icons.Bean /> Bean Library</h3>
-                    <button className="modal__close" onClick={handleClose}>
+                    <button className="modal__close" aria-label="Close" onClick={handleClose}>
                         <Icons.X />
                     </button>
                 </div>
@@ -240,13 +240,16 @@ export default function BeanLibraryModal({
                                                     className={`bean-card__toggle ${bean.isActive ? 'bean-card__toggle--active' : ''}`}
                                                     onClick={() => onToggleActive(bean.id)}
                                                     title={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
+                                                    aria-label={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
+                                                    aria-pressed={bean.isActive}
                                                 >
-                                                    {bean.isActive ? '✓' : '○'}
+                                                    <span aria-hidden="true">{bean.isActive ? '✓' : '○'}</span>
                                                 </button>
                                                 <button
                                                     className="bean-card__delete"
                                                     onClick={() => handleDelete(bean.id)}
                                                     title="Delete bean"
+                                                    aria-label="Delete bean"
                                                 >
                                                     <Icons.Trash />
                                                 </button>

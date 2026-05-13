@@ -14,7 +14,7 @@ export default function ConfirmDialog({ dialog, onConfirm, onClose }: ConfirmDia
             <div className="modal modal--confirm" onClick={e => e.stopPropagation()}>
                 <div className="modal__header">
                     <h2>{dialog.title}</h2>
-                    <button className="modal__close" onClick={onClose}>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>

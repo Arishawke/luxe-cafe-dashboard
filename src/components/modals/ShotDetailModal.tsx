@@ -39,6 +39,7 @@ export default function ShotDetailModal({
                             className="modal__header-btn"
                             onClick={() => onEdit(shot)}
                             title="Edit shot"
+                            aria-label="Edit shot"
                         >
                             <Icons.Edit />
                         </button>
@@ -46,10 +47,11 @@ export default function ShotDetailModal({
                             className="modal__header-btn modal__header-btn--delete"
                             onClick={(e) => { e.stopPropagation(); onDelete(shot.id); }}
                             title="Delete shot"
+                            aria-label="Delete shot"
                         >
                             <Icons.Trash />
                         </button>
-                        <button className="modal__close" onClick={onClose}>
+                        <button className="modal__close" aria-label="Close" onClick={onClose}>
                             <Icons.X />
                         </button>
                     </div>

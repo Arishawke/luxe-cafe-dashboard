@@ -17,7 +17,7 @@ export default function CaffeineModal({ open, shots, onClose }: CaffeineModalPro
             <div className="modal modal--caffeine" onClick={e => e.stopPropagation()}>
                 <div className="modal__header">
                     <h2><Icons.Caffeine /> Caffeine Tracker</h2>
-                    <button className="modal__close" onClick={onClose}>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>

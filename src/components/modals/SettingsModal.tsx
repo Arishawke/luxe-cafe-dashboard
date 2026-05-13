@@ -69,7 +69,7 @@ export default function SettingsModal({
             <div className="modal modal--settings" onClick={e => e.stopPropagation()}>
                 <div className="modal__header">
                     <h3><Icons.Sliders /> Settings</h3>
-                    <button className="modal__close" onClick={onClose}>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>
