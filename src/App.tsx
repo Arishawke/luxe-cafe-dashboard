@@ -405,17 +405,22 @@ function App() {
     return b.timestamp.getTime() - a.timestamp.getTime();
   });
 
+  const openModal = (setter: (v: boolean) => void) => () => {
+    setter(true);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="dashboard">
       <Header
         mobileMenuOpen={mobileMenuOpen}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         onCloseMobileMenu={() => setMobileMenuOpen(false)}
-        onOpenBeanLibrary={() => { setShowBeanLibrary(true); setMobileMenuOpen(false); }}
-        onOpenRecipes={() => { setShowRecipeLibrary(true); setMobileMenuOpen(false); }}
-        onOpenStats={() => { setShowStats(true); setMobileMenuOpen(false); }}
-        onOpenCaffeine={() => { setShowCaffeine(true); setMobileMenuOpen(false); }}
-        onOpenSettings={() => { setShowSettings(true); setMobileMenuOpen(false); }}
+        onOpenBeanLibrary={openModal(setShowBeanLibrary)}
+        onOpenRecipes={openModal(setShowRecipeLibrary)}
+        onOpenStats={openModal(setShowStats)}
+        onOpenCaffeine={openModal(setShowCaffeine)}
+        onOpenSettings={openModal(setShowSettings)}
       />
 
       {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
