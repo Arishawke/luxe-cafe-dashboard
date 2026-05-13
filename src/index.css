@@ -1,7 +1,5 @@
 /* Coffee Roast Design System - True Espresso Theme */
-
-/* Google Fonts - Serif for headers, Plus Jakarta Sans for body */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+/* Fonts loaded via preconnect + link in index.html for faster LCP */
 
 /* CSS Variables - Coffee Roast Palette (Black Coffee → Espresso → Latte → Cream) */
 :root {
@@ -21,7 +19,7 @@
   --color-cream: #F5EDE4;
   --color-foam: #E8DFD5;
   --color-muted: #A89F96;
-  --color-subtle: #6B6058;
+  --color-subtle: #9C8E85;
 
   /* Rating colors - warmer tones */
   --color-sour: #D4915C;
