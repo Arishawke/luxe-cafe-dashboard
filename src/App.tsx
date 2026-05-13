@@ -231,7 +231,6 @@ function App() {
           setFavorites(updated);
         }
         deleteShot(id);
-        setSelectedShot(null);
         showToast('Shot deleted', 'info');
       }
     );
@@ -240,7 +239,6 @@ function App() {
   const duplicateShot = (shot: ShotLog) => {
     form.applyFromShot(shot);
     form.setRatingIndex(BALANCED_RATING_INDEX);
-    setSelectedShot(null);
   };
 
   const openEditShot = (shot: ShotLog) => {
@@ -258,7 +256,6 @@ function App() {
       form.setShowTimer(true);
     }
     setEditingShot(shot);
-    setSelectedShot(null);
     setShowHistoryModal(false);
     showToast('Editing shot - make changes and click Update Shot', 'info');
   };
