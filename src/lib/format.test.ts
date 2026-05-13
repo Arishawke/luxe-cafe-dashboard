@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateId, formatDate } from './format';
+import { generateId, formatDate, formatDateLong } from './format';
 
 describe('generateId', () => {
     it('returns a UUID-shaped string', () => {
@@ -28,5 +28,22 @@ describe('formatDate', () => {
         expect(out).toMatch(/14:30/);
         expect(out).not.toMatch(/PM/);
         expect(out).not.toMatch(/AM/);
+    });
+});
+
+describe('formatDateLong', () => {
+    const date = new Date('2026-05-12T14:30:00');
+
+    it('includes weekday, full month name, and year', () => {
+        const out = formatDateLong(date);
+        expect(out).toMatch(/Tuesday/);
+        expect(out).toMatch(/May/);
+        expect(out).toMatch(/2026/);
+    });
+
+    it('respects 24-hour preference', () => {
+        const out = formatDateLong(date, true);
+        expect(out).toMatch(/14:30/);
+        expect(out).not.toMatch(/PM/);
     });
 });

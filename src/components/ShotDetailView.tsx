@@ -1,4 +1,5 @@
 import type { Rating, ShotLog } from '../types';
+import { formatDateLong } from '../lib/format';
 
 interface ShotDetailViewProps {
     shot: ShotLog;
@@ -20,15 +21,7 @@ export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConf
             </div>
 
             <div className="shot-detail__timestamp">
-                {new Intl.DateTimeFormat('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: !use24Hour,
-                }).format(shot.timestamp)}
+                {formatDateLong(shot.timestamp, use24Hour)}
             </div>
 
             <div className="shot-detail__grid">
