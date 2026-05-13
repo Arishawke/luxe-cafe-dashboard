@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import type { FormEvent } from 'react';
 import type { ShotLog, Rating, SavedRecipe } from './types';
 import { COLD_BREW_TYPES } from './types';
@@ -12,20 +12,21 @@ import Icons from './components/Icons';
 import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
-import RecipeEditorModal from './components/modals/RecipeEditorModal';
 import ShotDetailModal from './components/modals/ShotDetailModal';
-import BeanLibraryModal from './components/modals/BeanLibraryModal';
-import RecipeLibraryModal from './components/modals/RecipeLibraryModal';
-import StatsModal from './components/modals/StatsModal';
-import CaffeineModal from './components/modals/CaffeineModal';
-import HistoryModal from './components/modals/HistoryModal';
-import SettingsModal from './components/modals/SettingsModal';
 import { buildJSONBackup, buildCSV, downloadFile, parseImportFile } from './lib/dataIO';
 import Toast from './components/Toast';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
 import ShotComparison from './components/ShotComparison';
 import { RATING_COLOR_CLASS } from './lib/ratings';
+
+const RecipeEditorModal = lazy(() => import('./components/modals/RecipeEditorModal'));
+const BeanLibraryModal = lazy(() => import('./components/modals/BeanLibraryModal'));
+const RecipeLibraryModal = lazy(() => import('./components/modals/RecipeLibraryModal'));
+const StatsModal = lazy(() => import('./components/modals/StatsModal'));
+const CaffeineModal = lazy(() => import('./components/modals/CaffeineModal'));
+const HistoryModal = lazy(() => import('./components/modals/HistoryModal'));
+const SettingsModal = lazy(() => import('./components/modals/SettingsModal'));
 
 const RATING_CONFIG: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }> = {
   'Very Sour': { icon: Icons.DoubleChevronLeft, colorClass: RATING_COLOR_CLASS['Very Sour'] },
@@ -556,15 +557,19 @@ function App() {
         </div>
       </div>
 
-      <RecipeEditorModal
-        open={showRecipeModal || editingRecipe !== null}
-        form={form}
-        recipeName={recipeName}
-        setRecipeName={setRecipeName}
-        editingRecipe={editingRecipe}
-        onSave={() => editingRecipe ? submitRecipeEdits() : saveAsRecipe()}
-        onCancel={() => { setShowRecipeModal(false); setEditingRecipe(null); setRecipeName(''); }}
-      />
+      {(showRecipeModal || editingRecipe !== null) && (
+        <Suspense fallback={null}>
+          <RecipeEditorModal
+            open={true}
+            form={form}
+            recipeName={recipeName}
+            setRecipeName={setRecipeName}
+            editingRecipe={editingRecipe}
+            onSave={() => editingRecipe ? submitRecipeEdits() : saveAsRecipe()}
+            onCancel={() => { setShowRecipeModal(false); setEditingRecipe(null); setRecipeName(''); }}
+          />
+        </Suspense>
+      )}
 
       <ShotDetailModal
         shot={selectedShot}
@@ -583,119 +588,131 @@ function App() {
         }}
       />
 
-      <BeanLibraryModal
-        open={showBeanLibrary}
-        beans={beans}
-        onAdd={addBean}
-        onUpdate={updateBean}
-        onDelete={confirmDeleteBean}
-        onToggleActive={toggleActive}
-        onClose={() => setShowBeanLibrary(false)}
-      />
+      <Suspense fallback={null}>
+        {showBeanLibrary && (
+          <BeanLibraryModal
+            open={true}
+            beans={beans}
+            onAdd={addBean}
+            onUpdate={updateBean}
+            onDelete={confirmDeleteBean}
+            onToggleActive={toggleActive}
+            onClose={() => setShowBeanLibrary(false)}
+          />
+        )}
 
-      <RecipeLibraryModal
-        open={showRecipeLibrary}
-        recipes={recipes}
-        pinnedRecipes={pinnedRecipes}
-        onApply={(recipe) => {
-          form.applyFromRecipe(recipe);
-          setShowRecipeLibrary(false);
-          showToast(`Applied "${recipe.name}"`, 'success');
-        }}
-        onEdit={openEditRecipe}
-        onDelete={confirmDeleteRecipe}
-        onTogglePin={(recipe, wasStarred) => {
-          togglePinRecipe(recipe.id);
-          showToast(
-            wasStarred
-              ? `Removed "${recipe.name}" from quick recipes`
-              : `Added "${recipe.name}" to quick recipes`,
-            wasStarred ? 'info' : 'success'
-          );
-        }}
-        onClose={() => setShowRecipeLibrary(false)}
-      />
+        {showRecipeLibrary && (
+          <RecipeLibraryModal
+            open={true}
+            recipes={recipes}
+            pinnedRecipes={pinnedRecipes}
+            onApply={(recipe) => {
+              form.applyFromRecipe(recipe);
+              setShowRecipeLibrary(false);
+              showToast(`Applied "${recipe.name}"`, 'success');
+            }}
+            onEdit={openEditRecipe}
+            onDelete={confirmDeleteRecipe}
+            onTogglePin={(recipe, wasStarred) => {
+              togglePinRecipe(recipe.id);
+              showToast(
+                wasStarred
+                  ? `Removed "${recipe.name}" from quick recipes`
+                  : `Added "${recipe.name}" to quick recipes`,
+                wasStarred ? 'info' : 'success'
+              );
+            }}
+            onClose={() => setShowRecipeLibrary(false)}
+          />
+        )}
 
-      <StatsModal
-        open={showStats}
-        shots={shots}
-        onClose={() => setShowStats(false)}
-      />
+        {showStats && (
+          <StatsModal
+            open={true}
+            shots={shots}
+            onClose={() => setShowStats(false)}
+          />
+        )}
 
+        {showCaffeine && (
+          <CaffeineModal
+            open={true}
+            shots={shots}
+            onClose={() => setShowCaffeine(false)}
+          />
+        )}
 
+        {showHistoryModal && (
+          <HistoryModal
+            open={true}
+            shots={shots}
+            sortedShots={sortedShots}
+            favorites={favorites}
+            beanFilter={beanFilter}
+            setBeanFilter={setBeanFilter}
+            notesSearch={notesSearch}
+            setNotesSearch={setNotesSearch}
+            use24Hour={use24Hour}
+            ratingConfig={RATING_CONFIG}
+            compareShots={compareShots}
+            onClose={() => setShowHistoryModal(false)}
+            onSelectShot={(shot) => setSelectedShot(shot)}
+            onToggleFavorite={toggleFavorite}
+            onToggleCompare={(id) => {
+              const wasCompared = compareShots.includes(id);
+              toggleCompareShot(id);
+              showToast(wasCompared ? 'Removed from comparison' : 'Added to comparison', 'info');
+            }}
+            onEditShot={openEditShot}
+            onDuplicateShot={duplicateShot}
+            onDeleteShot={confirmDeleteShot}
+          />
+        )}
 
-      <CaffeineModal
-        open={showCaffeine}
-        shots={shots}
-        onClose={() => setShowCaffeine(false)}
-      />
-
-      <HistoryModal
-        open={showHistoryModal}
-        shots={shots}
-        sortedShots={sortedShots}
-        favorites={favorites}
-        beanFilter={beanFilter}
-        setBeanFilter={setBeanFilter}
-        notesSearch={notesSearch}
-        setNotesSearch={setNotesSearch}
-        use24Hour={use24Hour}
-        ratingConfig={RATING_CONFIG}
-        compareShots={compareShots}
-        onClose={() => setShowHistoryModal(false)}
-        onSelectShot={(shot) => setSelectedShot(shot)}
-        onToggleFavorite={toggleFavorite}
-        onToggleCompare={(id) => {
-          const wasCompared = compareShots.includes(id);
-          toggleCompareShot(id);
-          showToast(wasCompared ? 'Removed from comparison' : 'Added to comparison', 'info');
-        }}
-        onEditShot={openEditShot}
-        onDuplicateShot={duplicateShot}
-        onDeleteShot={confirmDeleteShot}
-      />
-
-      <SettingsModal
-        open={showSettings}
-        theme={theme}
-        setTheme={setTheme}
-        use24Hour={use24Hour}
-        setUse24Hour={setUse24Hour}
-        shotsCount={shots.length}
-        recipesCount={recipes.length}
-        beansCount={beans.length}
-        importStatus={importStatus}
-        fileInputRef={fileInputRef}
-        onExportJSON={exportData}
-        onExportCSV={exportToCSV}
-        onImport={handleImport}
-        onClearAll={() => {
-          showConfirm(
-            'Clear All Data',
-            `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
-            () => {
-              setShots([]);
-              setRecipes([]);
-              setBeans([]);
-              setFavorites({});
-              setMaintenance([]);
-              showToast('All data cleared', 'success');
-              setShowSettings(false);
-            }
-          );
-        }}
-        onClose={() => { setShowSettings(false); setImportStatus(null); }}
-        lastCleaning={lastMaintenanceFor('cleaning')}
-        lastDescaling={lastMaintenanceFor('descaling')}
-        onRecordCleaning={() => {
-          recordCleaning(shots.length);
-          showToast('Cleaning logged', 'success');
-        }}
-        onRecordDescaling={() => {
-          recordDescaling(shots.length);
-          showToast('Descale logged', 'success');
-        }}
-      />
+        {showSettings && (
+          <SettingsModal
+            open={true}
+            theme={theme}
+            setTheme={setTheme}
+            use24Hour={use24Hour}
+            setUse24Hour={setUse24Hour}
+            shotsCount={shots.length}
+            recipesCount={recipes.length}
+            beansCount={beans.length}
+            importStatus={importStatus}
+            fileInputRef={fileInputRef}
+            onExportJSON={exportData}
+            onExportCSV={exportToCSV}
+            onImport={handleImport}
+            onClearAll={() => {
+              showConfirm(
+                'Clear All Data',
+                `Are you sure you want to delete ALL data? This will permanently remove ${shots.length} shots, ${recipes.length} recipes, and ${beans.length} beans. This action cannot be undone.`,
+                () => {
+                  setShots([]);
+                  setRecipes([]);
+                  setBeans([]);
+                  setFavorites({});
+                  setMaintenance([]);
+                  showToast('All data cleared', 'success');
+                  setShowSettings(false);
+                }
+              );
+            }}
+            onClose={() => { setShowSettings(false); setImportStatus(null); }}
+            lastCleaning={lastMaintenanceFor('cleaning')}
+            lastDescaling={lastMaintenanceFor('descaling')}
+            onRecordCleaning={() => {
+              recordCleaning(shots.length);
+              showToast('Cleaning logged', 'success');
+            }}
+            onRecordDescaling={() => {
+              recordDescaling(shots.length);
+              showToast('Descale logged', 'success');
+            }}
+          />
+        )}
+      </Suspense>
 
       <ShotComparison
         shot1={shot1}
