@@ -26,3 +26,6 @@ dist-ssr
 # Local development scaffolding
 .claude/
 docs/superpowers/
+
+# Local notes
+TODO.md
