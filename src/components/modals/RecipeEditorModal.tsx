@@ -2,6 +2,7 @@ import type { useShotForm } from '../../hooks/useShotForm';
 import type { SavedRecipe } from '../../types';
 import { COLD_BREW_TYPES } from '../../types';
 import { BASKETS, TEMPERATURES, STRENGTHS } from '../../constants';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface RecipeEditorModalProps {
@@ -23,15 +24,23 @@ export default function RecipeEditorModal({
     onSave,
     onCancel,
 }: RecipeEditorModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!open) return null;
     const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
     const isEdit = editingRecipe !== null;
 
     return (
         <div className="modal-overlay" onClick={onCancel}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="recipe-editor-title"
+            >
                 <div className="modal__header">
-                    <h3>{isEdit ? <><Icons.Edit /> Edit Recipe</> : 'Save as Recipe'}</h3>
+                    <h3 id="recipe-editor-title">{isEdit ? <><Icons.Edit /> Edit Recipe</> : 'Save as Recipe'}</h3>
                     <button className="modal__close" aria-label="Close" onClick={onCancel}>
                         <Icons.X />
                     </button>

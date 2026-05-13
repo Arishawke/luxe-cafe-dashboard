@@ -1,4 +1,5 @@
 import type { SavedRecipe } from '../../types';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface RecipeLibraryModalProps {
@@ -22,13 +23,21 @@ export default function RecipeLibraryModal({
     onTogglePin,
     onClose,
 }: RecipeLibraryModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!open) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--large"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="recipe-library-title"
+            >
                 <div className="modal__header">
-                    <h3><Icons.Book /> Recipe Library</h3>
+                    <h3 id="recipe-library-title"><Icons.Book /> Recipe Library</h3>
                     <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>

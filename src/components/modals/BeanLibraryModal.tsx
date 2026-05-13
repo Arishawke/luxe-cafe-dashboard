@@ -3,6 +3,7 @@ import type { BeanProfile, ProcessMethod, RoastLevel } from '../../types';
 import { PROCESS_METHODS, ROAST_LEVELS } from '../../constants';
 import { generateId } from '../../lib/format';
 import { getDaysSinceRoast, getFreshnessStatus } from '../../lib/beans';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface BeanLibraryModalProps {
@@ -32,6 +33,7 @@ export default function BeanLibraryModal({
     const [roastDate, setRoastDate] = useState('');
     const [flavorNotes, setFlavorNotes] = useState('');
     const [editing, setEditing] = useState<BeanProfile | null>(null);
+    const modalRef = useFocusTrap<HTMLDivElement>();
 
     if (!open) return null;
 
@@ -99,9 +101,16 @@ export default function BeanLibraryModal({
 
     return (
         <div className="modal-overlay" onClick={handleClose}>
-            <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--large"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="bean-library-title"
+            >
                 <div className="modal__header">
-                    <h3><Icons.Bean /> Bean Library</h3>
+                    <h3 id="bean-library-title"><Icons.Bean /> Bean Library</h3>
                     <button className="modal__close" aria-label="Close" onClick={handleClose}>
                         <Icons.X />
                     </button>
