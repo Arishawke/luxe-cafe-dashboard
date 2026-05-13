@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1] - 2026-05-12
+
+### Fixed
+- Rose Pine and Rose Pine Moon themes had `--color-foam` and `--color-muted` collapsed to the same color, flattening the text hierarchy. Foam now uses a lighter desaturated lavender.
+- Header showed two duplicate Settings buttons (one icon-only on desktop, one with text on mobile). Consolidated to a single "Settings" button shown on both.
+- Several UI labels were 10px, below the readable floor. Bumped to 12px.
+
 ## [1.3.0] - 2026-05-12
 
 ### Changed
