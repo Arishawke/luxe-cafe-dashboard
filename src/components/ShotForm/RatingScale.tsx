@@ -9,7 +9,7 @@ export default function RatingScale({ ratingIndex, onChange }: RatingScaleProps)
     const rating = RATINGS[ratingIndex];
     return (
         <div className="form-group">
-            <label className="form-label">Taste Rating</label>
+            <label className="form-label" htmlFor="shot-rating">Taste Rating</label>
             <div className="rating-slider">
                 <div
                     className="rating-slider__label"
@@ -19,6 +19,7 @@ export default function RatingScale({ ratingIndex, onChange }: RatingScaleProps)
                 </div>
                 <div className="rating-slider__track">
                     <input
+                        id="shot-rating"
                         type="range"
                         className="rating-slider__input"
                         min={0}
@@ -26,6 +27,7 @@ export default function RatingScale({ ratingIndex, onChange }: RatingScaleProps)
                         step={1}
                         value={ratingIndex}
                         onChange={(e) => onChange(Number(e.target.value))}
+                        aria-valuetext={rating}
                         style={{
                             '--rating-color': RATING_COLORS[rating],
                         } as React.CSSProperties}

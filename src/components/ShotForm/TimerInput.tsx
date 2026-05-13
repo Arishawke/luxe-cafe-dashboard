@@ -47,11 +47,12 @@ export default function TimerInput({
             </button>
             {showTimer && (
                 <div className="shot-timer">
-                    <div className="shot-timer__mode-toggle">
+                    <div className="shot-timer__mode-toggle" role="group" aria-label="Timer mode">
                         <button
                             type="button"
                             className={`shot-timer__mode-btn ${!manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
                             onClick={() => setManualTimeInput(false)}
+                            aria-pressed={!manualTimeInput}
                         >
                             Stopwatch
                         </button>
@@ -59,6 +60,7 @@ export default function TimerInput({
                             type="button"
                             className={`shot-timer__mode-btn ${manualTimeInput ? 'shot-timer__mode-btn--active' : ''}`}
                             onClick={() => setManualTimeInput(true)}
+                            aria-pressed={manualTimeInput}
                         >
                             Manual
                         </button>
@@ -74,6 +76,7 @@ export default function TimerInput({
                                 value={manualTimerValue}
                                 onChange={(e) => setManualTimerValue(e.target.value)}
                                 className="shot-timer__input"
+                                aria-label="Extraction time in seconds"
                             />
                             <span className="shot-timer__unit">seconds</span>
                         </div>
@@ -115,8 +118,9 @@ export default function TimerInput({
                 <div className="dose-yield">
                     <div className="dose-yield__inputs">
                         <div className="dose-yield__field">
-                            <label>In (g)</label>
+                            <label htmlFor="shot-dose-in">In (g)</label>
                             <input
+                                id="shot-dose-in"
                                 type="number"
                                 step="0.1"
                                 min="0"
@@ -125,10 +129,11 @@ export default function TimerInput({
                                 onChange={(e) => setDoseIn(e.target.value)}
                             />
                         </div>
-                        <span className="dose-yield__arrow">→</span>
+                        <span className="dose-yield__arrow" aria-hidden="true">→</span>
                         <div className="dose-yield__field">
-                            <label>Out (g)</label>
+                            <label htmlFor="shot-dose-out">Out (g)</label>
                             <input
+                                id="shot-dose-out"
                                 type="number"
                                 step="0.1"
                                 min="0"
