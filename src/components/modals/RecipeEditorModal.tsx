@@ -32,7 +32,7 @@ export default function RecipeEditorModal({
             <div className="modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal__header">
                     <h3>{isEdit ? <><Icons.Edit /> Edit Recipe</> : 'Save as Recipe'}</h3>
-                    <button className="modal__close" onClick={onCancel}>
+                    <button className="modal__close" aria-label="Close" onClick={onCancel}>
                         <Icons.X />
                     </button>
                 </div>

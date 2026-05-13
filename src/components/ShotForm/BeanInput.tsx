@@ -69,6 +69,7 @@ export default function BeanInput({
                                 type="button"
                                 className="autocomplete__toggle"
                                 onClick={toggleDropdown}
+                                aria-label="Show saved beans"
                             >
                                 <Icons.ChevronDown />
                             </button>

@@ -57,7 +57,7 @@ export default function HistoryModal({
             <div className="modal modal--history" onClick={e => e.stopPropagation()}>
                 <div className="modal__header">
                     <h3><Icons.BarChart /> Shot History ({shots.length})</h3>
-                    <button className="modal__close" onClick={onClose}>
+                    <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>
                 </div>
@@ -82,8 +82,9 @@ export default function HistoryModal({
                                     className="history-filter__clear"
                                     onClick={() => setBeanFilter('')}
                                     title="Clear filter"
+                                    aria-label="Clear bean filter"
                                 >
-                                    ×
+                                    <span aria-hidden="true">×</span>
                                 </button>
                             )}
                         </div>
@@ -125,6 +126,8 @@ export default function HistoryModal({
                                                     className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
                                                     onClick={(e) => { e.stopPropagation(); onToggleFavorite(shot); }}
                                                     title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                                    aria-label={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                                    aria-pressed={isFavorite}
                                                 >
                                                     <Icons.Star filled={isFavorite} />
                                                 </button>
@@ -136,6 +139,7 @@ export default function HistoryModal({
                                                         if (previewShot?.id === shot.id) setPreviewShot(null);
                                                     }}
                                                     title="Delete shot"
+                                                    aria-label="Delete shot"
                                                 >
                                                     <Icons.Trash />
                                                 </button>
