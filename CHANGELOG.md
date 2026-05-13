@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0] - 2026-05-12
+
+### Changed
+- Swapped body font from Inter to Plus Jakarta Sans for a more distinctive look.
+- Removed the infinite glow pulse on the header coffee icon (subtle drop-shadow halo retained).
+
 ## [1.2.0] - 2026-05-12
 
 ### Changed

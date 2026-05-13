@@ -1,7 +1,7 @@
 /* Coffee Roast Design System - True Espresso Theme */
 
-/* Google Fonts - Serif for headers, Inter for body */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+/* Google Fonts - Serif for headers, Plus Jakarta Sans for body */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 /* CSS Variables - Coffee Roast Palette (Black Coffee → Espresso → Latte → Cream) */
 :root {
@@ -31,7 +31,7 @@
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
   /* Effects */
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -216,21 +216,6 @@ body {
   margin: 0 auto 0.75rem;
   color: var(--color-latte);
   filter: drop-shadow(0 0 12px rgba(166, 123, 91, 0.35));
-  animation: glow 3s ease-in-out infinite;
-}
-
-@keyframes glow {
-
-  0%,
-  100% {
-    filter: drop-shadow(0 0 12px rgba(166, 123, 91, 0.35));
-    transform: translateY(0);
-  }
-
-  50% {
-    filter: drop-shadow(0 0 20px rgba(166, 123, 91, 0.5));
-    transform: translateY(-3px);
-  }
 }
 
 .header__title {
