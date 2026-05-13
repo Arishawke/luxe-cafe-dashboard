@@ -47,6 +47,7 @@ export default function ShotHistory({
                         className="card__expand-btn"
                         onClick={onOpenHistoryModal}
                         title="Expand shot history"
+                        aria-label="Expand shot history"
                     >
                         <Icons.Expand />
                     </button>
@@ -74,8 +75,9 @@ export default function ShotHistory({
                                 className="history-filter__clear"
                                 onClick={() => setBeanFilter('')}
                                 title="Clear filter"
+                                aria-label="Clear bean filter"
                             >
-                                ×
+                                <span aria-hidden="true">×</span>
                             </button>
                         )}
                     </div>
@@ -139,6 +141,8 @@ export default function ShotHistory({
                                         className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
                                         onClick={(e) => { e.stopPropagation(); onToggleFavorite(shot); }}
                                         title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                        aria-label={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
+                                        aria-pressed={isFavorite}
                                     >
                                         <Icons.Star filled={isFavorite} />
                                     </button>
@@ -146,6 +150,7 @@ export default function ShotHistory({
                                         className="history-item__edit-btn"
                                         onClick={(e) => { e.stopPropagation(); onEditShot(shot); }}
                                         title="Edit shot"
+                                        aria-label="Edit shot"
                                     >
                                         <Icons.Edit />
                                     </button>
@@ -153,6 +158,7 @@ export default function ShotHistory({
                                         className="history-item__delete-btn"
                                         onClick={(e) => { e.stopPropagation(); onDeleteShot(shot.id); }}
                                         title="Delete shot"
+                                        aria-label="Delete shot"
                                     >
                                         <Icons.Trash />
                                     </button>

@@ -32,14 +32,15 @@ export default function BrewControls({
     return (
         <>
             <div className="form-group">
-                <label className="form-label">Basket Size</label>
-                <div className="pill-group">
+                <span className="form-label" id="shot-basket-label">Basket Size</span>
+                <div className="pill-group" role="group" aria-labelledby="shot-basket-label">
                     {BASKETS.map((b) => (
                         <button
                             key={b}
                             type="button"
                             className={`pill-btn ${basket === b ? 'pill-btn--active' : ''}`}
                             onClick={() => setBasket(b)}
+                            aria-pressed={basket === b}
                         >
                             {b}
                         </button>
@@ -48,18 +49,20 @@ export default function BrewControls({
             </div>
 
             <div className="form-group">
-                <label className="form-label">Grind Size</label>
+                <label className="form-label" htmlFor="shot-grind-size">Grind Size</label>
                 <div className="grind-control">
                     <button
                         type="button"
                         className="grind-control__btn"
                         onClick={onDecrementGrind}
                         disabled={grindSize <= 1}
+                        aria-label="Decrease grind size"
                     >
                         <Icons.Minus />
                     </button>
                     <div className="grind-control__slider-wrap">
                         <input
+                            id="shot-grind-size"
                             type="range"
                             className="slider slider--thick"
                             min={1}
@@ -74,6 +77,7 @@ export default function BrewControls({
                         className="grind-control__btn"
                         onClick={onIncrementGrind}
                         disabled={grindSize >= 25}
+                        aria-label="Increase grind size"
                     >
                         <Icons.Plus />
                     </button>
@@ -86,14 +90,15 @@ export default function BrewControls({
 
             {!isColdBrew && (
                 <div className="form-group">
-                    <label className="form-label">Temperature</label>
-                    <div className="pill-group">
+                    <span className="form-label" id="shot-temperature-label">Temperature</span>
+                    <div className="pill-group" role="group" aria-labelledby="shot-temperature-label">
                         {TEMPERATURES.map((t) => (
                             <button
                                 key={t}
                                 type="button"
                                 className={`pill-btn ${temperature === t ? 'pill-btn--active' : ''}`}
                                 onClick={() => setTemperature(t)}
+                                aria-pressed={temperature === t}
                             >
                                 {t}
                             </button>
@@ -103,14 +108,15 @@ export default function BrewControls({
             )}
 
             <div className="form-group">
-                <label className="form-label">Strength</label>
-                <div className="pill-group">
+                <span className="form-label" id="shot-strength-label">Strength</span>
+                <div className="pill-group" role="group" aria-labelledby="shot-strength-label">
                     {STRENGTHS.map((s) => (
                         <button
                             key={s.value}
                             type="button"
                             className={`pill-btn ${strength === s.value ? 'pill-btn--active' : ''}`}
                             onClick={() => setStrength(s.value)}
+                            aria-pressed={strength === s.value}
                         >
                             {s.label}
                         </button>

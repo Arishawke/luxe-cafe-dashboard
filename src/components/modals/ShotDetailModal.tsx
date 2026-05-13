@@ -1,4 +1,5 @@
 import type { Rating, ShotLog } from '../../types';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 import ShotDetailView from '../ShotDetailView';
 
@@ -27,18 +28,27 @@ export default function ShotDetailModal({
     onDuplicate,
     onToggleCompare,
 }: ShotDetailModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!shot) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--wide" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--wide"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="shot-detail-title"
+            >
                 <div className="modal__header">
-                    <h3>{shot.beanName}</h3>
+                    <h3 id="shot-detail-title">{shot.beanName}</h3>
                     <div className="modal__header-actions">
                         <button
                             className="modal__header-btn"
                             onClick={() => onEdit(shot)}
                             title="Edit shot"
+                            aria-label="Edit shot"
                         >
                             <Icons.Edit />
                         </button>
@@ -46,10 +56,11 @@ export default function ShotDetailModal({
                             className="modal__header-btn modal__header-btn--delete"
                             onClick={(e) => { e.stopPropagation(); onDelete(shot.id); }}
                             title="Delete shot"
+                            aria-label="Delete shot"
                         >
                             <Icons.Trash />
                         </button>
-                        <button className="modal__close" onClick={onClose}>
+                        <button className="modal__close" aria-label="Close" onClick={onClose}>
                             <Icons.X />
                         </button>
                     </div>

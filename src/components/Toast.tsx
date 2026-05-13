@@ -12,7 +12,7 @@ export default function Toast({ toast, onDismiss, shortcutsOpen = false }: Toast
     return (
         <div className={`toast toast--${toast.type} ${shortcutsOpen ? 'toast--shortcuts-open' : ''}`}>
             <span className="toast__message">{toast.message}</span>
-            <button className="toast__close" onClick={onDismiss}>
+            <button className="toast__close" onClick={onDismiss} aria-label="Dismiss notification">
                 <Icons.X />
             </button>
         </div>

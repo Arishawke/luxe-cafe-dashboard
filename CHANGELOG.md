@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0] - 2026-05-13
+
+### Changed
+- Accessibility hardening pass:
+  - Added a visible `:focus-visible` ring for keyboard users across all interactive elements.
+  - Honored the `prefers-reduced-motion` OS preference; animations and transitions collapse when set.
+  - Respected device safe areas (notches, gesture bars) on the main dashboard for installed PWA users.
+  - Associated every form label with its input via `htmlFor`/`id`, so screen readers announce field names correctly.
+  - Pill-group selectors (Basket, Temperature, Strength, Milk Type, Milk Style, Timer mode) now announce their selected state and group label to screen readers.
+  - Added descriptive labels to every icon-only button (modal closes, grind +/-, favorite star, edit, delete, etc.) so they are no longer silent in screen readers.
+  - All nine modals now identify themselves as dialogs and trap keyboard focus while open; closing a modal restores focus to where it came from.
+
 ## [1.3.1] - 2026-05-12
 
 ### Fixed
