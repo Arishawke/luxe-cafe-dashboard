@@ -1,5 +1,6 @@
 import type { ChangeEvent, RefObject } from 'react';
 import type { ThemeType, MaintenanceEvent } from '../../types';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface SettingsModalProps {
@@ -62,13 +63,21 @@ export default function SettingsModal({
     onRecordCleaning,
     onRecordDescaling,
 }: SettingsModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!open) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--settings" onClick={e => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--settings"
+                onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="settings-modal-title"
+            >
                 <div className="modal__header">
-                    <h3><Icons.Sliders /> Settings</h3>
+                    <h3 id="settings-modal-title"><Icons.Sliders /> Settings</h3>
                     <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>

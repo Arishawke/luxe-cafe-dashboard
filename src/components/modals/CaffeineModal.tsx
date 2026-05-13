@@ -1,5 +1,6 @@
 import type { ShotLog } from '../../types';
 import { computeCaffeine } from '../../lib/caffeine';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface CaffeineModalProps {
@@ -9,14 +10,22 @@ interface CaffeineModalProps {
 }
 
 export default function CaffeineModal({ open, shots, onClose }: CaffeineModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!open) return null;
     const data = computeCaffeine(shots);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--caffeine" onClick={e => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--caffeine"
+                onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="caffeine-modal-title"
+            >
                 <div className="modal__header">
-                    <h2><Icons.Caffeine /> Caffeine Tracker</h2>
+                    <h2 id="caffeine-modal-title"><Icons.Caffeine /> Caffeine Tracker</h2>
                     <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>

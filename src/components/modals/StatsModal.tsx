@@ -1,6 +1,7 @@
 import type { ShotLog } from '../../types';
 import { RATINGS, RATING_COLORS } from '../../constants';
 import { computeStats } from '../../lib/stats';
+import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface StatsModalProps {
@@ -10,14 +11,22 @@ interface StatsModalProps {
 }
 
 export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
+    const modalRef = useFocusTrap<HTMLDivElement>();
     if (!open) return null;
     const stats = computeStats(shots);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--large"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="stats-modal-title"
+            >
                 <div className="modal__header">
-                    <h3><Icons.PieChart /> Statistics</h3>
+                    <h3 id="stats-modal-title"><Icons.PieChart /> Statistics</h3>
                     <button className="modal__close" aria-label="Close" onClick={onClose}>
                         <Icons.X />
                     </button>

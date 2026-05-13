@@ -23,3 +23,5 @@ export { useKeyboardShortcuts } from './useKeyboardShortcuts';
 export { useBeanAutocomplete } from './useBeanAutocomplete';
 
 export { useMaintenance } from './useMaintenance';
+
+export { useFocusTrap } from './useFocusTrap';
