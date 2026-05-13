@@ -38,7 +38,7 @@ export default function ConfirmDialog({ dialog, onConfirm, onClose }: ConfirmDia
                         className="btn btn--danger"
                         onClick={onConfirm}
                     >
-                        Delete
+                        {dialog.confirmLabel ?? 'Delete'}
                     </button>
                 </div>
             </div>
