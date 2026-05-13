@@ -65,14 +65,7 @@ export default function Header({
                     <Icons.Caffeine /> Caffeine
                 </button>
                 <button
-                    className="header__btn header__btn--icon header__prefs-btn"
-                    onClick={onOpenSettings}
-                    title="Settings"
-                >
-                    <Icons.Sliders />
-                </button>
-                <button
-                    className="header__btn header__theme-btn"
+                    className="header__btn"
                     onClick={onOpenSettings}
                     title="Settings"
                 >
