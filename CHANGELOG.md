@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.2] - 2026-05-13
+
+### Changed
+- Every interactive button now has at least a 44x44px tap target, so phone taps are easier and meet platform accessibility minimums.
+
 ## [1.4.1] - 2026-05-13
 
 ### Changed
