@@ -1433,9 +1433,17 @@ body {
 
 /* Milk Setting Tag */
 .setting-tag--milk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   background: rgba(166, 123, 91, 0.15);
   border-color: rgba(166, 123, 91, 0.25);
   color: var(--color-latte);
+}
+
+.setting-tag--milk .icon {
+  width: 12px;
+  height: 12px;
 }
 
 /* ============================================
@@ -2463,12 +2471,20 @@ body {
 }
 
 .shot-detail__fav-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   margin-left: auto;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   background: rgba(255, 215, 0, 0.15);
   border-radius: 6px;
   color: #FFD700;
+}
+
+.shot-detail__fav-badge .icon {
+  width: 13px;
+  height: 13px;
 }
 
 /* Timestamp */
@@ -4811,10 +4827,12 @@ body {
   border-color: var(--color-caramel);
 }
 
-.theme-picker__emoji {
-  font-size: 1.25rem;
-  width: 28px;
-  text-align: center;
+.theme-picker__swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  flex-shrink: 0;
 }
 
 .theme-picker__label {
