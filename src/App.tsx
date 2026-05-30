@@ -1,6 +1,6 @@
-import { useState, useRef, lazy, Suspense } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import type { FormEvent } from 'react';
-import type { ShotLog, Rating, SavedRecipe } from './types';
+import type { ShotLog, Rating, SavedRecipe, BeanProfile, FavoritesMap, MaintenanceEvent } from './types';
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
 import { getFreshnessAlert } from './lib/beans';
@@ -48,6 +48,13 @@ function App() {
   const [showStats, setShowStats] = useState(false);
   const [showRecipeLibrary, setShowRecipeLibrary] = useState(false);
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [importBackup, setImportBackup] = useState<{
+    shots: ShotLog[];
+    recipes: SavedRecipe[];
+    beans: BeanProfile[];
+    favorites: FavoritesMap;
+    maintenance: MaintenanceEvent[];
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showCaffeine, setShowCaffeine] = useState(false);
   const [beanFilter, setBeanFilter] = useState<string>('');
@@ -74,6 +81,13 @@ function App() {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
     return stored === null ? true : stored === 'true';
   });
+
+  useEffect(() => {
+    const onStorageError = () =>
+      showToast('Storage full. Your latest change was not saved. Export a backup.', 'error');
+    window.addEventListener('luxe:storage-error', onStorageError);
+    return () => window.removeEventListener('luxe:storage-error', onStorageError);
+  }, [showToast]);
 
   const rating = RATINGS[form.ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
@@ -330,22 +344,36 @@ function App() {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
+      const previous = { shots, recipes, beans, favorites, maintenance: maintenanceEvents };
       const data = await parseImportFile(file);
       setShots(data.shots);
       setRecipes(data.recipes);
       setBeans(data.beans);
       setFavorites(data.favorites);
       setMaintenance(data.maintenance);
-      setImportStatus({
-        type: 'success',
-        message: `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`,
-      });
+      setImportBackup(previous); // enables one-click Undo import
+      const skipped = data.skipped.shots + data.skipped.recipes + data.skipped.beans + data.skipped.maintenance;
+      let message = `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`;
+      if (skipped > 0) message += `; skipped ${skipped} unreadable ${skipped === 1 ? 'entry' : 'entries'}`;
+      setImportStatus({ type: 'success', message });
     } catch (err) {
       setImportStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to import file' });
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // allow re-selecting same file
     }
+  };
+
+  const undoImport = () => {
+    if (!importBackup) return;
+    setShots(importBackup.shots);
+    setRecipes(importBackup.recipes);
+    setBeans(importBackup.beans);
+    setFavorites(importBackup.favorites);
+    setMaintenance(importBackup.maintenance);
+    setImportBackup(null);
+    setImportStatus({ type: 'success', message: 'Import reverted' });
+    showToast('Import reverted', 'info');
   };
 
   const decrementGrind = () => form.setGrindSize(Math.max(1, form.grindSize - 1));
@@ -680,6 +708,8 @@ function App() {
             recipesCount={recipes.length}
             beansCount={beans.length}
             importStatus={importStatus}
+            canUndoImport={importBackup !== null}
+            onUndoImport={undoImport}
             fileInputRef={fileInputRef}
             onExportJSON={exportData}
             onExportCSV={exportToCSV}
@@ -694,6 +724,7 @@ function App() {
                   setBeans([]);
                   setFavorites({});
                   setMaintenance([]);
+                  setImportBackup(null);
                   showToast('All data cleared', 'success');
                   setShowSettings(false);
                 }

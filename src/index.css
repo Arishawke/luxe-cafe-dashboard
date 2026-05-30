@@ -3189,6 +3189,28 @@ body {
   border: 1px solid rgba(192, 69, 69, 0.3);
 }
 
+.import-undo-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border-radius: 8px;
+  border: 1px solid var(--color-mocha);
+  background: transparent;
+  color: var(--color-cream);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.import-undo-btn:hover {
+  background: rgba(166, 123, 91, 0.15);
+  border-color: var(--color-caramel);
+  color: var(--color-caramel);
+}
+
 /* Data Action Buttons */
 .data-actions {
   display: grid;
@@ -5096,7 +5118,8 @@ textarea:focus-visible {
 .bean-card__toggle,
 .recipe-library__action-btn,
 .maintenance-row__btn,
-.maintenance-alert__action {
+.maintenance-alert__action,
+.import-undo-btn {
   min-height: 44px;
 }
 

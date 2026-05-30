@@ -13,6 +13,8 @@ interface SettingsModalProps {
     recipesCount: number;
     beansCount: number;
     importStatus: { type: 'success' | 'error'; message: string } | null;
+    canUndoImport: boolean;
+    onUndoImport: () => void;
     fileInputRef: RefObject<HTMLInputElement | null>;
     onExportJSON: () => void;
     onExportCSV: () => void;
@@ -52,6 +54,8 @@ export default function SettingsModal({
     recipesCount,
     beansCount,
     importStatus,
+    canUndoImport,
+    onUndoImport,
     fileInputRef,
     onExportJSON,
     onExportCSV,
@@ -175,6 +179,12 @@ export default function SettingsModal({
                             <div className={`import-status import-status--${importStatus.type}`}>
                                 {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
                             </div>
+                        )}
+
+                        {canUndoImport && (
+                            <button className="import-undo-btn" onClick={onUndoImport}>
+                                Undo import
+                            </button>
                         )}
 
                         <div className="data-actions">

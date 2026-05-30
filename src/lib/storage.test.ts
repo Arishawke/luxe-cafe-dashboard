@@ -173,3 +173,65 @@ describe('maintenance storage', () => {
         expect(loadMaintenance()).toEqual([]);
     });
 });
+
+describe('storage robustness', () => {
+    it('returns the array default when stored JSON is the wrong type (object)', () => {
+        localStorage.setItem('espresso-shots', '{}');
+        expect(loadShots()).toEqual([]);
+    });
+
+    it('returns the array default when stored JSON is the wrong type (number)', () => {
+        localStorage.setItem('espresso-recipes', '5');
+        expect(loadRecipes()).toEqual([]);
+    });
+
+    it('returns the object default when favorites JSON is an array', () => {
+        localStorage.setItem('espresso-favorites', '[1,2,3]');
+        expect(loadFavorites()).toEqual({});
+    });
+
+    it('preserves the raw value under a :corrupt key before falling back', () => {
+        localStorage.setItem('espresso-shots', '{not json');
+        loadShots();
+        expect(localStorage.getItem('espresso-shots:corrupt')).toBe('{not json');
+    });
+
+    it('treats a stored JSON null as empty without logging a warning', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => { });
+        localStorage.setItem('espresso-shots', 'null');
+        expect(loadShots()).toEqual([]);
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('does not throw when setItem fails (quota exceeded / private mode)', () => {
+        const throwing: Storage = {
+            getItem: () => null,
+            setItem: () => { throw new DOMException('Quota exceeded', 'QuotaExceededError'); },
+            removeItem: () => { },
+            clear: () => { },
+            key: () => null,
+            get length() { return 0; },
+        };
+        vi.stubGlobal('localStorage', throwing);
+        vi.spyOn(console, 'warn').mockImplementation(() => { });
+        expect(() => saveShots([])).not.toThrow();
+    });
+
+    it('signals a storage-error event when a save fails', () => {
+        const throwing: Storage = {
+            getItem: () => null,
+            setItem: () => { throw new DOMException('Quota exceeded', 'QuotaExceededError'); },
+            removeItem: () => { },
+            clear: () => { },
+            key: () => null,
+            get length() { return 0; },
+        };
+        vi.stubGlobal('localStorage', throwing);
+        vi.spyOn(console, 'warn').mockImplementation(() => { });
+        const dispatch = vi.fn();
+        vi.stubGlobal('window', { dispatchEvent: dispatch });
+        saveShots([]);
+        expect(dispatch).toHaveBeenCalledOnce();
+        expect(dispatch.mock.calls[0][0].type).toBe('luxe:storage-error');
+    });
+});
