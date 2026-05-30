@@ -26,10 +26,13 @@ export default function SuggestionCard({
         return (
             <div className="empty-state">
                 <Icons.Lightbulb />
+                <p className="empty-state__title">
+                    {beanName.trim() ? `No history for "${beanName}" yet` : 'Dial in with the Smart Barista'}
+                </p>
                 <p className="empty-state__text">
                     {beanName.trim()
-                        ? `No history for "${beanName}" yet. Log a shot to get tips!`
-                        : 'Enter a bean name to see calibration tips.'}
+                        ? 'Log a shot with this bean and your next-shot tips will appear here.'
+                        : 'Enter a bean name and your last shot will guide the next one, from sour toward balanced.'}
                 </p>
             </div>
         );
