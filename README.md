@@ -48,4 +48,6 @@ React 19, TypeScript, Vite. Data is persisted in browser localStorage.
 
 ## License
 
-GPL v3. See [LICENSE](LICENSE).
+Copyright (C) 2026 Arishawke.
+
+Licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE).
