@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.0] - 2026-05-30
+
+### Changed
+- Visual refresh: the emoji used as icons are replaced with a single consistent icon set, the theme picker now uses a color swatch per theme, and hover and selection animations are smoother and more intentional.
+- Corners and text sizes are drawn from a consistent scale across the app for a more polished, uniform look.
+- The Stats panel now leads with a large Balanced Rate figure, with context, so your dial-in success stands out at a glance.
+
+### Fixed
+- The Smart Barista panel shows a clearer heading and explanation before there is any shot history for a bean, instead of a near-empty card.
+
 ## [1.5.1] - 2026-05-30
 
 ### Fixed
