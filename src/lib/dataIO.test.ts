@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { parseBackup, buildJSONBackup } from './dataIO';
+import { parseBackup, buildJSONBackup, buildCSV } from './dataIO';
 import type { ShotLog, SavedRecipe, BeanProfile, MaintenanceEvent } from '../types';
 
 afterEach(() => { vi.restoreAllMocks(); });
@@ -103,6 +103,34 @@ describe('parseBackup', () => {
         expect(result.recipes).toHaveLength(1);
         expect(result.recipes[0].createdAt).toBeInstanceOf(Date);
         expect(result.skipped.recipes).toBe(1);
+    });
+});
+
+describe('buildCSV formula-injection safety', () => {
+    const base: ShotLog = {
+        id: '1', beanName: 'Ethiopia', brewType: 'Espresso', basket: 'Double',
+        grindSize: 12, strength: 2, rating: 'Balanced', timestamp: new Date('2026-05-01T10:00:00Z'),
+    };
+
+    it('neutralizes a bean name that starts with a formula character', () => {
+        expect(buildCSV([{ ...base, beanName: '=SUM(A1:A2)' }])).toContain(`"'=SUM(A1:A2)"`);
+    });
+
+    it('neutralizes notes starting with +, -, or @', () => {
+        expect(buildCSV([{ ...base, notes: '+1' }])).toContain(`"'+1"`);
+        expect(buildCSV([{ ...base, notes: '-1' }])).toContain(`"'-1"`);
+        expect(buildCSV([{ ...base, notes: '@cmd' }])).toContain(`"'@cmd"`);
+    });
+
+    it('leaves ordinary text unprefixed', () => {
+        const csv = buildCSV([{ ...base, beanName: 'Ethiopia', notes: 'tasty' }]);
+        expect(csv).toContain('"Ethiopia"');
+        expect(csv).not.toContain(`"'Ethiopia"`);
+        expect(csv).toContain('"tasty"');
+    });
+
+    it('still escapes embedded double quotes', () => {
+        expect(buildCSV([{ ...base, notes: 'say "hi"' }])).toContain(`"say ""hi"""`);
     });
 });
 

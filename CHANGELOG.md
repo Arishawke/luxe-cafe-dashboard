@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.1] - 2026-05-30
+
+### Fixed
+- CSV export now neutralizes bean names and notes that begin with `=`, `+`, `-`, or `@`, so opening the file in Excel or Google Sheets cannot run them as formulas.
+
 ## [1.5.0] - 2026-05-30
 
 ### Added
