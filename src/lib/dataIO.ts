@@ -40,6 +40,12 @@ export function buildJSONBackup(
     return JSON.stringify(data, null, 2);
 }
 
+// quote a free-text cell, doubling quotes and neutralizing spreadsheet formula injection (CWE-1236)
+function csvCell(value: string): string {
+    const neutralized = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+    return `"${neutralized.replace(/"/g, '""')}"`;
+}
+
 export function buildCSV(shots: ShotLog[]): string {
     const headers = ['Date', 'Bean', 'Brew Type', 'Basket', 'Grind', 'Temperature', 'Strength', 'Rating', 'Extraction Time', 'Dose In (g)', 'Dose Out (g)', 'Ratio', 'Milk Type', 'Milk Style', 'Notes'];
     const csvRows = [headers.join(',')];
@@ -48,7 +54,7 @@ export function buildCSV(shots: ShotLog[]): string {
         const ratio = shot.doseIn && shot.doseOut ? `1:${(shot.doseOut / shot.doseIn).toFixed(1)}` : '';
         const row = [
             new Date(shot.timestamp).toLocaleString(),
-            `"${shot.beanName.replace(/"/g, '""')}"`,
+            csvCell(shot.beanName),
             shot.brewType,
             shot.basket,
             shot.grindSize,
@@ -61,7 +67,7 @@ export function buildCSV(shots: ShotLog[]): string {
             ratio,
             shot.milk?.type || '',
             shot.milk?.style || '',
-            `"${(shot.notes || '').replace(/"/g, '""')}"`,
+            csvCell(shot.notes || ''),
         ];
         csvRows.push(row.join(','));
     });
