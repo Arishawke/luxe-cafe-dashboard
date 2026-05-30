@@ -1,5 +1,6 @@
 import type { Rating, ShotLog } from '../types';
 import { formatDateLong } from '../lib/format';
+import Icons from './Icons';
 
 interface ShotDetailViewProps {
     shot: ShotLog;
@@ -17,7 +18,7 @@ export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConf
             <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
                 <ShotIcon />
                 <span>{shot.rating}</span>
-                {isFavorite && <span className="shot-detail__fav-badge">⭐ Favorite</span>}
+                {isFavorite && <span className="shot-detail__fav-badge"><Icons.Star filled /> Favorite</span>}
             </div>
 
             <div className="shot-detail__timestamp">

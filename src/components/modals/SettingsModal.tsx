@@ -13,6 +13,8 @@ interface SettingsModalProps {
     recipesCount: number;
     beansCount: number;
     importStatus: { type: 'success' | 'error'; message: string } | null;
+    canUndoImport: boolean;
+    onUndoImport: () => void;
     fileInputRef: RefObject<HTMLInputElement | null>;
     onExportJSON: () => void;
     onExportCSV: () => void;
@@ -34,12 +36,12 @@ function formatLastDone(event: MaintenanceEvent | null): string {
     });
 }
 
-const THEME_OPTIONS: { value: ThemeType; label: string; emoji: string }[] = [
-    { value: 'dark', label: 'Coffee Dark', emoji: '☕' },
-    { value: 'light', label: 'Coffee Light', emoji: '🥛' },
-    { value: 'catppuccin', label: 'Catppuccin', emoji: '🍵' },
-    { value: 'rosepine', label: 'Rose Pine', emoji: '🌹' },
-    { value: 'rosepine-moon', label: 'Rose Pine Moon', emoji: '🌙' },
+const THEME_OPTIONS: { value: ThemeType; label: string; swatch: string }[] = [
+    { value: 'dark', label: 'Coffee Dark', swatch: '#A67B5B' },
+    { value: 'light', label: 'Coffee Light', swatch: '#E8DFD5' },
+    { value: 'catppuccin', label: 'Catppuccin', swatch: '#cba6f7' },
+    { value: 'rosepine', label: 'Rose Pine', swatch: '#ebbcba' },
+    { value: 'rosepine-moon', label: 'Rose Pine Moon', swatch: '#c4a7e7' },
 ];
 
 export default function SettingsModal({
@@ -52,6 +54,8 @@ export default function SettingsModal({
     recipesCount,
     beansCount,
     importStatus,
+    canUndoImport,
+    onUndoImport,
     fileInputRef,
     onExportJSON,
     onExportCSV,
@@ -84,7 +88,7 @@ export default function SettingsModal({
                 </div>
                 <div className="modal__body">
                     <div className="settings-section">
-                        <h4 className="settings-section__title">🎨 Appearance</h4>
+                        <h4 className="settings-section__title">Appearance</h4>
 
                         <div className="prefs-section">
                             <label className="prefs-section__label">Theme</label>
@@ -95,7 +99,7 @@ export default function SettingsModal({
                                         className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
                                         onClick={() => setTheme(t.value)}
                                     >
-                                        <span className="theme-picker__emoji">{t.emoji}</span>
+                                        <span className="theme-picker__swatch" style={{ background: t.swatch }} aria-hidden="true" />
                                         <span className="theme-picker__label">{t.label}</span>
                                         {theme === t.value && <Icons.Check />}
                                     </button>
@@ -110,13 +114,13 @@ export default function SettingsModal({
                                     className={`prefs-toggle__option ${!use24Hour ? 'prefs-toggle__option--active' : ''}`}
                                     onClick={() => setUse24Hour(false)}
                                 >
-                                    🕐 12-hour
+                                    12-hour
                                 </button>
                                 <button
                                     className={`prefs-toggle__option ${use24Hour ? 'prefs-toggle__option--active' : ''}`}
                                     onClick={() => setUse24Hour(true)}
                                 >
-                                    🕒 24-hour
+                                    24-hour
                                 </button>
                             </div>
                         </div>
@@ -154,7 +158,7 @@ export default function SettingsModal({
                     </div>
 
                     <div className="settings-section">
-                        <h4 className="settings-section__title">💾 Data</h4>
+                        <h4 className="settings-section__title">Data</h4>
 
                         <div className="data-summary">
                             <div className="data-summary__item">
@@ -175,6 +179,12 @@ export default function SettingsModal({
                             <div className={`import-status import-status--${importStatus.type}`}>
                                 {importStatus.type === 'success' ? '✓' : '✗'} {importStatus.message}
                             </div>
+                        )}
+
+                        {canUndoImport && (
+                            <button className="import-undo-btn" onClick={onUndoImport}>
+                                Undo import
+                            </button>
                         )}
 
                         <div className="data-actions">
@@ -211,7 +221,7 @@ export default function SettingsModal({
                         </div>
 
                         <p className="data-warning">
-                            ⚠️ Importing will replace all existing data
+                            Importing replaces all existing data. You can undo it right after.
                         </p>
                     </div>
                 </div>

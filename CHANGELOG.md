@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.6.0] - 2026-05-30
+
+### Changed
+- Visual refresh: the emoji used as icons are replaced with a single consistent icon set, the theme picker now uses a color swatch per theme, and hover and selection animations are smoother and more intentional.
+- Corners and text sizes are drawn from a consistent scale across the app for a more polished, uniform look.
+- The Stats panel now leads with a large Balanced Rate figure, with context, so your dial-in success stands out at a glance.
+
+### Fixed
+- The Smart Barista panel shows a clearer heading and explanation before there is any shot history for a bean, instead of a near-empty card.
+
+## [1.5.1] - 2026-05-30
+
+### Fixed
+- CSV export now neutralizes bean names and notes that begin with `=`, `+`, `-`, or `@`, so opening the file in Excel or Google Sheets cannot run them as formulas.
+
+## [1.5.0] - 2026-05-30
+
+### Added
+- "Undo import" button in Settings to instantly restore your previous data after an import.
+
+### Changed
+- Importing a backup now keeps every readable entry and reports how many unreadable ones were skipped, instead of refusing the whole file or letting one bad entry corrupt your data.
+
+### Fixed
+- A damaged, hand-edited, or partial backup file can no longer blank the screen on import; unreadable entries are validated out as the file is read.
+- Dates that cannot be read now show "Unknown date" instead of crashing the shot list or detail view.
+- When browser storage is full or unavailable (for example in private mode), the app now warns you to export a backup instead of failing silently, and no longer risks overwriting recoverable data with an empty list.
+
 ## [1.4.3] - 2026-05-13
 
 ### Changed

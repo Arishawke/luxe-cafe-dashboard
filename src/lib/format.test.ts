@@ -47,3 +47,13 @@ describe('formatDateLong', () => {
         expect(out).not.toMatch(/PM/);
     });
 });
+
+describe('invalid dates', () => {
+    it('formatDate returns a fallback instead of throwing on an Invalid Date', () => {
+        expect(formatDate(new Date('not a date'))).toBe('Unknown date');
+    });
+
+    it('formatDateLong returns a fallback instead of throwing on an Invalid Date', () => {
+        expect(formatDateLong(new Date('not a date'))).toBe('Unknown date');
+    });
+});
