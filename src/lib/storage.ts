@@ -6,86 +6,65 @@ const RECIPES_KEY = 'espresso-recipes';
 const BEANS_KEY = 'espresso-beans';
 const MAINTENANCE_KEY = 'luxe-cafe-maintenance';
 
-export function loadShots(): ShotLog[] {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return [];
+// Date revival, shared with the import path in dataIO.ts
+export const reviveShot = (s: ShotLog): ShotLog => ({ ...s, timestamp: new Date(s.timestamp) });
+export const reviveRecipe = (r: SavedRecipe): SavedRecipe => ({ ...r, createdAt: new Date(r.createdAt) });
+export const reviveBean = (b: BeanProfile): BeanProfile => ({ ...b, createdAt: new Date(b.createdAt) });
 
+function readParsed(key: string): unknown {
+    const stored = localStorage.getItem(key);
+    if (stored === null) return undefined;
     try {
-        const parsed = JSON.parse(stored);
-        return parsed.map((s: ShotLog) => ({
-            ...s,
-            timestamp: new Date(s.timestamp),
-        }));
+        return JSON.parse(stored);
     } catch (e) {
-        console.error('Failed to parse stored shots', e);
+        // keep the unreadable value so a save does not silently overwrite recoverable data
+        console.warn(`Corrupt data in ${key}, backing up and resetting`, e);
+        try { localStorage.setItem(`${key}:corrupt`, stored); } catch { /* best effort */ }
+        return undefined;
+    }
+}
+
+function loadArray<T>(key: string, revive: (item: T) => T = (x) => x): T[] {
+    const parsed = readParsed(key);
+    if (!Array.isArray(parsed)) {
+        if (parsed !== undefined && parsed !== null) console.warn(`Expected an array in ${key}, resetting`);
         return [];
     }
+    return (parsed as T[]).map(revive);
 }
 
-export function saveShots(shots: ShotLog[]): void {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(shots));
+function loadRecord<T extends object>(key: string, fallback: T): T {
+    const parsed = readParsed(key);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        if (parsed !== undefined && parsed !== null) console.warn(`Expected an object in ${key}, resetting`);
+        return fallback;
+    }
+    return parsed as T;
 }
 
-export function loadFavorites(): FavoritesMap {
-    const stored = localStorage.getItem(FAVORITES_KEY);
-    if (!stored) return {};
+function saveJSON(key: string, value: unknown): void {
     try {
-        return JSON.parse(stored);
-    } catch {
-        return {};
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        // quota exceeded or storage disabled (private mode); never crash the render
+        console.warn(`Failed to save ${key}`, e);
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('luxe:storage-error'));
+        }
     }
 }
 
-export function saveFavorites(favorites: FavoritesMap): void {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-}
+export function loadShots(): ShotLog[] { return loadArray(STORAGE_KEY, reviveShot); }
+export function saveShots(shots: ShotLog[]): void { saveJSON(STORAGE_KEY, shots); }
 
-export function loadRecipes(): SavedRecipe[] {
-    const stored = localStorage.getItem(RECIPES_KEY);
-    if (!stored) return [];
-    try {
-        const parsed = JSON.parse(stored);
-        return parsed.map((r: SavedRecipe) => ({
-            ...r,
-            createdAt: new Date(r.createdAt),
-        }));
-    } catch {
-        return [];
-    }
-}
+export function loadFavorites(): FavoritesMap { return loadRecord<FavoritesMap>(FAVORITES_KEY, {}); }
+export function saveFavorites(favorites: FavoritesMap): void { saveJSON(FAVORITES_KEY, favorites); }
 
-export function saveRecipes(recipes: SavedRecipe[]): void {
-    localStorage.setItem(RECIPES_KEY, JSON.stringify(recipes));
-}
+export function loadRecipes(): SavedRecipe[] { return loadArray(RECIPES_KEY, reviveRecipe); }
+export function saveRecipes(recipes: SavedRecipe[]): void { saveJSON(RECIPES_KEY, recipes); }
 
-export function loadBeans(): BeanProfile[] {
-    const stored = localStorage.getItem(BEANS_KEY);
-    if (!stored) return [];
-    try {
-        const parsed = JSON.parse(stored);
-        return parsed.map((b: BeanProfile) => ({
-            ...b,
-            createdAt: new Date(b.createdAt),
-        }));
-    } catch {
-        return [];
-    }
-}
+export function loadBeans(): BeanProfile[] { return loadArray(BEANS_KEY, reviveBean); }
+export function saveBeans(beans: BeanProfile[]): void { saveJSON(BEANS_KEY, beans); }
 
-export function saveBeans(beans: BeanProfile[]): void {
-    localStorage.setItem(BEANS_KEY, JSON.stringify(beans));
-}
-
-export function loadMaintenance(): MaintenanceEvent[] {
-    const stored = localStorage.getItem(MAINTENANCE_KEY);
-    if (!stored) return [];
-    try {
-        return JSON.parse(stored);
-    } catch {
-        return [];
-    }
-}
-
-export function saveMaintenance(events: MaintenanceEvent[]): void {
-    localStorage.setItem(MAINTENANCE_KEY, JSON.stringify(events));
-}
+export function loadMaintenance(): MaintenanceEvent[] { return loadArray<MaintenanceEvent>(MAINTENANCE_KEY); }
+export function saveMaintenance(events: MaintenanceEvent[]): void { saveJSON(MAINTENANCE_KEY, events); }

@@ -3,6 +3,7 @@ export function generateId(): string {
 }
 
 export function formatDate(date: Date, use24Hour: boolean = false): string {
+    if (isNaN(date.getTime())) return 'Unknown date';
     return new Intl.DateTimeFormat('en-US', {
         month: 'short',
         day: 'numeric',
@@ -13,6 +14,7 @@ export function formatDate(date: Date, use24Hour: boolean = false): string {
 }
 
 export function formatDateLong(date: Date, use24Hour: boolean = false): string {
+    if (isNaN(date.getTime())) return 'Unknown date';
     return new Intl.DateTimeFormat('en-US', {
         weekday: 'long',
         year: 'numeric',
