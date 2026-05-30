@@ -37,6 +37,10 @@
   --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.4);
   --radius-card: 20px;
   --radius-pill: 9999px;
+
+  /* Motion (theme-independent) */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease), opacity 0.2s var(--ease);
 }
 
 /* Light Theme */
@@ -343,7 +347,7 @@ body {
   border-radius: 6px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   align-items: center;
   justify-content: center;
 }
@@ -534,7 +538,7 @@ body {
   border-radius: 12px;
   background: var(--color-dark-roast);
   color: var(--color-cream);
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
 }
 
 .form-input:focus {
@@ -564,7 +568,7 @@ body {
   background: var(--color-dark-roast);
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
 }
 
 .pill-btn:hover {
@@ -682,7 +686,7 @@ body {
   background: linear-gradient(135deg, var(--color-caramel) 0%, var(--color-copper) 100%);
   color: var(--color-black-coffee);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-base);
   margin-top: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -804,7 +808,7 @@ body {
   background: var(--color-dark-roast);
   border: 1px solid var(--color-mocha);
   border-radius: 14px;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .history-item:hover {
@@ -1042,7 +1046,7 @@ body {
   border-radius: 10px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   flex-shrink: 0;
 }
 
@@ -1097,7 +1101,7 @@ body {
   background: var(--color-dark-roast);
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1243,7 +1247,7 @@ body {
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
 }
 
 .form-select:focus {
@@ -1345,7 +1349,7 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--color-mocha);
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .rating-slider__marker--active {
@@ -1376,7 +1380,7 @@ body {
   background: var(--color-dark-roast);
   color: var(--color-cream);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
 }
 
 .froth-toggle:hover {
@@ -1461,7 +1465,7 @@ body {
   border: none;
   color: var(--color-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   flex-shrink: 0;
   border-radius: 8px;
 }
@@ -1745,7 +1749,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 20px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .recipe-chip:hover {
@@ -1761,7 +1765,7 @@ body {
   border: none;
   color: var(--color-cream);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .recipe-chip__btn:hover {
@@ -1776,7 +1780,7 @@ body {
   border-left: 1px solid var(--color-mocha);
   color: var(--color-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .recipe-chip__dismiss:hover {
@@ -1830,7 +1834,7 @@ body {
   color: var(--color-cream);
   font-size: 1.125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .shot-timer__btn:hover:not(:disabled) {
@@ -1885,7 +1889,7 @@ body {
   border-radius: 10px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   font-size: 0.9375rem;
   width: 100%;
   text-align: left;
@@ -2051,7 +2055,7 @@ body {
   border-radius: 12px;
   color: var(--color-caramel);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
   min-height: 52px;
 }
 
@@ -2121,7 +2125,7 @@ body {
   color: var(--color-muted);
   cursor: pointer;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .modal__close:hover {
@@ -2147,7 +2151,7 @@ body {
   color: var(--color-muted);
   cursor: pointer;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .modal__header-btn:hover {
@@ -2181,7 +2185,7 @@ body {
   border-radius: 10px;
   color: var(--color-cream);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   white-space: nowrap;
 }
 
@@ -2234,7 +2238,7 @@ body {
   border-radius: 8px;
   color: var(--color-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   opacity: 0.4;
 }
 
@@ -2265,7 +2269,7 @@ body {
   border-radius: 8px;
   color: var(--color-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   opacity: 0.4;
 }
 
@@ -2356,7 +2360,7 @@ body {
   border-radius: 10px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn-cancel:hover {
@@ -2415,7 +2419,7 @@ body {
 /* Clickable History Items */
 .history-item--clickable {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .history-item--clickable:hover {
@@ -2560,7 +2564,7 @@ body {
   border-radius: 10px;
   color: #C04545;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn-delete:hover {
@@ -2603,7 +2607,7 @@ body {
   border-radius: 10px;
   color: var(--color-latte);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .header__btn--icon {
@@ -2632,7 +2636,7 @@ body {
   border-radius: 10px;
   color: var(--color-latte);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -2732,7 +2736,7 @@ body {
   border: 1px solid transparent;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .bean-card:hover {
@@ -2810,7 +2814,7 @@ body {
   border-radius: 6px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .bean-card__toggle--active {
@@ -2830,7 +2834,7 @@ body {
   border-radius: 6px;
   color: var(--color-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .bean-card__delete:hover {
@@ -2866,7 +2870,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 12px;
   padding: 1rem;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .recipe-library__item:hover {
@@ -2905,7 +2909,7 @@ body {
   border-radius: 8px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .recipe-library__action-btn:hover {
@@ -3245,7 +3249,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .data-action-btn:hover {
@@ -3536,7 +3540,7 @@ body {
   border-radius: 8px;
   color: #C04545;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .history-filter__clear:hover {
@@ -3562,7 +3566,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 8px;
   color: var(--color-cream);
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .history-filter__search:focus {
@@ -3602,7 +3606,7 @@ body {
   border-radius: 10px;
   color: var(--color-latte);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn-secondary:hover {
@@ -3724,7 +3728,7 @@ body {
   border-radius: 8px;
   color: var(--color-success);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn-apply-suggestion:hover {
@@ -3915,7 +3919,7 @@ body {
   border-radius: 8px;
   color: var(--color-cream);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn--secondary:hover {
@@ -3933,7 +3937,7 @@ body {
   border-radius: 8px;
   color: var(--color-bitter);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn--danger:hover {
@@ -4242,7 +4246,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .btn-compare:hover {
@@ -4415,7 +4419,7 @@ body {
   border-radius: 6px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .compare-panel__remove:hover {
@@ -4674,7 +4678,7 @@ body {
     border-radius: 8px;
     color: var(--color-cream);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-base);
     z-index: 1002;
   }
 
@@ -4810,7 +4814,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   font-family: var(--font-sans);
   color: var(--color-cream);
   text-align: left;
@@ -4878,7 +4882,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   font-family: var(--font-sans);
   font-size: 0.875rem;
   color: var(--color-muted);
@@ -4995,7 +4999,7 @@ body {
     font-size: 1.25rem;
     line-height: 1;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
+    transition: var(--transition-base);
   }
 
   .shortcuts-panel__toggle:hover {
@@ -5029,7 +5033,7 @@ body {
   border-radius: 6px;
   color: var(--color-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .shot-timer__mode-btn:hover {
@@ -5060,7 +5064,7 @@ body {
   border: 1px solid var(--color-mocha);
   border-radius: 10px;
   color: var(--color-caramel);
-  transition: all 0.25s ease;
+  transition: var(--transition-base);
   -moz-appearance: textfield;
   /* Firefox */
 }
