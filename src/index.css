@@ -3027,6 +3027,37 @@ body {
   border-color: var(--color-caramel);
 }
 
+.stat-hero {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(122, 158, 109, 0.1);
+  border: 1px solid rgba(122, 158, 109, 0.3);
+  border-radius: 16px;
+}
+
+.stat-hero__value {
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-success);
+}
+
+.stat-hero__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-top: 0.4rem;
+}
+
+.stat-hero__context {
+  font-size: 0.8125rem;
+  color: var(--color-subtle);
+  margin-top: 0.5rem;
+}
+
 .stat-card__value {
   font-family: var(--font-display);
   font-size: 2rem;

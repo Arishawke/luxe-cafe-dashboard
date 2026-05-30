@@ -39,14 +39,18 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                         </div>
                     ) : (
                         <>
+                            <div className="stat-hero">
+                                <div className="stat-hero__value">{stats.successRate}%</div>
+                                <div className="stat-hero__label">Balanced Rate</div>
+                                <div className="stat-hero__context">
+                                    {stats.ratingCounts.Balanced} of {stats.totalShots} shots dialed in
+                                </div>
+                            </div>
+
                             <div className="stats-summary">
                                 <div className="stat-card">
                                     <div className="stat-card__value">{stats.totalShots}</div>
                                     <div className="stat-card__label">Total Shots</div>
-                                </div>
-                                <div className="stat-card stat-card--success">
-                                    <div className="stat-card__value">{stats.successRate}%</div>
-                                    <div className="stat-card__label">Balanced Rate</div>
                                 </div>
                                 <div className="stat-card">
                                     <div className="stat-card__value">{stats.shotsThisWeek}</div>
