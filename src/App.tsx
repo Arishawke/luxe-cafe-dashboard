@@ -10,7 +10,6 @@ import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
 import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete, useMaintenance } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
-import DashboardSummary from './components/DashboardSummary';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
 import ShotDetailModal from './components/modals/ShotDetailModal';
@@ -449,8 +448,6 @@ function App() {
         onOpenCaffeine={openModal(setShowCaffeine)}
         onOpenSettings={openModal(setShowSettings)}
       />
-
-      <DashboardSummary shots={shots} />
 
       {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
         <div className="recipe-menu">
