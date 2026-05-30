@@ -3072,6 +3072,101 @@ body {
   margin-top: 0.5rem;
 }
 
+/* Dashboard summary band */
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 2rem;
+  background: rgba(122, 158, 109, 0.1);
+  border: 1px solid rgba(122, 158, 109, 0.3);
+  border-radius: var(--radius-card);
+}
+
+.summary-hero__value {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-success);
+}
+
+.summary-hero__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-top: 0.4rem;
+}
+
+.summary-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.summary-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 1rem 1.25rem;
+  background: rgba(166, 123, 91, 0.08);
+  border: 1px solid var(--color-mocha);
+  border-radius: var(--radius-md);
+}
+
+.summary-tile__value {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-cream);
+}
+
+.summary-tile__value--bean {
+  font-size: var(--text-lg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary-tile__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  margin-top: 0.35rem;
+}
+
+.dashboard-summary--empty {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  background: rgba(166, 123, 91, 0.08);
+  border: 1px solid var(--color-mocha);
+  border-radius: var(--radius-card);
+  text-align: center;
+}
+
+.dashboard-summary__welcome {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-muted);
+}
+
+@media (max-width: 640px) {
+  .dashboard-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stat-card__value {
   font-family: var(--font-display);
   font-size: var(--text-4xl);
