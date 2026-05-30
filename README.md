@@ -1,6 +1,7 @@
 # Luxe Cafe Dashboard
 
-**DISCLAIMER:** This is a simple personal web app built with heavy AI assistance. It's a hobby project for tracking espresso shots on the Ninja Luxe Cafe Pro, not production software. Use at your own discretion.
+> [!WARNING]
+> **Personal project, heavy AI assistance.** This is a hobby web app built with substantial AI assistance. It is not production software. Use at your own discretion.
 
 A small web app for logging espresso shots and dialing in beans.
 
