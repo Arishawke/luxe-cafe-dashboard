@@ -105,7 +105,7 @@ export default function RecipeLibraryModal({
                                                 <span className="setting-tag">S{recipe.strength}</span>
                                                 {recipe.milk && (
                                                     <span className="setting-tag setting-tag--milk">
-                                                        🥛 {recipe.milk.type} {recipe.milk.style}
+                                                        <Icons.Milk /> {recipe.milk.type} {recipe.milk.style}
                                                     </span>
                                                 )}
                                             </div>
