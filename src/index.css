@@ -804,6 +804,14 @@ body {
   line-height: 1.5;
 }
 
+.empty-state__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-cream);
+  margin: 0.75rem 0 0.35rem;
+}
+
 /* History List */
 .history-list {
   display: flex;
