@@ -118,9 +118,17 @@ function validRecipeRecord(r: unknown): r is SavedRecipe {
     return parsesToValidDate(r.createdAt);
 }
 
+function validFiniteNumberOrAbsent(v: unknown): boolean {
+    return v === undefined || (typeof v === 'number' && Number.isFinite(v));
+}
+
 function validBeanRecord(b: unknown): b is BeanProfile {
     if (!isRecord(b)) return false;
     if (typeof b.name !== 'string') return false;
+    // Inventory fields are optional; reject a present-but-non-numeric value so a
+    // hand-edited backup can't render NaN grams/cost.
+    if (!validFiniteNumberOrAbsent(b.bagSizeGrams)) return false;
+    if (!validFiniteNumberOrAbsent(b.pricePaid)) return false;
     return parsesToValidDate(b.createdAt);
 }
 

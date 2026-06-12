@@ -171,6 +171,30 @@ describe('buildJSONBackup -> parseBackup round-trip', () => {
     });
 });
 
+describe('parseBackup bean inventory validation', () => {
+    const validBean = { id: 'b1', name: 'Ethiopia', isActive: true, createdAt: '2026-05-01T10:00:00.000Z' };
+
+    it('keeps numeric and absent inventory fields', () => {
+        const text = JSON.stringify({ shots: [], beans: [
+            { ...validBean, id: 'b1', bagSizeGrams: 250, pricePaid: 18 },
+            { ...validBean, id: 'b2' },
+        ] });
+        const result = parseBackup(text);
+        expect(result.beans.map((b: BeanProfile) => b.id)).toEqual(['b1', 'b2']);
+        expect(result.skipped.beans).toBe(0);
+    });
+
+    it('drops a bean whose inventory field is non-numeric (no NaN in the UI)', () => {
+        const text = JSON.stringify({ shots: [], beans: [
+            validBean,
+            { ...validBean, id: 'b2', bagSizeGrams: 'lots' },
+        ] });
+        const result = parseBackup(text);
+        expect(result.beans.map((b: BeanProfile) => b.id)).toEqual(['b1']);
+        expect(result.skipped.beans).toBe(1);
+    });
+});
+
 describe('parseBackup maintenance and favorites validation', () => {
     const goodEvent = { task: 'cleaning', performedAt: '2026-05-01T10:00:00.000Z', shotCountAtTime: 200 };
 
