@@ -13,7 +13,7 @@
   <title>Luxe Cafe Dial-In | Espresso Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
   <script defer src="https://cloud.umami.is/script.js" data-website-id="fc70e356-507c-4f48-9154-aa00d7099fd5"></script>
   <script>
     document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
@@ -24,6 +24,7 @@
     html[data-theme="catppuccin"] { background: #181825; }
     html[data-theme="rosepine"] { background: #1f1d2e; }
     html[data-theme="rosepine-moon"] { background: #2a273f; }
+    html[data-theme="fadetouched"] { background: #11201e; }
     body { margin: 0; visibility: hidden; }
   </style>
 </head>
@@ -32,13 +33,20 @@
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
   <script>
-    // Register service worker for PWA support
+    // Register service worker for PWA support (production only).
+    // In dev, unregister any existing worker and clear its caches so the live server never serves stale assets.
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW registered:', reg.scope))
-          .catch(err => console.log('SW registration failed:', err));
-      });
+      var isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (isDev) {
+        navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+        if (window.caches) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
+      } else {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
     }
   </script>
 </body>

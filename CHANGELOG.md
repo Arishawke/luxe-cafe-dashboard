@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.0] - 2026-06-12
+
+### Added
+- A new "Fadetouched" theme: a calm, dark teal-green palette, selectable in Settings alongside the existing five.
+
+### Changed
+- A refreshed look across the whole app: a new heading typeface, calmer flat surfaces, and a decluttered shot history where each shot reads as a clean line instead of a row of boxes. The header is now just the wordmark.
+- The taste-rating slider is simpler: a clean gradient with a single handle and the live "Balanced" label, with the small marker dots removed.
+- Motion is quieter throughout. Things settle smoothly instead of bouncing, and a freshly logged shot gives a soft, brief tint instead of a glow.
+
+### Fixed
+- The Bag Size and Price fields no longer show the browser's mismatched up/down spinner arrows. You can still type the value or use the arrow keys.
+- Secondary text like shot times and details now meets readable contrast in the Light, Catppuccin, and Rosé Pine themes.
+
 ## [1.7.0] - 2026-06-11
 
 ### Added
