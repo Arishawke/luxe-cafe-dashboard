@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { ShotLog, FavoritesMap, Rating } from '../../types';
-import { formatDate } from '../../lib/format';
 import { filterShots } from '../../lib/shots';
 import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 import ShotDetailView from '../ShotDetailView';
+import ShotHistoryRow from '../ShotHistoryRow';
 
 interface HistoryModalProps {
     open: boolean;
@@ -111,53 +111,24 @@ export default function HistoryModal({
                     <div className="history-modal__content">
                         <div className="history-modal__list">
                             {filteredShots.length > 0 ? (
-                                filteredShots.map((shot) => {
-                                    const config = shot.rating ? ratingConfig[shot.rating] : null;
-                                    const ShotIcon = config?.icon;
-                                    const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
-                                    const isSelected = previewShot?.id === shot.id;
-                                    return (
-                                        <div
-                                            key={shot.id}
-                                            className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''} ${isSelected ? 'history-item--selected' : ''}`}
-                                            onClick={() => setPreviewShot(shot)}
-                                            onDoubleClick={() => { onSelectShot(shot); onClose(); }}
-                                        >
-                                            <div className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>
-                                                {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
-                                            </div>
-                                            <div className="history-item__details">
-                                                <div className="history-item__bean">{shot.beanName}</div>
-                                                <div className="history-item__meta">
-                                                    {shot.brewType} • {formatDate(shot.timestamp, use24Hour)}
-                                                </div>
-                                            </div>
-                                            <div className="history-item__actions">
-                                                <button
-                                                    className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}
-                                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(shot); }}
-                                                    title={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
-                                                    aria-label={isFavorite ? 'Remove from favorites' : 'Set as target recipe'}
-                                                    aria-pressed={isFavorite}
-                                                >
-                                                    <Icons.Star filled={isFavorite} />
-                                                </button>
-                                                <button
-                                                    className="history-item__delete-btn"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onDeleteShot(shot.id);
-                                                        if (previewShot?.id === shot.id) setPreviewShot(null);
-                                                    }}
-                                                    title="Delete shot"
-                                                    aria-label="Delete shot"
-                                                >
-                                                    <Icons.Trash />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })
+                                filteredShots.map((shot) => (
+                                    <ShotHistoryRow
+                                        key={shot.id}
+                                        shot={shot}
+                                        isFavorite={favorites[shot.beanName.toLowerCase()] === shot.id}
+                                        isSelected={previewShot?.id === shot.id}
+                                        use24Hour={use24Hour}
+                                        ratingConfig={ratingConfig}
+                                        onSelect={setPreviewShot}
+                                        onOpen={(s) => { onSelectShot(s); onClose(); }}
+                                        onToggleFavorite={onToggleFavorite}
+                                        onEdit={onEditShot}
+                                        onDelete={(id) => {
+                                            onDeleteShot(id);
+                                            if (previewShot?.id === id) setPreviewShot(null);
+                                        }}
+                                    />
+                                ))
                             ) : (
                                 <div className="empty-state">
                                     <Icons.Clipboard />

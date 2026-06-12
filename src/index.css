@@ -479,10 +479,37 @@ body {
   min-width: 0;
 }
 
-/* Selected shot in list */
-.history-item--selected {
-  background: color-mix(in srgb, var(--color-caramel) 18%, transparent);
+/* Modal list rows are rounded cards (the dashboard uses hairline dividers).
+   Scoping the card + highlight styling here keeps the dashboard list intact
+   and gives the favorite/selected states a proper rounded highlight. */
+.history-modal__list .history-item {
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+}
+
+.history-modal__list .history-item:hover {
+  background: color-mix(in srgb, var(--color-caramel) 6%, transparent);
+  border-color: color-mix(in srgb, var(--color-caramel) 45%, transparent);
+}
+
+.history-modal__list .history-item--favorite {
+  border-color: color-mix(in srgb, var(--color-star) 40%, transparent);
+}
+
+.history-modal__list .history-item--selected {
+  background: color-mix(in srgb, var(--color-caramel) 14%, transparent);
   border-color: var(--color-caramel);
+}
+
+/* Wide modal has room for a single tight action cluster at the top-right
+   (the narrow dashboard rows keep the vertical stack). */
+.history-modal__list .history-item__actions {
+  flex-direction: row;
+  align-self: flex-start;
+  gap: 0.25rem;
 }
 
 /* Preview Pane */
