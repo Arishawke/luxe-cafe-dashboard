@@ -23,7 +23,7 @@ export interface SuggestedSettings {
 }
 
 export function getSuggestedSettings(lastShot: ShotLog | null | undefined): SuggestedSettings | null {
-    if (!lastShot) return null;
+    if (!lastShot || !lastShot.rating) return null;
 
     const currentGrind = lastShot.grindSize;
     const currentTemp = lastShot.temperature || 'Med';

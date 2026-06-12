@@ -1,4 +1,5 @@
 import type { Rating, ShotLog } from '../types';
+import { RATINGS, RATING_COLORS } from '../constants';
 import { formatDateLong } from '../lib/format';
 import Icons from './Icons';
 
@@ -7,19 +8,39 @@ interface ShotDetailViewProps {
     use24Hour: boolean;
     isFavorite: boolean;
     ratingConfig: Record<Rating, { icon: () => React.JSX.Element; colorClass: string }>;
+    onRate: (id: string, rating: Rating) => void;
 }
 
-export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConfig }: ShotDetailViewProps) {
-    const config = ratingConfig[shot.rating];
-    const ShotIcon = config.icon;
+export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConfig, onRate }: ShotDetailViewProps) {
+    const config = shot.rating ? ratingConfig[shot.rating] : null;
+    const ShotIcon = config?.icon;
 
     return (
         <>
-            <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
-                <ShotIcon />
-                <span>{shot.rating}</span>
-                {isFavorite && <span className="shot-detail__fav-badge"><Icons.Star filled /> Favorite</span>}
-            </div>
+            {config && ShotIcon ? (
+                <div className={`shot-detail__rating shot-detail__rating--${config.colorClass}`}>
+                    <ShotIcon />
+                    <span>{shot.rating}</span>
+                    {isFavorite && <span className="shot-detail__fav-badge"><Icons.Star filled /> Favorite</span>}
+                </div>
+            ) : (
+                <div className="shot-detail__rate-prompt">
+                    <span className="shot-detail__label">How did it taste?</span>
+                    <div className="rate-chips">
+                        {RATINGS.map((r) => (
+                            <button
+                                key={r}
+                                type="button"
+                                className="rate-chip"
+                                style={{ '--rating-color': RATING_COLORS[r] } as React.CSSProperties}
+                                onClick={() => onRate(shot.id, r)}
+                            >
+                                {r}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div className="shot-detail__timestamp">
                 {formatDateLong(shot.timestamp, use24Hour)}

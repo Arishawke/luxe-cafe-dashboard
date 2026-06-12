@@ -87,6 +87,8 @@ export default function ShotForm({
             <RatingScale
                 ratingIndex={form.ratingIndex}
                 onChange={form.setRatingIndex}
+                rated={form.rated}
+                setRated={form.setRated}
             />
 
             <MilkControls

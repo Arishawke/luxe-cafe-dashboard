@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import type { BeanProfile, ProcessMethod, RoastLevel } from '../../types';
+import type { BeanProfile, ProcessMethod, RoastLevel, ShotLog } from '../../types';
 import { PROCESS_METHODS, ROAST_LEVELS } from '../../constants';
 import { generateId } from '../../lib/format';
 import { getDaysSinceRoast, getFreshnessStatus } from '../../lib/beans';
+import { getBeanInventory } from '../../lib/inventory';
 import { useFocusTrap } from '../../hooks';
 import Icons from '../Icons';
 
 interface BeanLibraryModalProps {
     open: boolean;
     beans: BeanProfile[];
+    shots: ShotLog[];
     onAdd: (bean: BeanProfile) => void;
     onUpdate: (bean: BeanProfile) => void;
     onDelete: (id: string) => void;
@@ -19,6 +21,7 @@ interface BeanLibraryModalProps {
 export default function BeanLibraryModal({
     open,
     beans,
+    shots,
     onAdd,
     onUpdate,
     onDelete,
@@ -32,6 +35,8 @@ export default function BeanLibraryModal({
     const [process, setProcess] = useState<ProcessMethod>('Washed');
     const [roastDate, setRoastDate] = useState('');
     const [flavorNotes, setFlavorNotes] = useState('');
+    const [bagSize, setBagSize] = useState('');
+    const [pricePaid, setPricePaid] = useState('');
     const [editing, setEditing] = useState<BeanProfile | null>(null);
     const modalRef = useFocusTrap<HTMLDivElement>();
 
@@ -45,6 +50,8 @@ export default function BeanLibraryModal({
         setProcess('Washed');
         setRoastDate('');
         setFlavorNotes('');
+        setBagSize('');
+        setPricePaid('');
         setEditing(null);
     };
 
@@ -57,10 +64,16 @@ export default function BeanLibraryModal({
         setProcess(bean.processMethod ?? 'Washed');
         setRoastDate(bean.roastDate ?? '');
         setFlavorNotes(bean.flavorNotes ?? '');
+        setBagSize(bean.bagSizeGrams?.toString() ?? '');
+        setPricePaid(bean.pricePaid?.toString() ?? '');
     };
 
     const save = () => {
         if (!name.trim()) return;
+        const inventory = {
+            bagSizeGrams: bagSize ? parseFloat(bagSize) : undefined,
+            pricePaid: pricePaid ? parseFloat(pricePaid) : undefined,
+        };
         if (editing) {
             onUpdate({
                 ...editing,
@@ -71,6 +84,7 @@ export default function BeanLibraryModal({
                 processMethod: process,
                 roastDate: roastDate || undefined,
                 flavorNotes: flavorNotes.trim() || undefined,
+                ...inventory,
             });
         } else {
             onAdd({
@@ -82,6 +96,7 @@ export default function BeanLibraryModal({
                 processMethod: process,
                 roastDate: roastDate || undefined,
                 flavorNotes: flavorNotes.trim() || undefined,
+                ...inventory,
                 isActive: true,
                 createdAt: new Date(),
             });
@@ -201,6 +216,34 @@ export default function BeanLibraryModal({
                                 onChange={(e) => setFlavorNotes(e.target.value)}
                             />
                         </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Bag Size (g)</label>
+                                <input
+                                    type="number"
+                                    inputMode="decimal"
+                                    min="0"
+                                    step="1"
+                                    className="form-input"
+                                    placeholder="e.g. 250"
+                                    value={bagSize}
+                                    onChange={(e) => setBagSize(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Price Paid</label>
+                                <input
+                                    type="number"
+                                    inputMode="decimal"
+                                    min="0"
+                                    step="0.01"
+                                    className="form-input"
+                                    placeholder="e.g. 18.00"
+                                    value={pricePaid}
+                                    onChange={(e) => setPricePaid(e.target.value)}
+                                />
+                            </div>
+                        </div>
                         <div className="bean-form__actions">
                             {editing && (
                                 <button className="btn-cancel" onClick={reset}>Cancel</button>
@@ -222,6 +265,7 @@ export default function BeanLibraryModal({
                                 {beans.map((bean) => {
                                     const days = getDaysSinceRoast(bean.roastDate);
                                     const freshness = getFreshnessStatus(days);
+                                    const inventory = getBeanInventory(bean, shots);
                                     return (
                                         <div
                                             key={bean.id}
@@ -241,6 +285,15 @@ export default function BeanLibraryModal({
                                                     >
                                                         <Icons.Calendar />
                                                         {days} days • {freshness.label}
+                                                    </div>
+                                                )}
+                                                {inventory && (
+                                                    <div className={`bean-card__inventory ${inventory.isEmpty ? 'bean-card__inventory--empty' : inventory.isLow ? 'bean-card__inventory--low' : ''}`}>
+                                                        <Icons.Scale />
+                                                        {inventory.isEmpty
+                                                            ? 'Bag empty'
+                                                            : `${inventory.gramsLeft}g left • ~${inventory.shotsLeft} shots`}
+                                                        {inventory.costPerShot != null && ` • ${inventory.costPerShot.toFixed(2)}/shot`}
                                                     </div>
                                                 )}
                                             </div>

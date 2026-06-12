@@ -38,6 +38,20 @@ export default function SuggestionCard({
         );
     }
 
+    if (!lastShot.rating) {
+        return (
+            <div className="barista-tip barista-tip--unrated">
+                <span className="barista-tip__icon">
+                    <Icons.Lightbulb />
+                </span>
+                <div className="barista-tip__content">
+                    <h4>Rate your last "{lastShot.beanName}" shot</h4>
+                    <p>Open it from your history and tap a taste rating. Once it's rated, your next-shot tip appears here.</p>
+                </div>
+            </div>
+        );
+    }
+
     const config = ratingConfig[lastShot.rating];
     const tip = getBaristaTip(lastShot.rating);
     const TipIcon = config.icon;
@@ -108,15 +122,15 @@ export default function SuggestionCard({
                         </div>
                         <div className="dialin-journey__timeline">
                             {displayShots.map((shot, idx) => {
-                                const shotConfig = ratingConfig[shot.rating];
-                                const ShotIcon = shotConfig.icon;
+                                const shotConfig = shot.rating ? ratingConfig[shot.rating] : null;
+                                const ShotIcon = shotConfig?.icon;
                                 return (
                                     <div
                                         key={shot.id}
-                                        className={`journey-step journey-step--${shotConfig.colorClass}`}
-                                        title={`Grind ${shot.grindSize} • ${shot.rating}`}
+                                        className={`journey-step ${shotConfig ? `journey-step--${shotConfig.colorClass}` : 'journey-step--unrated'}`}
+                                        title={`Grind ${shot.grindSize} • ${shot.rating ?? 'Not rated'}`}
                                     >
-                                        <ShotIcon />
+                                        {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
                                         <span className="journey-step__grind">G{shot.grindSize}</span>
                                         {idx < displayShots.length - 1 && <span className="journey-step__arrow">→</span>}
                                     </div>
@@ -130,7 +144,7 @@ export default function SuggestionCard({
                                     className={`grind-history__bar ${idx === displayShots.length - 1 ? 'grind-history__bar--current' : ''}`}
                                     style={{
                                         height: `${20 + ((shot.grindSize - minGrind) / grindRange) * 80}%`,
-                                        background: ratingColors[shot.rating]
+                                        background: shot.rating ? ratingColors[shot.rating] : 'var(--color-mocha)'
                                     }}
                                     title={`G${shot.grindSize}`}
                                 />

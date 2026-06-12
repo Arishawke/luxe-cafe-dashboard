@@ -245,6 +245,12 @@ const Icons = {
             <line x1="3" y1="21" x2="10" y2="14" />
         </svg>
     ),
+    Keyboard: () => (
+        <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2" />
+            <path d="M6 10h0M10 10h0M14 10h0M18 10h0M8 14h8" />
+        </svg>
+    ),
 };
 
 export default Icons;

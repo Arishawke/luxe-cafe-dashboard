@@ -60,7 +60,7 @@ export function buildCSV(shots: ShotLog[]): string {
             shot.grindSize,
             shot.temperature || '',
             shot.strength,
-            shot.rating,
+            shot.rating || '',
             shot.extractionTime || '',
             shot.doseIn || '',
             shot.doseOut || '',
@@ -99,7 +99,8 @@ function parsesToValidDate(value: unknown): boolean {
 function validShotRecord(s: unknown): s is ShotLog {
     if (!isRecord(s)) return false;
     if (typeof s.beanName !== 'string' || s.beanName.trim() === '') return false;
-    if (typeof s.rating !== 'string' || !(RATINGS as readonly string[]).includes(s.rating)) return false;
+    // rating is optional (logged-but-not-yet-tasted); reject only an invalid non-empty value
+    if (s.rating !== undefined && (typeof s.rating !== 'string' || !(RATINGS as readonly string[]).includes(s.rating))) return false;
     if (typeof s.grindSize !== 'number' || !Number.isFinite(s.grindSize)) return false;
     return parsesToValidDate(s.timestamp);
 }
@@ -117,9 +118,17 @@ function validRecipeRecord(r: unknown): r is SavedRecipe {
     return parsesToValidDate(r.createdAt);
 }
 
+function validFiniteNumberOrAbsent(v: unknown): boolean {
+    return v === undefined || (typeof v === 'number' && Number.isFinite(v));
+}
+
 function validBeanRecord(b: unknown): b is BeanProfile {
     if (!isRecord(b)) return false;
     if (typeof b.name !== 'string') return false;
+    // Inventory fields are optional; reject a present-but-non-numeric value so a
+    // hand-edited backup can't render NaN grams/cost.
+    if (!validFiniteNumberOrAbsent(b.bagSizeGrams)) return false;
+    if (!validFiniteNumberOrAbsent(b.pricePaid)) return false;
     return parsesToValidDate(b.createdAt);
 }
 

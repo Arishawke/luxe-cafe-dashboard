@@ -74,6 +74,20 @@ describe('computeStats', () => {
         expect(s.successRate).toBe(67);
     });
 
+    it('excludes unrated shots from the balanced rate denominator', () => {
+        // Two balanced, two not-yet-tasted. A shot you never rated must not
+        // count as a miss, or "save first, rate later" would tank the rate.
+        const s = computeStats([
+            shot({ rating: 'Balanced' }),
+            shot({ rating: 'Balanced' }),
+            shot({ rating: undefined }),
+            shot({ rating: undefined }),
+        ]);
+        expect(s.totalShots).toBe(4);
+        expect(s.ratedShots).toBe(2);
+        expect(s.successRate).toBe(100);
+    });
+
     it('counts shotsThisWeek over the last 7 days only', () => {
         const dayAgo = (d: number) => new Date(NOW.getTime() - d * 24 * 60 * 60 * 1000);
         const s = computeStats([

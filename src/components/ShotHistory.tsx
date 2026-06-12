@@ -7,6 +7,7 @@ interface ShotHistoryProps {
     shots: ShotLog[];
     sortedShots: ShotLog[];
     favorites: FavoritesMap;
+    justLoggedId?: string | null;
     use24Hour: boolean;
     beanFilter: string;
     setBeanFilter: (v: string) => void;
@@ -24,6 +25,7 @@ export default function ShotHistory({
     shots,
     sortedShots,
     favorites,
+    justLoggedId,
     use24Hour,
     beanFilter,
     setBeanFilter,
@@ -94,17 +96,17 @@ export default function ShotHistory({
             {filteredShots.length > 0 ? (
                 <div className="history-list">
                     {filteredShots.map((shot) => {
-                        const config = ratingConfig[shot.rating];
-                        const ShotIcon = config.icon;
+                        const config = shot.rating ? ratingConfig[shot.rating] : null;
+                        const ShotIcon = config?.icon;
                         const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
                         return (
                             <div
                                 key={shot.id}
-                                className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
+                                className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''} ${shot.id === justLoggedId ? 'history-item--just-logged' : ''}`}
                                 onClick={() => onSelectShot(shot)}
                             >
-                                <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
-                                    <ShotIcon />
+                                <div className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>
+                                    {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
                                 </div>
                                 <div className="history-item__details">
                                     <div className="history-item__bean">{shot.beanName}</div>

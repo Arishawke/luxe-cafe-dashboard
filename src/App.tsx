@@ -4,6 +4,8 @@ import type { ShotLog, Rating, SavedRecipe, BeanProfile, FavoritesMap, Maintenan
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
 import { getFreshnessAlert } from './lib/beans';
+import { getBeanInventory } from './lib/inventory';
+import { getLogMessage } from './lib/milestones';
 import { getSuggestedSettings } from './lib/suggestions';
 import { getMaintenanceAlerts } from './lib/maintenance';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
@@ -76,10 +78,17 @@ function App() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [justLoggedId, setJustLoggedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!justLoggedId) return;
+    const t = setTimeout(() => setJustLoggedId(null), 1600);
+    return () => clearTimeout(t);
+  }, [justLoggedId]);
 
   const [showShortcuts, setShowShortcuts] = useState(() => {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
-    return stored === null ? true : stored === 'true';
+    return stored === null ? false : stored === 'true';
   });
 
   useEffect(() => {
@@ -137,6 +146,7 @@ function App() {
     form.setGrindSize(suggestedSettings.grindSize);
     form.setTemperature(suggestedSettings.temperature);
     form.setRatingIndex(BALANCED_RATING_INDEX);
+    form.setRated(true);
   };
 
   const saveAsRecipe = () => {
@@ -254,11 +264,21 @@ function App() {
   const duplicateShot = (shot: ShotLog) => {
     form.applyFromShot(shot);
     form.setRatingIndex(BALANCED_RATING_INDEX);
+    form.setRated(true);
+  };
+
+  const rateShot = (shotId: string, rating: Rating) => {
+    const shot = shots.find(s => s.id === shotId);
+    if (!shot) return;
+    updateShot({ ...shot, rating });
+    setSelectedShot(prev => (prev && prev.id === shotId ? { ...prev, rating } : prev));
+    showToast(`Rated ${rating}`, 'success');
   };
 
   const openEditShot = (shot: ShotLog) => {
     form.applyFromShot(shot);
-    const ratingIdx = RATINGS.indexOf(shot.rating);
+    const ratingIdx = shot.rating ? RATINGS.indexOf(shot.rating) : -1;
+    form.setRated(ratingIdx >= 0);
     form.setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
     if (shot.doseIn) {
       form.setShowDose(true);
@@ -286,7 +306,7 @@ function App() {
       grindSize: form.grindSize,
       temperature: isColdBrew ? undefined : form.temperature,
       strength: form.strength,
-      rating,
+      rating: form.rated ? rating : undefined,
       milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
       notes: form.notes.trim() || undefined,
       doseIn: form.doseIn ? parseFloat(form.doseIn) : undefined,
@@ -407,7 +427,7 @@ function App() {
       grindSize: form.grindSize,
       temperature: isColdBrew ? undefined : form.temperature,
       strength: form.strength,
-      rating,
+      rating: form.rated ? rating : undefined,
       milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
       notes: form.notes.trim() || undefined,
       extractionTime: getExtractionTime(),
@@ -417,10 +437,12 @@ function App() {
     };
 
     addShot(newShot);
+    setJustLoggedId(newShot.id);
+    const beanShots = shots.filter(s => s.beanName.toLowerCase() === newShot.beanName.toLowerCase()).length + 1;
     form.reset();
     autocomplete.setShowSuggestions(false);
     resetTimer();
-    showToast('Shot logged!', 'success');
+    showToast(getLogMessage(shots.length + 1, beanShots, newShot.beanName), 'success');
   };
 
   const sortedShots = [...shots].sort((a, b) => {
@@ -534,6 +556,26 @@ function App() {
               );
             })()}
 
+            {(() => {
+              const key = form.beanName.trim().toLowerCase();
+              const profile = key ? beans.find(b => b.name.toLowerCase() === key) : undefined;
+              if (!profile) return null;
+              const inv = getBeanInventory(profile, shots);
+              if (!inv || (!inv.isLow && !inv.isEmpty)) return null;
+              return (
+                <div className={`freshness-alert freshness-alert--${inv.isEmpty ? 'stale' : 'fading'}`}>
+                  <span className="freshness-alert__badge" style={{ background: inv.isEmpty ? 'var(--color-very-bitter)' : 'var(--color-sour)' }}>
+                    {inv.isEmpty ? 'Empty' : 'Low Bag'}
+                  </span>
+                  <span className="freshness-alert__text">
+                    {inv.isEmpty
+                      ? `Your ${profile.name} bag is out. Time to restock.`
+                      : `About ${inv.gramsLeft}g (~${inv.shotsLeft} shots) of ${profile.name} left.`}
+                  </span>
+                </div>
+              );
+            })()}
+
             {getMaintenanceAlerts(maintenanceEvents, shots.length).map(alert => (
               <div key={alert.task} className={`maintenance-alert maintenance-alert--${alert.variant}`}>
                 <span className="maintenance-alert__badge">{alert.label}</span>
@@ -570,6 +612,7 @@ function App() {
             shots={shots}
             sortedShots={sortedShots}
             favorites={favorites}
+            justLoggedId={justLoggedId}
             use24Hour={use24Hour}
             beanFilter={beanFilter}
             setBeanFilter={setBeanFilter}
@@ -609,6 +652,7 @@ function App() {
         onEdit={openEditShot}
         onDelete={confirmDeleteShot}
         onDuplicate={duplicateShot}
+        onRate={rateShot}
         onToggleCompare={(id) => {
           const wasCompared = compareShots.includes(id);
           toggleCompareShot(id);
@@ -621,6 +665,7 @@ function App() {
           <BeanLibraryModal
             open={true}
             beans={beans}
+            shots={shots}
             onAdd={addBean}
             onUpdate={updateBean}
             onDelete={confirmDeleteBean}
@@ -694,6 +739,7 @@ function App() {
             onEditShot={openEditShot}
             onDuplicateShot={duplicateShot}
             onDeleteShot={confirmDeleteShot}
+            onRate={rateShot}
           />
         )}
 
@@ -764,7 +810,7 @@ function App() {
         {showShortcuts ? (
           <>
             <div className="shortcuts-panel__header">
-              <span>⌨️ Shortcuts</span>
+              <span className="shortcuts-panel__title"><Icons.Keyboard /> Shortcuts</span>
               <button
                 className="shortcuts-panel__close"
                 onClick={() => {
@@ -803,8 +849,9 @@ function App() {
               localStorage.setItem('luxe-cafe-show-shortcuts', 'true');
             }}
             title="Show keyboard shortcuts"
+            aria-label="Show keyboard shortcuts"
           >
-            ⌨️
+            <Icons.Keyboard />
           </button>
         )}
       </div>

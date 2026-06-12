@@ -10,6 +10,7 @@ export function useShotForm() {
     const [temperature, setTemperature] = useState<Temperature>('Med');
     const [strength, setStrength] = useState<Strength>(2);
     const [ratingIndex, setRatingIndex] = useState(BALANCED_RATING_INDEX);
+    const [rated, setRated] = useState(true); // false = log without tasting, rate later
     const [notes, setNotes] = useState('');
 
     const [showMilk, setShowMilk] = useState(false);
@@ -29,6 +30,7 @@ export function useShotForm() {
         setManualTimerValue('');
         setDoseIn('');
         setDoseOut('');
+        setRated(true);
     };
 
     const applyFromShot = (shot: ShotLog) => {
@@ -49,6 +51,7 @@ export function useShotForm() {
     };
 
     const applyFromRecipe = (r: SavedRecipe) => {
+        setRated(true);
         setBeanName(r.beanName);
         setBrewType(r.brewType);
         setBasket(r.basket);
@@ -73,6 +76,7 @@ export function useShotForm() {
         temperature, setTemperature,
         strength, setStrength,
         ratingIndex, setRatingIndex,
+        rated, setRated,
         notes, setNotes,
         showMilk, setShowMilk,
         milkType, setMilkType,

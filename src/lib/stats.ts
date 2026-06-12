@@ -9,6 +9,7 @@ export interface DayStat {
 
 export interface ShotStats {
     totalShots: number;
+    ratedShots: number;
     ratingCounts: Record<Rating, number>;
     maxRatingCount: number;
     topBeans: [string, number][];
@@ -42,13 +43,16 @@ export function computeStats(shots: ShotLog[]): ShotStats {
         .slice(0, 5);
     const maxBeanCount = Math.max(...topBeans.map(([, c]) => c), 1);
 
+    const ratedShots = shots.filter(s => s.rating).length;
+
     const balancedShots = shots.filter(s => s.rating === 'Balanced');
     const avgGrind = balancedShots.length > 0
         ? Math.round(balancedShots.reduce((sum, s) => sum + s.grindSize, 0) / balancedShots.length * 10) / 10
         : null;
 
-    const successRate = totalShots > 0
-        ? Math.round((balancedShots.length / totalShots) * 100)
+    // Balanced rate is out of rated shots only; unrated shots don't count against it
+    const successRate = ratedShots > 0
+        ? Math.round((balancedShots.length / ratedShots) * 100)
         : 0;
 
     const weekAgo = new Date();
@@ -83,6 +87,7 @@ export function computeStats(shots: ShotLog[]): ShotStats {
 
     return {
         totalShots,
+        ratedShots,
         ratingCounts,
         maxRatingCount,
         topBeans,
