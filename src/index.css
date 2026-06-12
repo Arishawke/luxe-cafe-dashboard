@@ -68,6 +68,7 @@
 
   /* Motion (theme-independent) */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* gentle overshoot for signature controls */
   --transition-base: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease), opacity 0.2s var(--ease);
 }
 
@@ -664,7 +665,7 @@ body {
   border: 3px solid var(--color-caramel);
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 10px color-mix(in srgb, var(--color-caramel) 20%, transparent);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.22s var(--ease-spring), box-shadow 0.15s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
@@ -5378,7 +5379,7 @@ textarea:focus-visible {
     margin: 0;
     border-bottom: none;
     border-radius: var(--radius-card) var(--radius-card) 0 0;
-    animation: sheetUp 0.28s var(--ease);
+    animation: sheetUp 0.32s var(--ease-spring);
   }
 
   /* Grab-handle affordance at the top of each sheet */
@@ -5417,4 +5418,23 @@ textarea:focus-visible {
 
 .bean-card__inventory--empty {
   color: var(--color-bitter-text);
+}
+
+/* ============================================
+   POST-LOG GLOW PULSE (Phase 5)
+   A brief copper pulse on a freshly logged shot.
+   Interaction feedback, so it honors Glow-Is-Light.
+   Reduced-motion users get no pulse (handled globally).
+   ============================================ */
+@keyframes logPulse {
+  0% { box-shadow: 0 0 0 0 transparent; }
+  30% {
+    box-shadow: 0 0 0 1px var(--color-caramel),
+                0 0 24px color-mix(in srgb, var(--color-caramel) 42%, transparent);
+  }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.history-item--just-logged {
+  animation: logPulse 1.5s var(--ease);
 }

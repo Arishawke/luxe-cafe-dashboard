@@ -7,6 +7,7 @@ interface ShotHistoryProps {
     shots: ShotLog[];
     sortedShots: ShotLog[];
     favorites: FavoritesMap;
+    justLoggedId?: string | null;
     use24Hour: boolean;
     beanFilter: string;
     setBeanFilter: (v: string) => void;
@@ -24,6 +25,7 @@ export default function ShotHistory({
     shots,
     sortedShots,
     favorites,
+    justLoggedId,
     use24Hour,
     beanFilter,
     setBeanFilter,
@@ -100,7 +102,7 @@ export default function ShotHistory({
                         return (
                             <div
                                 key={shot.id}
-                                className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''}`}
+                                className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''} ${shot.id === justLoggedId ? 'history-item--just-logged' : ''}`}
                                 onClick={() => onSelectShot(shot)}
                             >
                                 <div className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>

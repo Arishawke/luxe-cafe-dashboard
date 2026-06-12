@@ -78,6 +78,13 @@ function App() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [justLoggedId, setJustLoggedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!justLoggedId) return;
+    const t = setTimeout(() => setJustLoggedId(null), 1600);
+    return () => clearTimeout(t);
+  }, [justLoggedId]);
 
   const [showShortcuts, setShowShortcuts] = useState(() => {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
@@ -430,6 +437,7 @@ function App() {
     };
 
     addShot(newShot);
+    setJustLoggedId(newShot.id);
     const beanShots = shots.filter(s => s.beanName.toLowerCase() === newShot.beanName.toLowerCase()).length + 1;
     form.reset();
     autocomplete.setShowSuggestions(false);
@@ -604,6 +612,7 @@ function App() {
             shots={shots}
             sortedShots={sortedShots}
             favorites={favorites}
+            justLoggedId={justLoggedId}
             use24Hour={use24Hour}
             beanFilter={beanFilter}
             setBeanFilter={setBeanFilter}
