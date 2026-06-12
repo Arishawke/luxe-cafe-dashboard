@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.7.0] - 2026-06-11
+
+### Added
+- Save first, taste later: you can log a shot without rating it, then add the taste from the shot's detail card once you've tried it. Unrated shots no longer count against your balanced rate.
+- Bean inventory: record a bag's size and price, and the app tracks grams left, roughly how many shots remain, and the cost per shot on each bean card. A low-bag warning appears in the Smart Barista while you log.
+- A quiet word of encouragement at milestone shots (your first, your 100th, your 50th of a bean), with no badges or confetti.
+
+### Changed
+- On phones, the Stats, History, and library panels now rise from the bottom as sheets within thumb's reach, and the Log Shot button stays pinned at the bottom of the form while you fill it in. Delete confirmations stay centered.
+- Dose, yield, and time fields open the number pad on mobile, and the header is more compact so more of the form is visible.
+- In a shot's detail view, "Brew Again" is now the primary button.
+- A freshly logged shot briefly glows in your history, and the slider and bottom sheets settle with a gentle spring. Both respect your reduced-motion setting.
+
+### Fixed
+- All five themes now render their colors correctly. The favorite-shot gold is readable in the warm light theme (it was nearly invisible), the Caffeine tracker's gauge and labels display properly, and accent glows, rating colors, and danger text now follow the active theme instead of always using the dark one.
+- Delete buttons and the "stale bean" label now meet readable contrast on cards.
+- The keyboard-shortcuts panel starts collapsed and no longer covers your most recent shot's buttons.
+
 ## [1.6.0] - 2026-05-30
 
 ### Changed
