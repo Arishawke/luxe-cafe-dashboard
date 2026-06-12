@@ -22,10 +22,10 @@
   --color-subtle: #9C8E85;
 
   /* Rating colors - warmer tones */
-  --color-sour: var(--color-sour);
-  --color-balanced: var(--color-balanced);
-  --color-bitter: var(--color-bitter);
-  --color-success: var(--color-balanced);
+  --color-sour: #D4915C;
+  --color-balanced: #7A9E6D;
+  --color-bitter: #B85C5C;
+  --color-success: #7A9E6D;
   /* Extreme ratings derived from the themed sour/bitter so they re-skin too */
   --color-very-sour: color-mix(in srgb, var(--color-sour) 72%, #b8430a);
   --color-very-bitter: color-mix(in srgb, var(--color-bitter) 68%, #6e1a1a);
@@ -5345,5 +5345,50 @@ textarea:focus-visible {
 
   .header__subtitle {
     font-size: var(--text-xs);
+  }
+}
+
+/* ============================================
+   BOTTOM SHEETS ON MOBILE (Phase 3)
+   Review modals dock to the bottom as sheets;
+   confirm dialogs stay centered. Reduced-motion
+   users get no slide (handled globally above).
+   ============================================ */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* Confirm dialogs remain centered modals */
+  .modal-overlay:has(.modal--confirm) {
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .modal:not(.modal--confirm) {
+    max-width: 100%;
+    max-height: 92vh;
+    margin: 0;
+    border-bottom: none;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    animation: sheetUp 0.28s var(--ease);
+  }
+
+  /* Grab-handle affordance at the top of each sheet */
+  .modal:not(.modal--confirm)::before {
+    content: "";
+    flex-shrink: 0;
+    width: 36px;
+    height: 4px;
+    margin: 0.625rem auto 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-mocha);
   }
 }
