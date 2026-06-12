@@ -976,8 +976,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .history-item__settings {
   display: flex;
-  gap: 0.7rem;
+  align-items: center;
   flex-wrap: wrap;
+  column-gap: 0;
+  row-gap: 0.25rem;
   margin-top: 0.45rem;
 }
 
@@ -992,10 +994,21 @@ input[type="number"]::-webkit-outer-spin-button {
   letter-spacing: 0;
 }
 
-.history-item__settings .setting-tag + .setting-tag::before {
+.history-item__settings .setting-tag:not(:last-child)::after {
   content: "·";
-  margin-right: 0.7rem;
+  margin: 0 0.5rem;
   color: color-mix(in srgb, var(--color-muted) 45%, transparent);
+}
+
+.setting-tag--timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.setting-tag--timer .icon {
+  width: 13px;
+  height: 13px;
 }
 
 /* Right Column Panel */
@@ -4887,14 +4900,8 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .theme-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
-}
-
-@media (max-width: 480px) {
-  .theme-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 .theme-swatch {
