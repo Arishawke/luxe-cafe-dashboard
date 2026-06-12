@@ -4,6 +4,8 @@ import type { ShotLog, Rating, SavedRecipe, BeanProfile, FavoritesMap, Maintenan
 import { COLD_BREW_TYPES } from './types';
 import { generateId } from './lib/format';
 import { getFreshnessAlert } from './lib/beans';
+import { getBeanInventory } from './lib/inventory';
+import { getLogMessage } from './lib/milestones';
 import { getSuggestedSettings } from './lib/suggestions';
 import { getMaintenanceAlerts } from './lib/maintenance';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
@@ -428,10 +430,11 @@ function App() {
     };
 
     addShot(newShot);
+    const beanShots = shots.filter(s => s.beanName.toLowerCase() === newShot.beanName.toLowerCase()).length + 1;
     form.reset();
     autocomplete.setShowSuggestions(false);
     resetTimer();
-    showToast('Shot logged!', 'success');
+    showToast(getLogMessage(shots.length + 1, beanShots, newShot.beanName), 'success');
   };
 
   const sortedShots = [...shots].sort((a, b) => {
@@ -545,6 +548,26 @@ function App() {
               );
             })()}
 
+            {(() => {
+              const key = form.beanName.trim().toLowerCase();
+              const profile = key ? beans.find(b => b.name.toLowerCase() === key) : undefined;
+              if (!profile) return null;
+              const inv = getBeanInventory(profile, shots);
+              if (!inv || (!inv.isLow && !inv.isEmpty)) return null;
+              return (
+                <div className={`freshness-alert freshness-alert--${inv.isEmpty ? 'stale' : 'fading'}`}>
+                  <span className="freshness-alert__badge" style={{ background: inv.isEmpty ? 'var(--color-very-bitter)' : 'var(--color-sour)' }}>
+                    {inv.isEmpty ? 'Empty' : 'Low Bag'}
+                  </span>
+                  <span className="freshness-alert__text">
+                    {inv.isEmpty
+                      ? `Your ${profile.name} bag is out. Time to restock.`
+                      : `About ${inv.gramsLeft}g (~${inv.shotsLeft} shots) of ${profile.name} left.`}
+                  </span>
+                </div>
+              );
+            })()}
+
             {getMaintenanceAlerts(maintenanceEvents, shots.length).map(alert => (
               <div key={alert.task} className={`maintenance-alert maintenance-alert--${alert.variant}`}>
                 <span className="maintenance-alert__badge">{alert.label}</span>
@@ -633,6 +656,7 @@ function App() {
           <BeanLibraryModal
             open={true}
             beans={beans}
+            shots={shots}
             onAdd={addBean}
             onUpdate={updateBean}
             onDelete={confirmDeleteBean}

@@ -66,6 +66,8 @@ export interface BeanProfile {
   processMethod?: ProcessMethod;
   roastDate?: string; // ISO date
   flavorNotes?: string;
+  bagSizeGrams?: number; // for inventory + cost-per-shot
+  pricePaid?: number; // in the user's own currency
   isActive: boolean;
   createdAt: Date;
 }

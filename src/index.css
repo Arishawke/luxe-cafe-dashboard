@@ -5392,3 +5392,29 @@ textarea:focus-visible {
     background: var(--color-mocha);
   }
 }
+
+/* ============================================
+   BEAN INVENTORY (Phase 4)
+   ============================================ */
+.bean-card__inventory {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  margin-top: 0.375rem;
+  color: var(--color-muted);
+}
+
+.bean-card__inventory .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.bean-card__inventory--low {
+  color: var(--color-sour);
+}
+
+.bean-card__inventory--empty {
+  color: var(--color-bitter-text);
+}
