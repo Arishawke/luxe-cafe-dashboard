@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { ThemeType } from '../types';
 
-const VALID_THEMES: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon'];
+const VALID_THEMES: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon', 'fadetouched'];
 
 function loadTheme(): ThemeType {
     const saved = localStorage.getItem('theme');

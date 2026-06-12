@@ -42,6 +42,7 @@ const THEME_OPTIONS: { value: ThemeType; label: string; swatch: string }[] = [
     { value: 'catppuccin', label: 'Catppuccin', swatch: '#cba6f7' },
     { value: 'rosepine', label: 'Rose Pine', swatch: '#ebbcba' },
     { value: 'rosepine-moon', label: 'Rose Pine Moon', swatch: '#c4a7e7' },
+    { value: 'fadetouched', label: 'Fadetouched', swatch: '#96bb93' },
 ];
 
 export default function SettingsModal({

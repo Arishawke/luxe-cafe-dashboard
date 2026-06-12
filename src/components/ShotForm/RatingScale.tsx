@@ -45,15 +45,6 @@ export default function RatingScale({ ratingIndex, onChange, rated, setRated }: 
                                 '--rating-color': RATING_COLORS[rating],
                             } as React.CSSProperties}
                         />
-                        <div className="rating-slider__markers">
-                            {RATINGS.map((_, i) => (
-                                <span
-                                    key={i}
-                                    className={`rating-slider__marker ${i === ratingIndex ? 'rating-slider__marker--active' : ''}`}
-                                    style={i === ratingIndex ? { background: RATING_COLORS[rating] } : {}}
-                                />
-                            ))}
-                        </div>
                     </div>
                     <div className="rating-slider__scale">
                         <span>Sour</span>

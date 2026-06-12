@@ -1,4 +1,4 @@
-export type ThemeType = 'dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon';
+export type ThemeType = 'dark' | 'light' | 'catppuccin' | 'rosepine' | 'rosepine-moon' | 'fadetouched';
 
 export type Basket = 'Single' | 'Double' | 'Luxe';
 export type Temperature = 'Low' | 'Med' | 'High';
