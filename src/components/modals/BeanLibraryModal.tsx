@@ -301,11 +301,11 @@ export default function BeanLibraryModal({
                                                 <button
                                                     className={`bean-card__toggle ${bean.isActive ? 'bean-card__toggle--active' : ''}`}
                                                     onClick={() => onToggleActive(bean.id)}
-                                                    title={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
+                                                    title={bean.isActive ? 'In rotation. Click to set inactive.' : 'Inactive. Click to set active.'}
                                                     aria-label={bean.isActive ? 'Mark as inactive' : 'Mark as active'}
                                                     aria-pressed={bean.isActive}
                                                 >
-                                                    <span aria-hidden="true">{bean.isActive ? '✓' : '○'}</span>
+                                                    {bean.isActive ? <><Icons.Check /> Active</> : 'Inactive'}
                                                 </button>
                                                 <button
                                                     className="bean-card__delete"

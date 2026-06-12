@@ -68,12 +68,12 @@ export default function RecipeLibraryModal({
                                                     <Icons.Star filled={isStarred} />
                                                 </button>
                                                 <button
-                                                    className="recipe-library__action-btn"
+                                                    className="recipe-library__action-btn recipe-library__apply-btn"
                                                     onClick={() => onApply(recipe)}
-                                                    title="Apply Recipe"
+                                                    title="Apply these settings to the form"
                                                     aria-label="Apply recipe"
                                                 >
-                                                    <Icons.Check />
+                                                    Apply
                                                 </button>
                                                 <button
                                                     className="recipe-library__action-btn"
@@ -102,7 +102,7 @@ export default function RecipeLibraryModal({
                                                 <span className="setting-tag">Grind {recipe.grindSize}</span>
                                                 {recipe.temperature && <span className="setting-tag">{recipe.temperature}</span>}
                                                 <span className="setting-tag">{recipe.basket}</span>
-                                                <span className="setting-tag">S{recipe.strength}</span>
+                                                <span className="setting-tag">Str {recipe.strength}</span>
                                                 {recipe.milk && (
                                                     <span className="setting-tag setting-tag--milk">
                                                         <Icons.Milk /> {recipe.milk.type} {recipe.milk.style}

@@ -2883,18 +2883,27 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .bean-card__toggle {
-  width: 28px;
   height: 28px;
-  display: flex;
+  padding: 0 0.625rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
   background: transparent;
   border: 1px solid var(--color-mocha);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   color: var(--color-muted);
   cursor: pointer;
   transition: var(--transition-base);
+}
+
+.bean-card__toggle .icon {
+  width: 13px;
+  height: 13px;
 }
 
 .bean-card__toggle--active {
@@ -3002,6 +3011,17 @@ input[type="number"]::-webkit-outer-spin-button {
   border-color: color-mix(in srgb, var(--color-bitter) 60%, transparent);
   background: color-mix(in srgb, var(--color-bitter) 10%, transparent);
   color: var(--color-bitter-text);
+}
+
+/* Apply is the card's primary action: a labelled text button, not an icon */
+.recipe-library__apply-btn {
+  width: auto;
+  padding: 0 0.875rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-caramel);
+  border-color: color-mix(in srgb, var(--color-caramel) 45%, transparent);
 }
 
 /* Starred/pinned recipe styling */
