@@ -4627,11 +4627,8 @@ input[type="number"]::-webkit-outer-spin-button {
   .recipe-chip__btn,
   .recipe-chip__dismiss,
   .btn-submit,
-  .btn-secondary,
-  .btn-delete,
-  .btn-compare,
   .modal__close,
-  .froth-toggle {
+  .advanced-toggle {
     min-height: 44px;
     min-width: 44px;
   }
@@ -4652,8 +4649,16 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   /* Larger slider track */
-  .grind-slider input[type="range"] {
+  .slider--thick,
+  .rating-slider__input {
     height: 32px;
+  }
+
+  /* Larger secondary toggle tap target */
+  .rating-later-toggle {
+    min-height: 44px;
+    padding: 0 0.5rem;
+    margin-right: -0.5rem;
   }
 
   /* Better spacing for recipe chips */

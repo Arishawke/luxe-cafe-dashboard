@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 // Guards the design-token layer in index.css. A mechanical hex -> token
@@ -29,5 +29,26 @@ describe('design tokens in index.css', () => {
         const body = css.slice(css.indexOf('/* Reset & Base */'));
         const found = offenders.filter(hex => body.toUpperCase().includes(hex));
         expect(found).toEqual([]);
+    });
+});
+
+describe('mobile touch targets in index.css', () => {
+    it('only enlarges pointer:coarse selectors that still exist in markup', () => {
+        // A renamed/removed class leaves a dead selector in the coarse-pointer
+        // block, so the touch enlargement silently stops applying. `.grind-slider`
+        // and `.froth-toggle` both rotted this way after refactors. Tie every
+        // coarse selector back to a live className so the next rename fails here.
+        const start = css.indexOf('@media (pointer: coarse)');
+        const block = css.slice(start, css.indexOf('\n}', css.indexOf('}', start)) + 2);
+        const selectors = [...new Set([...block.matchAll(/\.[a-z][\w-]*/g)].map(m => m[0].slice(1)))];
+
+        const srcDir = fileURLToPath(new URL('..', import.meta.url));
+        const markup = readdirSync(srcDir, { recursive: true })
+            .filter((f): f is string => typeof f === 'string' && f.endsWith('.tsx'))
+            .map(f => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'))
+            .join('\n');
+
+        const dead = selectors.filter(cls => !new RegExp(`(?<![\\w-])${cls}(?![\\w-])`).test(markup));
+        expect(dead).toEqual([]);
     });
 });

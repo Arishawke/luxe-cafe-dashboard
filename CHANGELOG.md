@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.9.1] - 2026-06-12
+
+### Fixed
+- On phones and tablets, the grind and taste sliders and the "Taste later" and "Froth Lab" toggles now grow back to comfortable tap sizes. Some of these controls had been renamed, which had quietly switched off their touch-friendly sizing.
+
 ## [1.9.0] - 2026-06-12
 
 ### Changed
