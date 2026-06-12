@@ -987,7 +987,7 @@ input[type="number"]::-webkit-outer-spin-button {
   background: transparent;
   border: none;
   color: var(--color-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -1189,7 +1189,7 @@ input[type="number"]::-webkit-outer-spin-button {
   background: var(--color-mocha);
   border-radius: var(--radius-sm);
   color: var(--color-latte);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 /* 5-Point Rating Scale */
@@ -2096,7 +2096,7 @@ input[type="number"]::-webkit-outer-spin-button {
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-caramel);
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-sans);
 }
 
 /* Shot timer when nested in advanced tools */
@@ -3897,7 +3897,23 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .journey-step__grind {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+}
+
+/* Numeric type: feature and data numbers use lining tabular figures so digits
+   align in columns and read cleanly. (The live stopwatch and kbd keys keep
+   monospace, where fixed-width digits are genuinely the right choice.) */
+.stat-hero__value,
+.stat-card__value,
+.data-summary__count,
+.caffeine-gauge__value,
+.caffeine-gauge__number,
+.caffeine-stat__value,
+.dose-yield__ratio-value,
+.grind-control__value,
+.journey-step__grind,
+.setting-tag {
+  font-variant-numeric: tabular-nums;
 }
 
 .journey-step__arrow {
