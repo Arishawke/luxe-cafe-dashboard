@@ -24,10 +24,12 @@ export default function MilkControls({
     if (isColdBrew) return null;
     return (
         <div className="advanced-tools">
+            <div className="advanced-group">
             <button
                 type="button"
                 className={`advanced-toggle ${showMilk ? 'advanced-toggle--active' : ''}`}
                 onClick={() => setShowMilk(!showMilk)}
+                aria-expanded={showMilk}
             >
                 <Icons.Milk />
                 <span>Froth Lab</span>
@@ -35,7 +37,8 @@ export default function MilkControls({
                 {showMilk ? <Icons.ChevronUp /> : <Icons.ChevronDown />}
             </button>
 
-            {showMilk && (
+            <div className={`collapsible ${showMilk ? 'collapsible--open' : ''}`}>
+            <div className="collapsible__inner" inert={!showMilk ? true : undefined}>
                 <div className="froth-panel">
                     <div className="froth-panel__row">
                         <span className="form-label" id="shot-milk-type-label">Milk Type</span>
@@ -70,7 +73,9 @@ export default function MilkControls({
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
+            </div>
+            </div>
         </div>
     );
 }

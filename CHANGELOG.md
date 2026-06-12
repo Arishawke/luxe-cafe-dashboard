@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0] - 2026-06-12
+
+### Added
+- Tap the grind-size number to type a value directly, alongside the slider and the +/- buttons.
+
+### Fixed
+- On phones, opening a popup no longer lets the page behind it scroll or jump out of place; the background is held still and your scroll position is kept when you close it.
+- Removed the pull-down bar at the top of mobile popups that looked draggable but only triggered an accidental page refresh.
+- Smoother scrolling inside popups on phones.
+- The Shot Timer, Dose & Yield, and Froth Lab panels now ease open instead of snapping the layout down.
+- The bean icon is no longer clipped at the top.
+
 ## [1.10.0] - 2026-06-12
 
 ### Added

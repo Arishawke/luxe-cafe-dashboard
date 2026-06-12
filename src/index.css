@@ -1200,9 +1200,34 @@ input[type="number"]::-webkit-outer-spin-button {
   font-weight: 600;
   text-align: center;
   background: var(--color-mocha);
+  border: none;
   border-radius: var(--radius-sm);
   color: var(--color-latte);
   font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+button.grind-control__value:hover {
+  background: color-mix(in srgb, var(--color-mocha) 75%, var(--color-caramel));
+}
+
+.grind-control__value:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Tap-to-type variant of the grind value */
+.grind-control__value--input {
+  width: 3rem;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.grind-control__value--input::-webkit-outer-spin-button,
+.grind-control__value--input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* 5-Point Rating Scale */
@@ -1885,6 +1910,24 @@ input[type="number"]::-webkit-outer-spin-button {
    SHOT TIMER
    ============================================ */
 
+/* Smooth height reveal for the advanced-tool panels (timer, dose, froth) so
+   expanding eases the content below down instead of snapping it. The
+   prefers-reduced-motion block neutralizes the transition. */
+.collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.26s var(--ease-spring);
+}
+
+.collapsible--open {
+  grid-template-rows: 1fr;
+}
+
+.collapsible__inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .shot-timer {
   display: flex;
   align-items: center;
@@ -1970,6 +2013,13 @@ input[type="number"]::-webkit-outer-spin-button {
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 1rem;
+}
+
+/* Each toggle + its collapsible panel are one unit, so a collapsed (0-height)
+   panel does not add a stray gap between toggles. */
+.advanced-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .advanced-toggle {
@@ -2405,6 +2455,7 @@ input[type="number"]::-webkit-outer-spin-button {
   overflow-y: auto;
   flex: 1;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* keep pull-down inside the sheet, not the browser refresh */
 }
 
 .modal__desc {
@@ -5484,6 +5535,7 @@ textarea:focus-visible {
     align-items: flex-end;
     padding: 0;
     overflow: hidden;
+    backdrop-filter: none; /* the live blur is the main cause of in-sheet scroll jank on mobile GPUs */
   }
 
   /* Confirm dialogs remain centered modals */
@@ -5499,17 +5551,6 @@ textarea:focus-visible {
     border-bottom: none;
     border-radius: var(--radius-card) var(--radius-card) 0 0;
     animation: sheetUp 0.32s var(--ease-spring);
-  }
-
-  /* Grab-handle affordance at the top of each sheet */
-  .modal:not(.modal--confirm)::before {
-    content: "";
-    flex-shrink: 0;
-    width: 36px;
-    height: 4px;
-    margin: 0.625rem auto 0;
-    border-radius: var(--radius-pill);
-    background: var(--color-mocha);
   }
 }
 

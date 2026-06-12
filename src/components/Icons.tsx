@@ -71,7 +71,7 @@ const Icons = {
         </svg>
     ),
     Bean: () => (
-        <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="icon" width="24" height="24" viewBox="0 -3 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 7c0 4-3.5 7.5-8 11-4.5-3.5-8-7-8-11a8 8 0 1 1 16 0Z" />
             <path d="M11 13c2-2.5 4-4 4-7" />
         </svg>

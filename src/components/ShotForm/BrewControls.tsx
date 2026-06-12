@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Basket, Temperature, Strength } from '../../types';
 import { BASKETS, TEMPERATURES, STRENGTHS } from '../../constants';
 import Icons from '../Icons';
@@ -29,6 +30,17 @@ export default function BrewControls({
     onIncrementGrind,
     onDecrementGrind,
 }: BrewControlsProps) {
+    const [editingGrind, setEditingGrind] = useState(false);
+    const [grindDraft, setGrindDraft] = useState('');
+
+    const commitGrind = () => {
+        const n = Math.round(Number(grindDraft));
+        if (grindDraft.trim() !== '' && Number.isFinite(n)) {
+            setGrindSize(Math.min(25, Math.max(1, n)));
+        }
+        setEditingGrind(false);
+    };
+
     return (
         <>
             <div className="form-group">
@@ -70,7 +82,33 @@ export default function BrewControls({
                             value={grindSize}
                             onChange={(e) => setGrindSize(Number(e.target.value))}
                         />
-                        <span className="grind-control__value">{grindSize}</span>
+                        {editingGrind ? (
+                            <input
+                                type="number"
+                                inputMode="numeric"
+                                className="grind-control__value grind-control__value--input"
+                                min={1}
+                                max={25}
+                                value={grindDraft}
+                                autoFocus
+                                aria-label="Grind size"
+                                onChange={(e) => setGrindDraft(e.target.value)}
+                                onBlur={commitGrind}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') { e.preventDefault(); commitGrind(); }
+                                    else if (e.key === 'Escape') setEditingGrind(false);
+                                }}
+                            />
+                        ) : (
+                            <button
+                                type="button"
+                                className="grind-control__value"
+                                onClick={() => { setGrindDraft(String(grindSize)); setEditingGrind(true); }}
+                                aria-label={`Grind size ${grindSize}, tap to type a value`}
+                            >
+                                {grindSize}
+                            </button>
+                        )}
                     </div>
                     <button
                         type="button"

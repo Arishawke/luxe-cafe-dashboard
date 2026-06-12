@@ -9,7 +9,7 @@ import { getLogMessage } from './lib/milestones';
 import { getSuggestedSettings } from './lib/suggestions';
 import { getMaintenanceAlerts } from './lib/maintenance';
 import { RATINGS, RATING_COLORS, BALANCED_RATING_INDEX } from './constants';
-import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete, useMaintenance } from './hooks';
+import { useToast, useConfirm, useTimer, useShots, useBeans, useRecipes, useFavorites, useTheme, useShotForm, useKeyboardShortcuts, useBeanAutocomplete, useMaintenance, useScrollLock } from './hooks';
 import Icons from './components/Icons';
 import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
@@ -100,6 +100,12 @@ function App() {
 
   const rating = RATINGS[form.ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
+
+  const anyModalOpen =
+    showRecipeModal || showRecipeLibrary || showBeanLibrary || showStats || showCaffeine
+    || showSettings || showHistoryModal || selectedShot !== null || editingRecipe !== null
+    || confirmDialog !== null;
+  useScrollLock(anyModalOpen);
 
   useKeyboardShortcuts({
     canSubmit: () =>

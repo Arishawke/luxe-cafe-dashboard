@@ -12,7 +12,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>() {
 
         const previousActive = document.activeElement as HTMLElement | null;
         const focusables = node.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-        focusables[0]?.focus();
+        focusables[0]?.focus({ preventScroll: true });
 
         const handler = (e: KeyboardEvent) => {
             if (e.key !== 'Tab') return;
@@ -33,7 +33,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>() {
         node.addEventListener('keydown', handler);
         return () => {
             node.removeEventListener('keydown', handler);
-            previousActive?.focus();
+            previousActive?.focus({ preventScroll: true });
         };
     }, []);
 

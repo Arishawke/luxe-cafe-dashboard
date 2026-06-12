@@ -25,3 +25,5 @@ export { useBeanAutocomplete } from './useBeanAutocomplete';
 export { useMaintenance } from './useMaintenance';
 
 export { useFocusTrap } from './useFocusTrap';
+
+export { useScrollLock } from './useScrollLock';
