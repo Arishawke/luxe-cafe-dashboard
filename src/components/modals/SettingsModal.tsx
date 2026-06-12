@@ -222,6 +222,27 @@ export default function SettingsModal({
                             Importing replaces all existing data. You can undo it right after.
                         </p>
                     </div>
+
+                    <div className="settings-footer">
+                        <a
+                            className="settings-footer__link"
+                            href="https://ko-fi.com/Arishawke"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Icons.Coffee className="icon" aria-hidden="true" />
+                            <span>Support</span>
+                        </a>
+                        <a
+                            className="settings-footer__link"
+                            href="https://github.com/Arishawke/luxe-cafe-dashboard"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Icons.Github aria-hidden="true" />
+                            <span>GitHub</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

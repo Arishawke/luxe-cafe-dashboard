@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.10.0] - 2026-06-12
+
+### Added
+- A small Support (Ko-fi) link and a GitHub link at the bottom of Settings.
+
 ## [1.9.1] - 2026-06-12
 
 ### Fixed

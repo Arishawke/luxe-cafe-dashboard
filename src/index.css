@@ -4903,6 +4903,39 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0 0 1rem 0;
 }
 
+/* Support / source links at the end of Settings */
+.settings-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.settings-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.125rem;
+  font-size: var(--text-xs);
+  color: var(--color-subtle);
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+.settings-footer__link:hover {
+  color: var(--color-caramel);
+}
+
+.settings-footer__link:focus-visible {
+  outline: 2px solid var(--color-caramel);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.settings-footer__link .icon {
+  width: 15px;
+  height: 15px;
+}
+
 .theme-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
