@@ -193,17 +193,14 @@ export default function SettingsModal({
                             <button className="data-action-btn" onClick={onExportJSON}>
                                 <Icons.Download />
                                 <span>Export Backup</span>
-                                <small>Download all data as JSON</small>
                             </button>
                             <button className="data-action-btn" onClick={onExportCSV}>
                                 <Icons.BarChart />
-                                <span>Export to CSV</span>
-                                <small>Shot history as spreadsheet</small>
+                                <span>Export CSV</span>
                             </button>
                             <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
                                 <Icons.Upload />
                                 <span>Import Backup</span>
-                                <small>Restore from JSON file</small>
                             </button>
                             <button
                                 className="data-action-btn data-action-btn--danger"
@@ -211,7 +208,6 @@ export default function SettingsModal({
                             >
                                 <Icons.Trash />
                                 <span>Clear All Data</span>
-                                <small>Permanently delete everything</small>
                             </button>
                             <input
                                 ref={fileInputRef}
