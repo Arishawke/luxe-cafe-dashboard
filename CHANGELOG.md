@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0] - 2026-06-12
+
+### Changed
+- Settings is more compact: themes are now a tidy two-column swatch grid (the selected one is ringed in the active theme's own color), and the data tools and sections are tighter so the panel fits in view instead of scrolling.
+- The expanded Shot History now shows each shot's dial-in details inline, matching the dashboard, with the favorite, edit, and delete actions grouped together.
+- A refreshed icon set across the whole app for a more consistent, crafted look.
+- Numbers read more elegantly and now line up in columns across stats, the caffeine tracker, and dose and yield.
+- Clearer controls: recipe cards have a labelled "Apply" button, a bean's active state now reads as an "Active"/"Inactive" tag, and the Strength control looks the same everywhere.
+
+### Fixed
+- The highlight on a favorited or selected shot in the history view now renders correctly in every theme.
+
 ## [1.8.0] - 2026-06-12
 
 ### Added
