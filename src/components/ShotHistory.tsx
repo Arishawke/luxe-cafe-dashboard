@@ -119,7 +119,7 @@ export default function ShotHistory({
                                         <span className="setting-tag">{shot.basket}</span>
                                         <span className="setting-tag">S{shot.strength}</span>
                                         {shot.extractionTime && (
-                                            <span className="setting-tag setting-tag--timer">⏱ {shot.extractionTime}s</span>
+                                            <span className="setting-tag setting-tag--timer"><Icons.Timer /> {shot.extractionTime}s</span>
                                         )}
                                         {shot.doseIn && shot.doseOut && (
                                             <span className="setting-tag setting-tag--dose">
