@@ -88,25 +88,6 @@ export default function RecipeEditorModal({
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Strength</label>
-                                    <div className="pill-group pill-group--sm">
-                                        {STRENGTHS.map((s) => (
-                                            <button
-                                                key={s.value}
-                                                type="button"
-                                                className={`pill-btn pill-btn--sm ${form.strength === s.value ? 'pill-btn--active' : ''}`}
-                                                onClick={() => form.setStrength(s.value)}
-                                                title={s.label}
-                                            >
-                                                {s.value}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="edit-recipe__grid">
-                                <div className="form-group">
                                     <label className="form-label">Basket</label>
                                     <div className="pill-group pill-group--sm">
                                         {BASKETS.map((b) => (
@@ -115,29 +96,49 @@ export default function RecipeEditorModal({
                                                 type="button"
                                                 className={`pill-btn pill-btn--sm ${form.basket === b ? 'pill-btn--active' : ''}`}
                                                 onClick={() => form.setBasket(b)}
+                                                aria-pressed={form.basket === b}
                                             >
                                                 {b}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-                                {!isColdBrew && (
-                                    <div className="form-group">
-                                        <label className="form-label">Temperature</label>
-                                        <div className="pill-group pill-group--sm">
-                                            {TEMPERATURES.map((t) => (
-                                                <button
-                                                    key={t}
-                                                    type="button"
-                                                    className={`pill-btn pill-btn--sm ${form.temperature === t ? 'pill-btn--active' : ''}`}
-                                                    onClick={() => form.setTemperature(t)}
-                                                >
-                                                    {t}
-                                                </button>
-                                            ))}
-                                        </div>
+                            </div>
+
+                            {!isColdBrew && (
+                                <div className="form-group">
+                                    <label className="form-label">Temperature</label>
+                                    <div className="pill-group pill-group--sm">
+                                        {TEMPERATURES.map((t) => (
+                                            <button
+                                                key={t}
+                                                type="button"
+                                                className={`pill-btn pill-btn--sm ${form.temperature === t ? 'pill-btn--active' : ''}`}
+                                                onClick={() => form.setTemperature(t)}
+                                                aria-pressed={form.temperature === t}
+                                            >
+                                                {t}
+                                            </button>
+                                        ))}
                                     </div>
-                                )}
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <label className="form-label">Strength</label>
+                                <div className="pill-group pill-group--sm">
+                                    {STRENGTHS.map((s) => (
+                                        <button
+                                            key={s.value}
+                                            type="button"
+                                            className={`pill-btn pill-btn--sm ${form.strength === s.value ? 'pill-btn--active' : ''}`}
+                                            onClick={() => form.setStrength(s.value)}
+                                            aria-pressed={form.strength === s.value}
+                                        >
+                                            {s.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="form-group">
@@ -161,7 +162,7 @@ export default function RecipeEditorModal({
                             <span className="setting-tag">Grind {form.grindSize}</span>
                             {!isColdBrew && <span className="setting-tag">{form.temperature}</span>}
                             <span className="setting-tag">{form.basket}</span>
-                            <span className="setting-tag">S{form.strength}</span>
+                            <span className="setting-tag">Str {form.strength}</span>
                             {form.showMilk && <span className="setting-tag setting-tag--milk">{form.milkType} {form.milkStyle}</span>}
                             {form.notes && <span className="setting-tag">{form.notes}</span>}
                         </div>

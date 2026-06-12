@@ -93,16 +93,17 @@ export default function SettingsModal({
 
                         <div className="prefs-section">
                             <label className="prefs-section__label">Theme</label>
-                            <div className="theme-picker__options">
+                            <div className="theme-grid">
                                 {THEME_OPTIONS.map((t) => (
                                     <button
                                         key={t.value}
-                                        className={`theme-picker__option ${theme === t.value ? 'theme-picker__option--active' : ''}`}
+                                        type="button"
+                                        className={`theme-swatch ${theme === t.value ? 'theme-swatch--active' : ''}`}
                                         onClick={() => setTheme(t.value)}
+                                        aria-pressed={theme === t.value}
                                     >
-                                        <span className="theme-picker__swatch" style={{ background: t.swatch }} aria-hidden="true" />
-                                        <span className="theme-picker__label">{t.label}</span>
-                                        {theme === t.value && <Icons.Check />}
+                                        <span className="theme-swatch__dot" style={{ background: t.swatch }} aria-hidden="true" />
+                                        <span className="theme-swatch__name">{t.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -192,17 +193,14 @@ export default function SettingsModal({
                             <button className="data-action-btn" onClick={onExportJSON}>
                                 <Icons.Download />
                                 <span>Export Backup</span>
-                                <small>Download all data as JSON</small>
                             </button>
                             <button className="data-action-btn" onClick={onExportCSV}>
                                 <Icons.BarChart />
-                                <span>Export to CSV</span>
-                                <small>Shot history as spreadsheet</small>
+                                <span>Export CSV</span>
                             </button>
                             <button className="data-action-btn" onClick={() => fileInputRef.current?.click()}>
                                 <Icons.Upload />
                                 <span>Import Backup</span>
-                                <small>Restore from JSON file</small>
                             </button>
                             <button
                                 className="data-action-btn data-action-btn--danger"
@@ -210,7 +208,6 @@ export default function SettingsModal({
                             >
                                 <Icons.Trash />
                                 <span>Clear All Data</span>
-                                <small>Permanently delete everything</small>
                             </button>
                             <input
                                 ref={fileInputRef}
