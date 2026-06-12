@@ -2,12 +2,13 @@ import type { Rating, BrewType, Basket, Temperature, Strength, MilkType, MilkSty
 
 export const RATINGS: Rating[] = ['Very Sour', 'Sour', 'Balanced', 'Bitter', 'Very Bitter'];
 
+// CSS custom properties so inline styles re-skin across all five themes
 export const RATING_COLORS: Record<Rating, string> = {
-    'Very Sour': '#E8A045',
-    'Sour': '#D4915C',
-    'Balanced': '#7A9E6D',
-    'Bitter': '#B85C5C',
-    'Very Bitter': '#C04545',
+    'Very Sour': 'var(--color-very-sour)',
+    'Sour': 'var(--color-sour)',
+    'Balanced': 'var(--color-balanced)',
+    'Bitter': 'var(--color-bitter)',
+    'Very Bitter': 'var(--color-very-bitter)',
 };
 
 export const BREW_TYPES: BrewType[] = ['Espresso', 'Drip Coffee', 'Cold Brew', 'Cold Pressed', 'Over Ice'];

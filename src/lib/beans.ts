@@ -8,11 +8,12 @@ export function getDaysSinceRoast(roastDate: string | undefined): number | null 
 }
 
 export function getFreshnessStatus(days: number | null): { label: string; color: string } {
-    if (days === null) return { label: 'Unknown', color: '#888' };
-    if (days < 7) return { label: 'Resting', color: '#E8A045' };
-    if (days <= 21) return { label: 'Peak', color: '#7A9E6D' };
-    if (days <= 35) return { label: 'Fading', color: '#D4915C' };
-    return { label: 'Stale', color: '#C04545' };
+    // CSS custom properties so freshness badges re-skin across all five themes
+    if (days === null) return { label: 'Unknown', color: 'var(--color-muted)' };
+    if (days < 7) return { label: 'Resting', color: 'var(--color-very-sour)' };
+    if (days <= 21) return { label: 'Peak', color: 'var(--color-balanced)' };
+    if (days <= 35) return { label: 'Fading', color: 'var(--color-sour)' };
+    return { label: 'Stale', color: 'var(--color-very-bitter)' };
 }
 
 export function getUniqueBeans(shots: ShotLog[]): string[] {

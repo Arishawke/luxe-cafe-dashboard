@@ -79,7 +79,7 @@ function App() {
 
   const [showShortcuts, setShowShortcuts] = useState(() => {
     const stored = localStorage.getItem('luxe-cafe-show-shortcuts');
-    return stored === null ? true : stored === 'true';
+    return stored === null ? false : stored === 'true';
   });
 
   useEffect(() => {
@@ -764,7 +764,7 @@ function App() {
         {showShortcuts ? (
           <>
             <div className="shortcuts-panel__header">
-              <span>⌨️ Shortcuts</span>
+              <span className="shortcuts-panel__title"><Icons.Keyboard /> Shortcuts</span>
               <button
                 className="shortcuts-panel__close"
                 onClick={() => {
@@ -803,8 +803,9 @@ function App() {
               localStorage.setItem('luxe-cafe-show-shortcuts', 'true');
             }}
             title="Show keyboard shortcuts"
+            aria-label="Show keyboard shortcuts"
           >
-            ⌨️
+            <Icons.Keyboard />
           </button>
         )}
       </div>
