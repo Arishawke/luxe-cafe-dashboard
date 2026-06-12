@@ -162,17 +162,17 @@ export default function HistoryModal({
                                             <Icons.Edit /> Edit
                                         </button>
                                         <button
-                                            className="btn-action"
+                                            className={`btn-action ${compareShots.includes(previewShot.id) ? 'btn-action--active' : ''}`}
+                                            onClick={() => onToggleCompare(previewShot.id)}
+                                        >
+                                            <Icons.BarChart /> {compareShots.includes(previewShot.id) ? 'In Compare' : 'Add to Compare'}
+                                        </button>
+                                        <button
+                                            className="btn-action btn-action--primary"
                                             onClick={() => onDuplicateShot(previewShot)}
                                             title="Copy settings to form"
                                         >
                                             <Icons.Copy /> Brew Again
-                                        </button>
-                                        <button
-                                            className={`btn-action ${compareShots.includes(previewShot.id) ? 'btn-action--active' : 'btn-action--primary'}`}
-                                            onClick={() => onToggleCompare(previewShot.id)}
-                                        >
-                                            <Icons.BarChart /> {compareShots.includes(previewShot.id) ? 'In Compare' : 'Add to Compare'}
                                         </button>
                                     </div>
                                 </>
