@@ -26,8 +26,8 @@ export default function ShotComparison({ shot1, shot2, onClear, onRemoveAt }: Sh
                             <>
                                 <div className="compare-panel__shot-header">
                                     <span className="compare-panel__bean">{shot.beanName}</span>
-                                    <span className={`compare-panel__rating compare-panel__rating--${RATING_COLOR_CLASS[shot.rating]}`}>
-                                        {shot.rating}
+                                    <span className={`compare-panel__rating ${shot.rating ? `compare-panel__rating--${RATING_COLOR_CLASS[shot.rating]}` : 'compare-panel__rating--unrated'}`}>
+                                        {shot.rating ?? 'Not rated'}
                                     </span>
                                 </div>
                                 <div className="compare-panel__details">

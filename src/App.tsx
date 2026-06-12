@@ -137,6 +137,7 @@ function App() {
     form.setGrindSize(suggestedSettings.grindSize);
     form.setTemperature(suggestedSettings.temperature);
     form.setRatingIndex(BALANCED_RATING_INDEX);
+    form.setRated(true);
   };
 
   const saveAsRecipe = () => {
@@ -254,11 +255,21 @@ function App() {
   const duplicateShot = (shot: ShotLog) => {
     form.applyFromShot(shot);
     form.setRatingIndex(BALANCED_RATING_INDEX);
+    form.setRated(true);
+  };
+
+  const rateShot = (shotId: string, rating: Rating) => {
+    const shot = shots.find(s => s.id === shotId);
+    if (!shot) return;
+    updateShot({ ...shot, rating });
+    setSelectedShot(prev => (prev && prev.id === shotId ? { ...prev, rating } : prev));
+    showToast(`Rated ${rating}`, 'success');
   };
 
   const openEditShot = (shot: ShotLog) => {
     form.applyFromShot(shot);
-    const ratingIdx = RATINGS.indexOf(shot.rating);
+    const ratingIdx = shot.rating ? RATINGS.indexOf(shot.rating) : -1;
+    form.setRated(ratingIdx >= 0);
     form.setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
     if (shot.doseIn) {
       form.setShowDose(true);
@@ -286,7 +297,7 @@ function App() {
       grindSize: form.grindSize,
       temperature: isColdBrew ? undefined : form.temperature,
       strength: form.strength,
-      rating,
+      rating: form.rated ? rating : undefined,
       milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
       notes: form.notes.trim() || undefined,
       doseIn: form.doseIn ? parseFloat(form.doseIn) : undefined,
@@ -407,7 +418,7 @@ function App() {
       grindSize: form.grindSize,
       temperature: isColdBrew ? undefined : form.temperature,
       strength: form.strength,
-      rating,
+      rating: form.rated ? rating : undefined,
       milk: form.showMilk ? { type: form.milkType, style: form.milkStyle } : undefined,
       notes: form.notes.trim() || undefined,
       extractionTime: getExtractionTime(),
@@ -609,6 +620,7 @@ function App() {
         onEdit={openEditShot}
         onDelete={confirmDeleteShot}
         onDuplicate={duplicateShot}
+        onRate={rateShot}
         onToggleCompare={(id) => {
           const wasCompared = compareShots.includes(id);
           toggleCompareShot(id);
@@ -694,6 +706,7 @@ function App() {
             onEditShot={openEditShot}
             onDuplicateShot={duplicateShot}
             onDeleteShot={confirmDeleteShot}
+            onRate={rateShot}
           />
         )}
 

@@ -14,6 +14,7 @@ interface ShotDetailModalProps {
     onDelete: (id: string) => void;
     onDuplicate: (shot: ShotLog) => void;
     onToggleCompare: (id: string) => void;
+    onRate: (id: string, rating: Rating) => void;
 }
 
 export default function ShotDetailModal({
@@ -27,6 +28,7 @@ export default function ShotDetailModal({
     onDelete,
     onDuplicate,
     onToggleCompare,
+    onRate,
 }: ShotDetailModalProps) {
     const modalRef = useFocusTrap<HTMLDivElement>();
     if (!shot) return null;
@@ -71,6 +73,7 @@ export default function ShotDetailModal({
                         use24Hour={use24Hour}
                         isFavorite={isFavorite}
                         ratingConfig={ratingConfig}
+                        onRate={onRate}
                     />
                 </div>
                 <div className="modal__footer">
@@ -82,13 +85,13 @@ export default function ShotDetailModal({
                         <Icons.BarChart /> Compare
                     </button>
                     <button
-                        className="btn-action"
+                        className="btn-action btn-action--primary"
                         onClick={() => { onClose(); onDuplicate(shot); }}
                         title="Copy settings to form"
                     >
                         <Icons.Copy /> Brew Again
                     </button>
-                    <button className="btn-action btn-action--primary" onClick={onClose}>
+                    <button className="btn-action" onClick={onClose}>
                         Close
                     </button>
                 </div>

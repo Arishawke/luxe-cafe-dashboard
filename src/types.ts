@@ -26,7 +26,7 @@ export interface ShotLog {
   grindSize: number; // 1 fine, 25 coarse
   temperature?: Temperature;
   strength: Strength;
-  rating: Rating;
+  rating?: Rating; // omitted when logged without tasting yet
   milk?: MilkSettings;
   notes?: string;
   extractionTime?: number; // seconds

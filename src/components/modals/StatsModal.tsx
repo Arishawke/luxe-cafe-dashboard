@@ -43,7 +43,7 @@ export default function StatsModal({ open, shots, onClose }: StatsModalProps) {
                                 <div className="stat-hero__value">{stats.successRate}%</div>
                                 <div className="stat-hero__label">Balanced Rate</div>
                                 <div className="stat-hero__context">
-                                    {stats.ratingCounts.Balanced} of {stats.totalShots} shots dialed in
+                                    {stats.ratingCounts.Balanced} of {stats.ratedShots} rated shots dialed in
                                 </div>
                             </div>
 

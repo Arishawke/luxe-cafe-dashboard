@@ -69,6 +69,7 @@ export default function TimerInput({
                         <div className="shot-timer__manual">
                             <input
                                 type="number"
+                                inputMode="decimal"
                                 step="0.1"
                                 min="0"
                                 max="120"
@@ -122,6 +123,7 @@ export default function TimerInput({
                             <input
                                 id="shot-dose-in"
                                 type="number"
+                                inputMode="decimal"
                                 step="0.1"
                                 min="0"
                                 placeholder="18.0"
@@ -135,6 +137,7 @@ export default function TimerInput({
                             <input
                                 id="shot-dose-out"
                                 type="number"
+                                inputMode="decimal"
                                 step="0.1"
                                 min="0"
                                 placeholder="36.0"

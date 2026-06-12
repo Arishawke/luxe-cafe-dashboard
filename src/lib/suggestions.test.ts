@@ -44,6 +44,12 @@ describe('getSuggestedSettings', () => {
         expect(getSuggestedSettings(undefined)).toBeNull();
     });
 
+    it('returns null when the last shot has no rating yet', () => {
+        // A logged-but-untasted shot carries no taste signal, so there is
+        // nothing to dial toward; the UI prompts to rate it instead.
+        expect(getSuggestedSettings({ ...shot('Balanced', 12), rating: undefined })).toBeNull();
+    });
+
     it('returns null for a Balanced last shot', () => {
         expect(getSuggestedSettings(shot('Balanced', 12))).toBeNull();
     });

@@ -59,6 +59,16 @@ describe('parseBackup', () => {
         expect(result.skipped.shots).toBe(1);
     });
 
+    it('keeps a shot with no rating (logged but not yet tasted)', () => {
+        // "Save first, rate later" shots round-trip through export/import.
+        const { rating, ...unrated } = validShot;
+        void rating;
+        const text = JSON.stringify({ shots: [{ ...unrated, id: '2' }] });
+        const result = parseBackup(text);
+        expect(result.shots.map((s: ShotLog) => s.id)).toEqual(['2']);
+        expect(result.skipped.shots).toBe(0);
+    });
+
     it('skips a shot whose grindSize is not a finite number', () => {
         const text = JSON.stringify({
             shots: [validShot, { ...validShot, id: '2', grindSize: 'twelve' }],

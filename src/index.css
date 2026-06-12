@@ -5197,3 +5197,153 @@ textarea:focus-visible {
 .header__hamburger {
   min-width: 44px;
 }
+
+/* ============================================
+   CAPTURE ERGONOMICS + RATE-LATER (Phase 2)
+   ============================================ */
+
+.rating-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.rating-later-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--color-caramel);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: var(--transition-base);
+}
+
+.rating-later-toggle:hover {
+  color: var(--color-latte);
+}
+
+.rating-later-hint {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  font-style: italic;
+  line-height: 1.5;
+  padding: 0.5rem 0;
+}
+
+/* Unrated states (shared muted treatment) */
+.rating-unrated-mark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-subtle);
+}
+
+.history-item__rating--unrated {
+  background: var(--color-dark-roast);
+  border: 1px dashed var(--color-mocha);
+  color: var(--color-subtle);
+}
+
+.journey-step--unrated {
+  background: color-mix(in srgb, var(--color-muted) 12%, transparent);
+  color: var(--color-subtle);
+  border-color: color-mix(in srgb, var(--color-muted) 25%, transparent);
+}
+
+.barista-tip--unrated {
+  background: color-mix(in srgb, var(--color-muted) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-muted) 25%, transparent);
+}
+
+.barista-tip--unrated .barista-tip__icon {
+  color: var(--color-latte);
+}
+
+.compare-panel__rating--unrated {
+  background: var(--color-dark-roast);
+  color: var(--color-subtle);
+}
+
+/* Rate-later prompt inside shot detail */
+.shot-detail__rate-prompt {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-muted) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-muted) 25%, transparent);
+  margin-bottom: 1rem;
+}
+
+.rate-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+}
+
+.rate-chip {
+  flex: 1 1 auto;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--rating-color);
+  background: color-mix(in srgb, var(--rating-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rating-color) 35%, transparent);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.rate-chip:hover {
+  background: color-mix(in srgb, var(--rating-color) 22%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Mobile: keep Log Shot in the thumb zone + tighten the header */
+@media (max-width: 640px) {
+  .shot-form .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    margin: 1rem -1.25rem 0;
+    padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom));
+    background: var(--color-espresso);
+    border-top: 1px solid var(--color-mocha);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .shot-form .form-actions .btn-submit {
+    width: auto;
+    flex: 1 1 auto;
+    margin-top: 0;
+  }
+
+  .shot-form .form-actions .btn-save-recipe {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .header__icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.5rem;
+  }
+
+  .header__title {
+    font-size: var(--text-4xl);
+  }
+
+  .header__subtitle {
+    font-size: var(--text-xs);
+  }
+}

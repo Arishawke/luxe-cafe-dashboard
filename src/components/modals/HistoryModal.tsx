@@ -25,6 +25,7 @@ interface HistoryModalProps {
     onEditShot: (shot: ShotLog) => void;
     onDuplicateShot: (shot: ShotLog) => void;
     onDeleteShot: (id: string) => void;
+    onRate: (id: string, rating: Rating) => void;
 }
 
 export default function HistoryModal({
@@ -46,6 +47,7 @@ export default function HistoryModal({
     onEditShot,
     onDuplicateShot,
     onDeleteShot,
+    onRate,
 }: HistoryModalProps) {
     const [previewShot, setPreviewShot] = useState<ShotLog | null>(null);
     const modalRef = useFocusTrap<HTMLDivElement>();
@@ -110,8 +112,8 @@ export default function HistoryModal({
                         <div className="history-modal__list">
                             {filteredShots.length > 0 ? (
                                 filteredShots.map((shot) => {
-                                    const config = ratingConfig[shot.rating];
-                                    const ShotIcon = config.icon;
+                                    const config = shot.rating ? ratingConfig[shot.rating] : null;
+                                    const ShotIcon = config?.icon;
                                     const isFavorite = favorites[shot.beanName.toLowerCase()] === shot.id;
                                     const isSelected = previewShot?.id === shot.id;
                                     return (
@@ -121,8 +123,8 @@ export default function HistoryModal({
                                             onClick={() => setPreviewShot(shot)}
                                             onDoubleClick={() => { onSelectShot(shot); onClose(); }}
                                         >
-                                            <div className={`history-item__rating history-item__rating--${config.colorClass}`}>
-                                                <ShotIcon />
+                                            <div className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>
+                                                {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
                                             </div>
                                             <div className="history-item__details">
                                                 <div className="history-item__bean">{shot.beanName}</div>
@@ -174,6 +176,10 @@ export default function HistoryModal({
                                         use24Hour={use24Hour}
                                         isFavorite={favorites[previewShot.beanName.toLowerCase()] === previewShot.id}
                                         ratingConfig={ratingConfig}
+                                        onRate={(id, rating) => {
+                                            onRate(id, rating);
+                                            setPreviewShot(prev => (prev && prev.id === id ? { ...prev, rating } : prev));
+                                        }}
                                     />
 
                                     <div className="history-modal__preview-actions">
