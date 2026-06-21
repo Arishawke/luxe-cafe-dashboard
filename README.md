@@ -5,7 +5,7 @@
 
 A small web app for logging espresso shots and dialing in beans.
 
-**Live:** [luxe-cafe-dashboard.vercel.app](https://luxe-cafe-dashboard.vercel.app/)
+**Live:** [luxecafe.arishawke.com](https://luxecafe.arishawke.com/)
 
 > Your data is saved in your browser's localStorage. Clearing browser data or switching browsers will erase it. Use Export Backup in Settings to save a copy.
 
