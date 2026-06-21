@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.13.0] - 2026-06-21
+
+### Changed
+- Switched analytics from Umami to Vercel Web Analytics.
+
 ## [1.12.0] - 2026-06-21
 
 ### Added
