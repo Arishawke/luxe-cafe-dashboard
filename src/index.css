@@ -5594,3 +5594,107 @@ textarea:focus-visible {
 .history-item--just-logged {
   animation: logPulse 1.2s var(--ease);
 }
+
+/* ============================================
+   Migration notice
+   One-time banner inviting data over from the old domain.
+   Temporary; removed when the old domain is retired.
+   ============================================ */
+@keyframes migrationNoticeIn {
+  0% { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.migration-notice {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in srgb, var(--color-caramel) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-caramel) 30%, transparent);
+  border-radius: var(--radius-md);
+  animation: migrationNoticeIn 0.3s var(--ease);
+}
+
+.migration-notice__icon {
+  flex-shrink: 0;
+  color: var(--color-latte);
+}
+
+.migration-notice__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.migration-notice__content h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-latte);
+  margin-bottom: 0.25rem;
+}
+
+.migration-notice__content p {
+  font-size: var(--text-sm);
+  color: var(--color-cream);
+  line-height: 1.5;
+}
+
+.migration-notice__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.migration-notice__migrate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  background: var(--color-caramel);
+  border: 1px solid var(--color-caramel);
+  border-radius: var(--radius-sm);
+  color: var(--color-black-coffee);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.migration-notice__migrate:hover {
+  background: var(--color-latte);
+  border-color: var(--color-latte);
+}
+
+.migration-notice__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-subtle);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.migration-notice__dismiss:hover {
+  color: var(--color-cream);
+  background: color-mix(in srgb, var(--color-mocha) 50%, transparent);
+}
+
+@media (max-width: 540px) {
+  .migration-notice {
+    flex-wrap: wrap;
+  }
+
+  .migration-notice__migrate {
+    flex: 1;
+    justify-content: center;
+  }
+}

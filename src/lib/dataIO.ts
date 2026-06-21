@@ -21,14 +21,14 @@ export interface ImportResult {
     skipped: { shots: number; recipes: number; beans: number; maintenance: number };
 }
 
-export function buildJSONBackup(
+export function buildBackupObject(
     shots: ShotLog[],
     recipes: SavedRecipe[],
     beans: BeanProfile[],
     favorites: FavoritesMap,
     maintenance: MaintenanceEvent[],
-): string {
-    const data: BackupPayload = {
+): BackupPayload {
+    return {
         version: 2,
         exportedAt: new Date().toISOString(),
         shots,
@@ -37,7 +37,16 @@ export function buildJSONBackup(
         beans,
         maintenance,
     };
-    return JSON.stringify(data, null, 2);
+}
+
+export function buildJSONBackup(
+    shots: ShotLog[],
+    recipes: SavedRecipe[],
+    beans: BeanProfile[],
+    favorites: FavoritesMap,
+    maintenance: MaintenanceEvent[],
+): string {
+    return JSON.stringify(buildBackupObject(shots, recipes, beans, favorites, maintenance), null, 2);
 }
 
 // quote a free-text cell, doubling quotes and neutralizing spreadsheet formula injection (CWE-1236)

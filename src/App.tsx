@@ -15,8 +15,11 @@ import Header from './components/Header';
 import ShotForm from './components/ShotForm/ShotForm';
 import ConfirmDialog from './components/modals/ConfirmDialog';
 import ShotDetailModal from './components/modals/ShotDetailModal';
-import { buildJSONBackup, buildCSV, downloadFile, parseImportFile } from './lib/dataIO';
+import { buildJSONBackup, buildCSV, downloadFile, parseImportFile, parseBackup } from './lib/dataIO';
+import type { ImportResult } from './lib/dataIO';
+import { readMigrationLanding, clearMigrationHash, shouldOfferMigration, startMigration, dismissMigration } from './lib/migration';
 import Toast from './components/Toast';
+import MigrationNotice from './components/MigrationNotice';
 import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
 import ShotComparison from './components/ShotComparison';
@@ -58,6 +61,7 @@ function App() {
     maintenance: MaintenanceEvent[];
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showMigration, setShowMigration] = useState(() => shouldOfferMigration());
   const [showCaffeine, setShowCaffeine] = useState(false);
   const [beanFilter, setBeanFilter] = useState<string>('');
   const [notesSearch, setNotesSearch] = useState<string>('');
@@ -97,6 +101,29 @@ function App() {
     window.addEventListener('luxe:storage-error', onStorageError);
     return () => window.removeEventListener('luxe:storage-error', onStorageError);
   }, [showToast]);
+
+  // Land a one-time migration payload from the old domain (see lib/migration).
+  const migrationLanded = useRef(false);
+  useEffect(() => {
+    if (migrationLanded.current) return;
+    migrationLanded.current = true;
+    const landing = readMigrationLanding();
+    if (!landing) return;
+    clearMigrationHash();
+    if (landing.tooBig) {
+      showToast('Your data is large. On the old site use Settings, Export, then Import here.', 'error');
+      return;
+    }
+    try {
+      const data = parseBackup(landing.json!);
+      applyResult(data);
+      setShowMigration(false);
+      showToast(`Brought over ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`, 'success');
+    } catch {
+      showToast('Could not read the data from the old site. Try Export and Import instead.', 'error');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const rating = RATINGS[form.ratingIndex];
   const isColdBrew = COLD_BREW_TYPES.includes(form.brewType);
@@ -366,17 +393,21 @@ function App() {
     showToast(`Exported ${shots.length} shots to CSV`, 'success');
   };
 
+  const applyResult = (data: ImportResult) => {
+    setShots(data.shots);
+    setRecipes(data.recipes);
+    setBeans(data.beans);
+    setFavorites(data.favorites);
+    setMaintenance(data.maintenance);
+  };
+
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
       const previous = { shots, recipes, beans, favorites, maintenance: maintenanceEvents };
       const data = await parseImportFile(file);
-      setShots(data.shots);
-      setRecipes(data.recipes);
-      setBeans(data.beans);
-      setFavorites(data.favorites);
-      setMaintenance(data.maintenance);
+      applyResult(data);
       setImportBackup(previous); // enables one-click Undo import
       const skipped = data.skipped.shots + data.skipped.recipes + data.skipped.beans + data.skipped.maintenance;
       let message = `Imported ${data.shots.length} shots, ${data.recipes.length} recipes, ${data.beans.length} beans`;
@@ -476,6 +507,13 @@ function App() {
         onOpenCaffeine={openModal(setShowCaffeine)}
         onOpenSettings={openModal(setShowSettings)}
       />
+
+      {showMigration && (
+        <MigrationNotice
+          onMigrate={() => startMigration()}
+          onDismiss={() => { dismissMigration(); setShowMigration(false); }}
+        />
+      )}
 
       {recipes.filter(r => pinnedRecipes.has(r.id)).length > 0 && (
         <div className="recipe-menu">

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.12.0] - 2026-06-21
+
+### Added
+- One-click data move for the new site address: if you open the new site without any data, a welcome banner can bring your shots, recipes, beans, and history over from the old site in a single click, no manual export needed.
+
 ## [1.11.0] - 2026-06-12
 
 ### Added
