@@ -1,5 +1,6 @@
 import type { ShotLog, Rating } from '../types';
 import { formatDate } from '../lib/format';
+import { getRatioLabel } from '../lib/dialIn';
 import Icons from './Icons';
 
 interface ShotHistoryRowProps {
@@ -33,6 +34,7 @@ export default function ShotHistoryRow({
 }: ShotHistoryRowProps) {
     const config = shot.rating ? ratingConfig[shot.rating] : null;
     const ShotIcon = config?.icon;
+    const ratioLabel = getRatioLabel(shot.doseIn, shot.doseOut, shot.brewType);
 
     return (
         <div
@@ -59,6 +61,7 @@ export default function ShotHistoryRow({
                     {shot.doseIn && shot.doseOut && (
                         <span className="setting-tag setting-tag--dose">
                             {shot.doseIn}→{shot.doseOut}g (1:{(shot.doseOut / shot.doseIn).toFixed(1)})
+                            {ratioLabel && <span className="ratio-label">{ratioLabel}</span>}
                         </span>
                     )}
                     {shot.milk && (

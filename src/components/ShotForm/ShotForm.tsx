@@ -114,6 +114,7 @@ export default function ShotForm({
                 setDoseIn={form.setDoseIn}
                 doseOut={form.doseOut}
                 setDoseOut={form.setDoseOut}
+                brewType={form.brewType}
                 timer={timer}
             />
 

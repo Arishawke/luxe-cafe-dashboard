@@ -112,3 +112,57 @@ describe('getSuggestedSettings', () => {
         expect(out?.temperature).toBe('High');
     });
 });
+
+// With a recorded extraction time on an espresso pull, taste alone no longer
+// picks the lever: a fast sour shot is mechanically under-extracted (grind),
+// while a sour shot that already pulled on time needs heat, not a finer grind.
+describe('getSuggestedSettings with extraction time', () => {
+    it('grinds finer when a sour shot ran fast', () => {
+        const out = getSuggestedSettings({ ...shot('Sour', 12, 'Med'), extractionTime: 20 });
+        expect(out?.grindSize).toBe(11);
+        expect(out?.grindDiff).toBe(-1);
+        expect(out?.adjustmentType).toBe('grind');
+        expect(out?.temperature).toBe('Med');
+        expect(out?.reason).toMatch(/finer/i);
+    });
+
+    it('raises temperature (not grind) when a sour shot already pulled on time', () => {
+        const out = getSuggestedSettings({ ...shot('Sour', 12, 'Med'), extractionTime: 29 });
+        expect(out?.grindSize).toBe(12);
+        expect(out?.grindDiff).toBe(0);
+        expect(out?.adjustmentType).toBe('temp');
+        expect(out?.temperature).toBe('High');
+        expect(out?.reason).toMatch(/temperature/i);
+    });
+
+    it('grinds coarser when a bitter shot ran long', () => {
+        const out = getSuggestedSettings({ ...shot('Bitter', 12, 'Med'), extractionTime: 36 });
+        expect(out?.grindSize).toBe(13);
+        expect(out?.grindDiff).toBe(1);
+        expect(out?.adjustmentType).toBe('grind');
+        expect(out?.temperature).toBe('Med');
+    });
+
+    it('lowers temperature (not grind) when a bitter shot did not run long', () => {
+        const out = getSuggestedSettings({ ...shot('Very Bitter', 12, 'Med'), extractionTime: 22 });
+        expect(out?.grindSize).toBe(12);
+        expect(out?.adjustmentType).toBe('temp');
+        expect(out?.temperature).toBe('Low');
+        expect(out?.reason).toMatch(/temperature/i);
+    });
+
+    it('ignores time for non-espresso brews and keeps rating-only behavior', () => {
+        const out = getSuggestedSettings({ ...shot('Sour', 12, 'Med'), brewType: 'Drip Coffee', extractionTime: 20 });
+        expect(out?.grindSize).toBe(11);
+        expect(out?.adjustmentType).toBe('grind');
+        expect(out?.reason).toBeUndefined();
+    });
+
+    it('falls back to grinding finer when the temperature is already maxed', () => {
+        const out = getSuggestedSettings({ ...shot('Sour', 12, 'High'), extractionTime: 29 });
+        expect(out?.grindSize).toBe(11);
+        expect(out?.adjustmentType).toBe('grind');
+        expect(out?.temperature).toBe('High');
+        expect(out?.reason).toMatch(/finer|grind/i);
+    });
+});

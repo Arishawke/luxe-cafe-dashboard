@@ -2162,6 +2162,15 @@ button.grind-control__value:hover {
   font-family: var(--font-sans);
 }
 
+/* ristretto / normale / lungo tag next to the ratio readout */
+.ratio-label {
+  margin-left: 0.4rem;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 /* Shot timer when nested in advanced tools */
 .advanced-tools .shot-timer {
   margin-top: -0.5rem;
@@ -3872,6 +3881,14 @@ button.grind-control__value:hover {
   margin-bottom: 0.75rem;
 }
 
+/* why the lever was chosen, when extraction time drove it */
+.suggested-settings__reason {
+  margin-bottom: 0.75rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
 .suggested-setting {
   display: flex;
   flex-direction: column;
@@ -5578,6 +5595,73 @@ textarea:focus-visible {
 
 .bean-card__inventory--empty {
   color: var(--color-bitter-text);
+}
+
+/* per-bean dial-in recall + grind trend on each bean card */
+.bean-card__dialin {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-muted) 22%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialin-sparkline {
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+}
+
+.dialin-sparkline__line {
+  stroke: var(--color-muted);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.bean-card__best {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.bean-card__best-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.bean-card__best-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-latte);
+}
+
+.bean-card__best-settings {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bean-card__best-use {
+  flex-shrink: 0;
+  padding: 0.3rem 0.7rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-latte);
+  background: color-mix(in srgb, var(--color-caramel) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-caramel) 30%, transparent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.bean-card__best-use:hover {
+  background: color-mix(in srgb, var(--color-caramel) 24%, transparent);
 }
 
 /* ============================================

@@ -86,18 +86,23 @@ export default function SuggestionCard({
                             <span className="suggested-setting__label">Grind</span>
                             <span className="suggested-setting__value">
                                 {suggestion.grindSize}
-                                <span className={`suggested-setting__diff ${suggestion.grindDiff > 0 ? 'diff--coarser' : 'diff--finer'}`}>
-                                    ({suggestion.grindDiff > 0 ? '+' : ''}{suggestion.grindDiff})
-                                </span>
+                                {suggestion.grindDiff !== 0 && (
+                                    <span className={`suggested-setting__diff ${suggestion.grindDiff > 0 ? 'diff--coarser' : 'diff--finer'}`}>
+                                        ({suggestion.grindDiff > 0 ? '+' : ''}{suggestion.grindDiff})
+                                    </span>
+                                )}
                             </span>
                         </div>
-                        {suggestion.adjustmentType === 'both' && (
+                        {suggestion.adjustmentType !== 'grind' && (
                             <div className="suggested-setting">
                                 <span className="suggested-setting__label">Temp</span>
                                 <span className="suggested-setting__value">{suggestion.temperature}</span>
                             </div>
                         )}
                     </div>
+                    {suggestion.reason && (
+                        <p className="suggested-settings__reason">{suggestion.reason}</p>
+                    )}
                     <button
                         className="btn-apply-suggestion"
                         onClick={onApply}

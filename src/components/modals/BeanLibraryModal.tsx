@@ -4,7 +4,9 @@ import { PROCESS_METHODS, ROAST_LEVELS } from '../../constants';
 import { generateId } from '../../lib/format';
 import { getDaysSinceRoast, getFreshnessStatus } from '../../lib/beans';
 import { getBeanInventory } from '../../lib/inventory';
+import { getBestDialIn, getDialInProgression } from '../../lib/dialIn';
 import { useFocusTrap } from '../../hooks';
+import DialInSparkline from '../DialInSparkline';
 import Icons from '../Icons';
 
 interface BeanLibraryModalProps {
@@ -15,6 +17,7 @@ interface BeanLibraryModalProps {
     onUpdate: (bean: BeanProfile) => void;
     onDelete: (id: string) => void;
     onToggleActive: (id: string) => void;
+    onApplyDialIn: (shot: ShotLog) => void;
     onClose: () => void;
 }
 
@@ -26,6 +29,7 @@ export default function BeanLibraryModal({
     onUpdate,
     onDelete,
     onToggleActive,
+    onApplyDialIn,
     onClose,
 }: BeanLibraryModalProps) {
     const [name, setName] = useState('');
@@ -266,6 +270,8 @@ export default function BeanLibraryModal({
                                     const days = getDaysSinceRoast(bean.roastDate);
                                     const freshness = getFreshnessStatus(days);
                                     const inventory = getBeanInventory(bean, shots);
+                                    const bestDialIn = getBestDialIn(bean.name, shots);
+                                    const progression = getDialInProgression(bean.name, shots);
                                     return (
                                         <div
                                             key={bean.id}
@@ -294,6 +300,30 @@ export default function BeanLibraryModal({
                                                             ? 'Bag empty'
                                                             : `${inventory.gramsLeft}g left • ~${inventory.shotsLeft} shots`}
                                                         {inventory.costPerShot != null && ` • ${inventory.costPerShot.toFixed(2)}/shot`}
+                                                    </div>
+                                                )}
+                                                {(bestDialIn || progression.length > 1) && (
+                                                    <div className="bean-card__dialin" onClick={(e) => e.stopPropagation()}>
+                                                        {progression.length > 1 && <DialInSparkline points={progression} />}
+                                                        {bestDialIn && (
+                                                            <div className="bean-card__best">
+                                                                <div className="bean-card__best-info">
+                                                                    <span className="bean-card__best-label">Best dial-in</span>
+                                                                    <span className="bean-card__best-settings">
+                                                                        Grind {bestDialIn.grindSize} • {bestDialIn.basket}
+                                                                        {bestDialIn.temperature ? ` • ${bestDialIn.temperature}` : ''} • Str {bestDialIn.strength}
+                                                                    </span>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    className="bean-card__best-use"
+                                                                    onClick={() => onApplyDialIn(bestDialIn)}
+                                                                    title="Load this dial-in into the shot form"
+                                                                >
+                                                                    Use
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>

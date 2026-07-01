@@ -1,4 +1,6 @@
 import type { useTimer } from '../../hooks/useTimer';
+import type { BrewType } from '../../types';
+import { getRatioLabel } from '../../lib/dialIn';
 import Icons from '../Icons';
 
 interface TimerInputProps {
@@ -14,6 +16,7 @@ interface TimerInputProps {
     setDoseIn: (v: string) => void;
     doseOut: string;
     setDoseOut: (v: string) => void;
+    brewType: BrewType;
     timer: ReturnType<typeof useTimer>;
 }
 
@@ -30,9 +33,13 @@ export default function TimerInput({
     setDoseIn,
     doseOut,
     setDoseOut,
+    brewType,
     timer,
 }: TimerInputProps) {
     const { timerRunning, timerSeconds, startTimer, stopTimer, resetTimer } = timer;
+    const ratioLabel = doseIn && doseOut
+        ? getRatioLabel(parseFloat(doseIn), parseFloat(doseOut), brewType)
+        : null;
     return (
         <div className="advanced-tools">
             <div className="advanced-group">
@@ -159,6 +166,7 @@ export default function TimerInput({
                                     <span className="dose-yield__ratio-label">Ratio</span>
                                     <span className="dose-yield__ratio-value">
                                         1:{(parseFloat(doseOut) / parseFloat(doseIn)).toFixed(1)}
+                                        {ratioLabel && <span className="ratio-label">{ratioLabel}</span>}
                                     </span>
                                 </div>
                             )}

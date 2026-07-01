@@ -1,6 +1,7 @@
 import type { Rating, ShotLog } from '../types';
 import { RATINGS, RATING_COLORS } from '../constants';
 import { formatDateLong } from '../lib/format';
+import { getRatioLabel } from '../lib/dialIn';
 import Icons from './Icons';
 
 interface ShotDetailViewProps {
@@ -14,6 +15,7 @@ interface ShotDetailViewProps {
 export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConfig, onRate }: ShotDetailViewProps) {
     const config = shot.rating ? ratingConfig[shot.rating] : null;
     const ShotIcon = config?.icon;
+    const ratioLabel = getRatioLabel(shot.doseIn, shot.doseOut, shot.brewType);
 
     return (
         <>
@@ -86,6 +88,7 @@ export default function ShotDetailView({ shot, use24Hour, isFavorite, ratingConf
                         <span className="shot-detail__label">Dose / Yield</span>
                         <span className="shot-detail__value">
                             {shot.doseIn}g → {shot.doseOut}g (1:{(shot.doseOut / shot.doseIn).toFixed(1)})
+                            {ratioLabel && <span className="ratio-label">{ratioLabel}</span>}
                         </span>
                     </div>
                 )}

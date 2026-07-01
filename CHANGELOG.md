@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.15.0] - 2026-06-30
+
+### Added
+- Ratio labels: espresso and cold-pressed shots now show whether your dose-out ratio is a ristretto, normale, or lungo, right next to the ratio readout.
+- Best dial-in recall: each bean in the Bean Library shows the settings from its best-tasting shot, with a Use button that loads them straight into the shot form.
+- A dial-in trend on each bean card: a small sparkline of grind size across your recent shots, colored by how each one tasted, so you can watch a bean settle toward balanced.
+
+### Changed
+- Next-shot tips now weigh your extraction time, not taste alone: a sour shot that ran fast points to a finer grind, while a sour shot that already pulled on time points to a higher temperature instead.
+
 ## [1.14.0] - 2026-06-30
 
 ### Added

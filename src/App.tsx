@@ -300,6 +300,14 @@ function App() {
     form.setRated(true);
   };
 
+  const applyBestDialIn = (shot: ShotLog) => {
+    form.applyFromShot(shot);
+    form.setRatingIndex(BALANCED_RATING_INDEX);
+    form.setRated(true);
+    setShowBeanLibrary(false);
+    showToast(`Loaded best dial-in for ${shot.beanName}`, 'success');
+  };
+
   const rateShot = (shotId: string, rating: Rating) => {
     const shot = shots.find(s => s.id === shotId);
     if (!shot) return;
@@ -714,6 +722,7 @@ function App() {
             onUpdate={updateBean}
             onDelete={confirmDeleteBean}
             onToggleActive={toggleActive}
+            onApplyDialIn={applyBestDialIn}
             onClose={() => setShowBeanLibrary(false)}
           />
         )}
