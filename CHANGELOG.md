@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.14.0] - 2026-06-30
+
+### Added
+- A fifth Froth Lab milk style, Extra-Thick, matching the machine's froth presets.
+- A Website link at the bottom of Settings, alongside the Support and GitHub links.
+
 ## [1.13.0] - 2026-06-21
 
 ### Changed

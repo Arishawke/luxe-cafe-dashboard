@@ -4,7 +4,7 @@ import {
     Lightning, Scales, Faders, BookOpen, X, Trash, OrangeSlice, Sparkle, Fire,
     CaretDoubleLeft, CaretDoubleRight, Calendar, ChartPie, DownloadSimple,
     UploadSimple, Gear, Sun, Moon, Copy, ChartLineUp, List, Palette, Check,
-    ArrowsOut, Keyboard, Timer, GithubLogo,
+    ArrowsOut, Keyboard, Timer, GithubLogo, Globe,
 } from '@phosphor-icons/react';
 import type { Icon, IconProps } from '@phosphor-icons/react';
 
@@ -61,6 +61,7 @@ const Icons = {
     Keyboard: wrap(Keyboard),
     Timer: wrap(Timer, 'icon icon--sm'),
     Github: wrap(GithubLogo, 'icon icon--sm'),
+    Globe: wrap(Globe, 'icon icon--sm'),
 
     // Bespoke holdouts: Phosphor has no good coffee-bean, milk-carton, or
     // ticked-cup metaphor, so these stay hand-drawn (on-brand, not a failure).

@@ -11,7 +11,7 @@ export type BrewType = 'Espresso' | 'Drip Coffee' | 'Cold Brew' | 'Cold Pressed'
 export const COLD_BREW_TYPES: BrewType[] = ['Cold Brew', 'Cold Pressed', 'Over Ice']; // skip temperature
 
 export type MilkType = 'Dairy' | 'Plant';
-export type MilkStyle = 'Steamed' | 'Thin' | 'Thick' | 'Cold Foam';
+export type MilkStyle = 'Steamed' | 'Thin' | 'Thick' | 'Extra-Thick' | 'Cold Foam';
 
 export interface MilkSettings {
   type: MilkType;

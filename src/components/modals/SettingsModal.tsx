@@ -242,6 +242,15 @@ export default function SettingsModal({
                             <Icons.Github aria-hidden="true" />
                             <span>GitHub</span>
                         </a>
+                        <a
+                            className="settings-footer__link"
+                            href="https://arishawke.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Icons.Globe aria-hidden="true" />
+                            <span>Website</span>
+                        </a>
                     </div>
                 </div>
             </div>

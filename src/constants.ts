@@ -20,7 +20,7 @@ export const STRENGTHS: { value: Strength; label: string }[] = [
     { value: 3, label: '3 Rich' },
 ];
 export const MILK_TYPES: MilkType[] = ['Dairy', 'Plant'];
-export const MILK_STYLES: MilkStyle[] = ['Steamed', 'Thin', 'Thick', 'Cold Foam'];
+export const MILK_STYLES: MilkStyle[] = ['Steamed', 'Thin', 'Thick', 'Extra-Thick', 'Cold Foam'];
 export const PROCESS_METHODS: ProcessMethod[] = ['Washed', 'Natural', 'Honey', 'Anaerobic', 'Other'];
 export const ROAST_LEVELS: RoastLevel[] = ['Light', 'Medium', 'Medium-Dark', 'Dark'];
 

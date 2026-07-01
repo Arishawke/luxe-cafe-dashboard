@@ -33,19 +33,6 @@ A small web app for logging espresso shots and dialing in beans.
 | Ctrl+D | Cycle theme |
 | Esc | Close any open modal |
 
-## Run Locally
-
-```bash
-npm install
-npm run dev
-```
-
-Then open http://localhost:5173.
-
-## Tech
-
-React 19, TypeScript, Vite. Data is persisted in browser localStorage.
-
 ## License
 
 [GPL v3](LICENSE). © 2026 Arishawke.
