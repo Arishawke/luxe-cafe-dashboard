@@ -8,7 +8,7 @@ export function getDaysSinceRoast(roastDate: string | undefined): number | null 
 }
 
 export function getFreshnessStatus(days: number | null): { label: string; color: string } {
-    // CSS custom properties so freshness badges re-skin across all five themes
+    // CSS custom properties so freshness badges re-skin across all six themes
     if (days === null) return { label: 'Unknown', color: 'var(--color-muted)' };
     if (days < 7) return { label: 'Resting', color: 'var(--color-very-sour)' };
     if (days <= 21) return { label: 'Peak', color: 'var(--color-balanced)' };

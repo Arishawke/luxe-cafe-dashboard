@@ -22,14 +22,16 @@ export default function BeanInput({
 }: BeanInputProps) {
     const {
         showSuggestions,
-        setShowSuggestions,
         filteredBeans,
+        activeIndex,
         inputRef,
         suggestionsRef,
         handleInput,
         handleFocus,
+        handleKeyDown,
         select,
         toggleDropdown,
+        closeSuggestions,
     } = autocomplete;
 
     useEffect(() => {
@@ -40,12 +42,12 @@ export default function BeanInput({
                 suggestionsRef.current &&
                 !suggestionsRef.current.contains(e.target as Node)
             ) {
-                setShowSuggestions(false);
+                closeSuggestions();
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [inputRef, suggestionsRef, setShowSuggestions]);
+    }, [inputRef, suggestionsRef, closeSuggestions]);
 
     return (
         <>
@@ -62,6 +64,12 @@ export default function BeanInput({
                             value={beanName}
                             onChange={(e) => handleInput(e.target.value, setBeanName)}
                             onFocus={handleFocus}
+                            onKeyDown={(e) => handleKeyDown(e, setBeanName)}
+                            role="combobox"
+                            aria-autocomplete="list"
+                            aria-expanded={showSuggestions && filteredBeans.length > 0}
+                            aria-controls="shot-bean-listbox"
+                            aria-activedescendant={activeIndex >= 0 ? `shot-bean-option-${activeIndex}` : undefined}
                             required
                         />
                         {hasAnyBeans && (
@@ -76,14 +84,19 @@ export default function BeanInput({
                         )}
                     </div>
                     {showSuggestions && filteredBeans.length > 0 && (
-                        <div ref={suggestionsRef} className="autocomplete__dropdown">
-                            {filteredBeans.map((name) => {
+                        <div ref={suggestionsRef} id="shot-bean-listbox" className="autocomplete__dropdown" role="listbox">
+                            {filteredBeans.map((name, index) => {
                                 const libraryBean = beans.find(b => b.name.toLowerCase() === name.toLowerCase() && b.isActive);
                                 return (
                                     <button
                                         key={name}
+                                        id={`shot-bean-option-${index}`}
                                         type="button"
-                                        className={`autocomplete__option ${libraryBean ? 'autocomplete__option--library' : ''}`}
+                                        role="option"
+                                        tabIndex={-1}
+                                        data-option-index={index}
+                                        aria-selected={activeIndex === index}
+                                        className={`autocomplete__option ${libraryBean ? 'autocomplete__option--library' : ''} ${activeIndex === index ? 'autocomplete__option--active' : ''}`}
                                         onClick={() => select(name, setBeanName)}
                                     >
                                         {libraryBean && <Icons.Bean />}

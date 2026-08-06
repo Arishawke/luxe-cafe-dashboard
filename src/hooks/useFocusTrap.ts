@@ -3,10 +3,11 @@ import { useEffect, useRef } from 'react';
 const FOCUSABLE_SELECTOR =
     'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function useFocusTrap<T extends HTMLElement = HTMLElement>() {
+export function useFocusTrap<T extends HTMLElement = HTMLElement>(active = true) {
     const ref = useRef<T>(null);
 
     useEffect(() => {
+        if (!active) return;
         const node = ref.current;
         if (!node) return;
 
@@ -35,7 +36,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>() {
             node.removeEventListener('keydown', handler);
             previousActive?.focus({ preventScroll: true });
         };
-    }, []);
+    }, [active]);
 
     return ref;
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ThemeType } from '../types';
+import { saveStorageValue } from '../lib/storage';
 
 const VALID_THEMES: ThemeType[] = ['dark', 'light', 'catppuccin', 'rosepine', 'rosepine-moon', 'fadetouched'];
 
@@ -18,12 +19,12 @@ export function useTheme() {
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+        saveStorageValue('theme', theme);
     }, [theme]);
 
     const setUse24Hour = (v: boolean) => {
         setUse24HourState(v);
-        localStorage.setItem('luxe-cafe-24hour', String(v));
+        saveStorageValue('luxe-cafe-24hour', String(v));
     };
 
     const cycleTheme = () =>

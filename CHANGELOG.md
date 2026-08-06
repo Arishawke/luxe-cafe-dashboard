@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.0] - 2026-08-06
+
+### Changed
+- Smart Barista now bases next-shot guidance on the latest shot for a bean while keeping a favorite as its separate target recipe.
+
+### Fixed
+- Damaged saved data and imported backups no longer crash startup or allow duplicate IDs to make one edit or deletion affect multiple records.
+- The first-run data-migration banner now keeps its controls visible on narrow phones.
+- Shot history, Bean Library editing, bean suggestions, mobile navigation, and dialogs now provide improved keyboard and screen-reader behavior.
+- Editing a shot without dose data no longer carries over unsaved dose values from the form.
+- Malformed old-site migration links now show the recovery message instead of breaking the landing flow.
+
 ## [1.15.0] - 2026-06-30
 
 ### Added

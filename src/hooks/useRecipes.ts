@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { SavedRecipe } from '../types';
-import { loadRecipes, saveRecipes } from '../lib/storage';
+import { loadRecipes, loadStringArray, saveRecipes, saveStringArray } from '../lib/storage';
 
 const PINNED_KEY = 'luxe-cafe-pinned-recipes';
 
 function loadPinned(): Set<string> {
-    const stored = localStorage.getItem(PINNED_KEY);
-    return stored ? new Set(JSON.parse(stored)) : new Set();
+    return new Set(loadStringArray(PINNED_KEY));
 }
 
 export function useRecipes() {
@@ -15,7 +14,7 @@ export function useRecipes() {
 
     useEffect(() => { saveRecipes(recipes); }, [recipes]);
     useEffect(() => {
-        localStorage.setItem(PINNED_KEY, JSON.stringify([...pinned]));
+        saveStringArray(PINNED_KEY, [...pinned]);
     }, [pinned]);
 
     const addRecipe = (r: SavedRecipe) => setRecipes(prev => [r, ...prev]);

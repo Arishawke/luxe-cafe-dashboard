@@ -10,6 +10,8 @@ import {
     saveBeans,
     loadMaintenance,
     saveMaintenance,
+    loadStringArray,
+    saveStorageValue,
 } from './storage';
 import type { ShotLog, SavedRecipe, BeanProfile, MaintenanceEvent } from '../types';
 
@@ -78,6 +80,18 @@ describe('shots storage', () => {
     it('returns an empty array when stored JSON is corrupt', () => {
         localStorage.setItem('espresso-shots', '{not json');
         expect(loadShots()).toEqual([]);
+    });
+
+    it('skips malformed and duplicate records without overwriting the raw data', () => {
+        const raw = JSON.stringify([
+            { id: '1', beanName: 'Ethiopia', brewType: 'Espresso', basket: 'Double', grindSize: 12, strength: 2, timestamp: '2026-05-01T10:00:00Z' },
+            { id: '1', beanName: 'Duplicate', brewType: 'Espresso', basket: 'Double', grindSize: 12, strength: 2, timestamp: '2026-05-01T10:00:00Z' },
+            { id: '2', beanName: null, timestamp: '2026-05-01T10:00:00Z' },
+        ]);
+        localStorage.setItem('espresso-shots', raw);
+        expect(loadShots().map(shot => shot.beanName)).toEqual(['Ethiopia']);
+        expect(localStorage.getItem('espresso-shots')).toBe(raw);
+        expect(localStorage.getItem('espresso-shots:corrupt')).toBe(raw);
     });
 });
 
@@ -175,6 +189,16 @@ describe('maintenance storage', () => {
 });
 
 describe('storage robustness', () => {
+    it('loads only unique non-empty strings from preference arrays', () => {
+        localStorage.setItem('pins', JSON.stringify(['r1', '', 3, 'r1', 'r2']));
+        expect(loadStringArray('pins')).toEqual(['r1', 'r2']);
+    });
+
+    it('returns an empty string array for corrupt preference JSON', () => {
+        localStorage.setItem('pins', '{');
+        expect(loadStringArray('pins')).toEqual([]);
+    });
+
     it('returns the array default when stored JSON is the wrong type (object)', () => {
         localStorage.setItem('espresso-shots', '{}');
         expect(loadShots()).toEqual([]);
@@ -233,5 +257,18 @@ describe('storage robustness', () => {
         saveShots([]);
         expect(dispatch).toHaveBeenCalledOnce();
         expect(dispatch.mock.calls[0][0].type).toBe('luxe:storage-error');
+    });
+
+    it('guards raw preference writes with the same storage-error event', () => {
+        const throwing = {
+            ...createStorageMock(),
+            setItem: () => { throw new DOMException('Quota exceeded', 'QuotaExceededError'); },
+        };
+        vi.stubGlobal('localStorage', throwing);
+        vi.spyOn(console, 'warn').mockImplementation(() => { });
+        const dispatch = vi.fn();
+        vi.stubGlobal('window', { dispatchEvent: dispatch });
+        expect(() => saveStorageValue('theme', 'dark')).not.toThrow();
+        expect(dispatch).toHaveBeenCalledOnce();
     });
 });

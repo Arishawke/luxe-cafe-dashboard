@@ -2,7 +2,7 @@ import type { Rating, BrewType, Basket, Temperature, Strength, MilkType, MilkSty
 
 export const RATINGS: Rating[] = ['Very Sour', 'Sour', 'Balanced', 'Bitter', 'Very Bitter'];
 
-// CSS custom properties so inline styles re-skin across all five themes
+// CSS custom properties so inline styles re-skin across all six themes
 export const RATING_COLORS: Record<Rating, string> = {
     'Very Sour': 'var(--color-very-sour)',
     'Sour': 'var(--color-sour)',

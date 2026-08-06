@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { filterShots } from './shots';
+import { filterShots, getRecentShotsForBean } from './shots';
 import type { ShotLog } from '../types';
 
 const baseShot = (over: Partial<ShotLog>): ShotLog => ({
@@ -40,5 +40,17 @@ describe('filterShots', () => {
 
     it('combines bean and notes filters', () => {
         expect(filterShots(shots, 'Ethiopia', 'floral').map(s => s.id)).toEqual(['1']);
+    });
+});
+
+describe('getRecentShotsForBean', () => {
+    it('matches normalized names and returns newest shots first', () => {
+        const shots = [
+            baseShot({ id: 'old', beanName: 'Ethiopia', timestamp: new Date('2026-05-01') }),
+            baseShot({ id: 'other', beanName: 'Colombia', timestamp: new Date('2026-05-03') }),
+            baseShot({ id: 'new', beanName: ' ETHIOPIA ', timestamp: new Date('2026-05-02') }),
+        ];
+        expect(getRecentShotsForBean(shots, 'ethiopia').map(shot => shot.id)).toEqual(['new', 'old']);
+        expect(getRecentShotsForBean(shots, 'ethiopia', 1).map(shot => shot.id)).toEqual(['new']);
     });
 });

@@ -8,3 +8,12 @@ export function filterShots(shots: ShotLog[], beanFilter: string, notesSearch: s
         return true;
     });
 }
+
+export function getRecentShotsForBean(shots: ShotLog[], beanName: string, limit?: number): ShotLog[] {
+    const key = beanName.trim().toLowerCase();
+    if (!key) return [];
+    const matching = shots
+        .filter(shot => shot.beanName.trim().toLowerCase() === key)
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return limit === undefined ? matching : matching.slice(0, limit);
+}

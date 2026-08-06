@@ -29,8 +29,8 @@ interface FakeLocation {
     hostname: string;
     hash: string;
     search: string;
-    assign: ReturnType<typeof vi.fn>;
-    replace: ReturnType<typeof vi.fn>;
+    assign: ReturnType<typeof vi.fn<(url: string) => void>>;
+    replace: ReturnType<typeof vi.fn<(url: string) => void>>;
 }
 
 function fakeLoc(over: Partial<FakeLocation> = {}): FakeLocation {
@@ -124,6 +124,10 @@ describe('readMigrationLanding', () => {
         const json = JSON.stringify({ shots: [{ beanName: 'Test' }] });
         const loc = fakeLoc({ hash: `#migrate=${encodeURIComponent(json)}` });
         expect(readMigrationLanding(loc)).toEqual({ json });
+    });
+
+    it('flags malformed URI encoding instead of throwing', () => {
+        expect(readMigrationLanding(fakeLoc({ hash: '#migrate=%' }))).toEqual({ invalid: true });
     });
 });
 

@@ -9,7 +9,7 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({ dialog, onConfirm, onClose }: ConfirmDialogProps) {
-    const modalRef = useFocusTrap<HTMLDivElement>();
+    const modalRef = useFocusTrap<HTMLDivElement>(dialog !== null);
     if (!dialog) return null;
     return (
         <div className="modal-overlay" onClick={onClose}>

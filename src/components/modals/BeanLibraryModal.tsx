@@ -138,8 +138,9 @@ export default function BeanLibraryModal({
                     <div className="bean-form">
                         <h4>{editing ? 'Edit Bean' : 'Add New Bean'}</h4>
                         <div className="form-group">
-                            <label className="form-label">Bean Name *</label>
+                            <label className="form-label" htmlFor="bean-name">Bean Name *</label>
                             <input
+                                id="bean-name"
                                 type="text"
                                 className="form-input"
                                 placeholder="e.g. Ethiopian Yirgacheffe"
@@ -149,8 +150,9 @@ export default function BeanLibraryModal({
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <label className="form-label">Roaster</label>
+                                <label className="form-label" htmlFor="bean-roaster">Roaster</label>
                                 <input
+                                    id="bean-roaster"
                                     type="text"
                                     className="form-input"
                                     placeholder="e.g. Counter Culture"
@@ -159,8 +161,9 @@ export default function BeanLibraryModal({
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Origin</label>
+                                <label className="form-label" htmlFor="bean-origin">Origin</label>
                                 <input
+                                    id="bean-origin"
                                     type="text"
                                     className="form-input"
                                     placeholder="e.g. Ethiopia"
@@ -171,9 +174,10 @@ export default function BeanLibraryModal({
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <label className="form-label">Roast Level</label>
+                                <label className="form-label" htmlFor="bean-roast-level">Roast Level</label>
                                 <div className="select-wrap">
                                     <select
+                                        id="bean-roast-level"
                                         className="form-select"
                                         value={roastLevel}
                                         onChange={(e) => setRoastLevel(e.target.value as RoastLevel)}
@@ -186,9 +190,10 @@ export default function BeanLibraryModal({
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Process</label>
+                                <label className="form-label" htmlFor="bean-process">Process</label>
                                 <div className="select-wrap">
                                     <select
+                                        id="bean-process"
                                         className="form-select"
                                         value={process}
                                         onChange={(e) => setProcess(e.target.value as ProcessMethod)}
@@ -202,8 +207,9 @@ export default function BeanLibraryModal({
                             </div>
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Roast Date</label>
+                            <label className="form-label" htmlFor="bean-roast-date">Roast Date</label>
                             <input
+                                id="bean-roast-date"
                                 type="date"
                                 className="form-input"
                                 value={roastDate}
@@ -211,8 +217,9 @@ export default function BeanLibraryModal({
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Flavor Notes</label>
+                            <label className="form-label" htmlFor="bean-flavor-notes">Flavor Notes</label>
                             <input
+                                id="bean-flavor-notes"
                                 type="text"
                                 className="form-input"
                                 placeholder="e.g. Blueberry, Chocolate, Citrus"
@@ -222,8 +229,9 @@ export default function BeanLibraryModal({
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <label className="form-label">Bag Size (g)</label>
+                                <label className="form-label" htmlFor="bean-bag-size">Bag Size (g)</label>
                                 <input
+                                    id="bean-bag-size"
                                     type="number"
                                     inputMode="decimal"
                                     min="0"
@@ -235,8 +243,9 @@ export default function BeanLibraryModal({
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Price Paid</label>
+                                <label className="form-label" htmlFor="bean-price">Price Paid</label>
                                 <input
+                                    id="bean-price"
                                     type="number"
                                     inputMode="decimal"
                                     min="0"
@@ -277,7 +286,7 @@ export default function BeanLibraryModal({
                                             key={bean.id}
                                             className={`bean-card ${!bean.isActive ? 'bean-card--inactive' : ''} ${editing?.id === bean.id ? 'bean-card--editing' : ''}`}
                                         >
-                                            <div className="bean-card__main" onClick={() => startEdit(bean)}>
+                                            <div className="bean-card__main">
                                                 <div className="bean-card__name">{bean.name}</div>
                                                 <div className="bean-card__meta">
                                                     {bean.roaster && <span>{bean.roaster}</span>}
@@ -303,7 +312,7 @@ export default function BeanLibraryModal({
                                                     </div>
                                                 )}
                                                 {(bestDialIn || progression.length > 1) && (
-                                                    <div className="bean-card__dialin" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="bean-card__dialin">
                                                         {progression.length > 1 && <DialInSparkline points={progression} />}
                                                         {bestDialIn && (
                                                             <div className="bean-card__best">
@@ -328,6 +337,14 @@ export default function BeanLibraryModal({
                                                 )}
                                             </div>
                                             <div className="bean-card__actions">
+                                                <button
+                                                    className="bean-card__edit"
+                                                    onClick={() => startEdit(bean)}
+                                                    title={`Edit ${bean.name}`}
+                                                    aria-label={`Edit ${bean.name}`}
+                                                >
+                                                    <Icons.Edit />
+                                                </button>
                                                 <button
                                                     className={`bean-card__toggle ${bean.isActive ? 'bean-card__toggle--active' : ''}`}
                                                     onClick={() => onToggleActive(bean.id)}

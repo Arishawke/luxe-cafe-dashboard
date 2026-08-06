@@ -920,6 +920,21 @@ input[type="number"]::-webkit-outer-spin-button {
   border-bottom-color: color-mix(in srgb, var(--color-caramel) 45%, transparent);
 }
 
+.history-item__review {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .history-item__rating {
   width: 34px;
   height: 34px;
@@ -1103,7 +1118,8 @@ input[type="number"]::-webkit-outer-spin-button {
   transition: background 0.15s ease;
 }
 
-.autocomplete__option:hover {
+.autocomplete__option:hover,
+.autocomplete__option--active {
   background: var(--color-mocha);
 }
 
@@ -2888,7 +2904,6 @@ button.grind-control__value:hover {
   background: color-mix(in srgb, var(--color-caramel) 6%, transparent);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  cursor: pointer;
   transition: var(--transition-base);
 }
 
@@ -2985,6 +3000,7 @@ button.grind-control__value:hover {
   color: var(--color-balanced);
 }
 
+.bean-card__edit,
 .bean-card__delete {
   width: 28px;
   height: 28px;
@@ -2997,6 +3013,11 @@ button.grind-control__value:hover {
   color: var(--color-subtle);
   cursor: pointer;
   transition: var(--transition-base);
+}
+
+.bean-card__edit:hover {
+  background: color-mix(in srgb, var(--color-caramel) 20%, transparent);
+  color: var(--color-caramel);
 }
 
 .bean-card__delete:hover {
@@ -5359,6 +5380,7 @@ textarea:focus-visible {
 .toast__close,
 .compare-panel__close,
 .bean-card__delete,
+.bean-card__edit,
 .bean-card__toggle,
 .recipe-library__action-btn,
 .maintenance-row__btn,
@@ -5380,6 +5402,7 @@ textarea:focus-visible {
 .toast__close,
 .compare-panel__close,
 .bean-card__delete,
+.bean-card__edit,
 .bean-card__toggle,
 .recipe-library__action-btn,
 .header__hamburger {
@@ -5780,5 +5803,18 @@ textarea:focus-visible {
   .migration-notice__migrate {
     flex: 1;
     justify-content: center;
+  }
+
+  .migration-notice__actions {
+    width: 100%;
+  }
+
+  .migration-notice__migrate,
+  .migration-notice__dismiss {
+    min-height: 44px;
+  }
+
+  .migration-notice__dismiss {
+    min-width: 44px;
   }
 }

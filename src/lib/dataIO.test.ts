@@ -87,6 +87,25 @@ describe('parseBackup', () => {
         expect(result.skipped.shots).toBe(1);
     });
 
+    it('skips shots with a blank id or invalid required settings', () => {
+        const text = JSON.stringify({ shots: [
+            validShot,
+            { ...validShot, id: ' ' },
+            { ...validShot, id: '2', brewType: 'Tea' },
+            { ...validShot, id: '3', strength: 9 },
+        ] });
+        const result = parseBackup(text);
+        expect(result.shots.map((s: ShotLog) => s.id)).toEqual(['1']);
+        expect(result.skipped.shots).toBe(3);
+    });
+
+    it('keeps the first record when imported ids are duplicated', () => {
+        const text = JSON.stringify({ shots: [validShot, { ...validShot, beanName: 'Duplicate' }] });
+        const result = parseBackup(text);
+        expect(result.shots.map((s: ShotLog) => s.beanName)).toEqual(['Ethiopia']);
+        expect(result.skipped.shots).toBe(1);
+    });
+
     it('defaults recipes, beans, and maintenance to empty when absent', () => {
         const result = parseBackup(backup({}));
         expect(result.recipes).toEqual([]);
@@ -113,6 +132,20 @@ describe('parseBackup', () => {
         expect(result.recipes).toHaveLength(1);
         expect(result.recipes[0].createdAt).toBeInstanceOf(Date);
         expect(result.skipped.recipes).toBe(1);
+    });
+
+    it('skips recipes and beans with invalid required fields', () => {
+        const recipe = { id: 'r1', name: 'Latte', beanName: 'Ethiopia', brewType: 'Espresso', basket: 'Double', grindSize: 12, strength: 2, createdAt: '2026-05-01T10:00:00.000Z' };
+        const bean = { id: 'b1', name: 'Ethiopia', isActive: true, createdAt: '2026-05-01T10:00:00.000Z' };
+        const result = parseBackup(JSON.stringify({
+            shots: [validShot],
+            recipes: [recipe, { ...recipe, id: '', basket: 'Triple' }],
+            beans: [bean, { ...bean, id: 'b2', isActive: 'yes' }],
+        }));
+        expect(result.recipes.map((r: SavedRecipe) => r.id)).toEqual(['r1']);
+        expect(result.beans.map((b: BeanProfile) => b.id)).toEqual(['b1']);
+        expect(result.skipped.recipes).toBe(1);
+        expect(result.skipped.beans).toBe(1);
     });
 });
 

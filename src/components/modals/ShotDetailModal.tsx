@@ -30,7 +30,7 @@ export default function ShotDetailModal({
     onToggleCompare,
     onRate,
 }: ShotDetailModalProps) {
-    const modalRef = useFocusTrap<HTMLDivElement>();
+    const modalRef = useFocusTrap<HTMLDivElement>(shot !== null);
     if (!shot) return null;
 
     return (

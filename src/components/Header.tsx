@@ -29,12 +29,14 @@ export default function Header({
             <button
                 className="header__hamburger"
                 onClick={onToggleMobileMenu}
-                aria-label="Toggle menu"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="header-menu"
             >
                 {mobileMenuOpen ? <Icons.X /> : <Icons.Menu />}
             </button>
 
-            <div className={`header__btns ${mobileMenuOpen ? 'header__btns--open' : ''}`}>
+            <div id="header-menu" className={`header__btns ${mobileMenuOpen ? 'header__btns--open' : ''}`}>
                 <button
                     className="header__btn"
                     onClick={onOpenBeanLibrary}

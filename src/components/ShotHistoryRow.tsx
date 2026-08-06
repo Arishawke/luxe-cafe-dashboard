@@ -39,43 +39,44 @@ export default function ShotHistoryRow({
     return (
         <div
             className={`history-item history-item--clickable ${isFavorite ? 'history-item--favorite' : ''} ${isSelected ? 'history-item--selected' : ''} ${justLogged ? 'history-item--just-logged' : ''}`}
-            onClick={() => onSelect(shot)}
-            onDoubleClick={onOpen ? () => onOpen(shot) : undefined}
         >
-            <div className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>
-                {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
-            </div>
-            <div className="history-item__details">
-                <div className="history-item__bean">{shot.beanName}</div>
-                <div className="history-item__meta">
-                    {shot.brewType} • {formatDate(shot.timestamp, use24Hour)}
-                </div>
-                <div className="history-item__settings">
-                    <span className="setting-tag">Grind {shot.grindSize}</span>
-                    {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
-                    <span className="setting-tag">{shot.basket}</span>
-                    <span className="setting-tag">Str {shot.strength}</span>
-                    {shot.extractionTime && (
-                        <span className="setting-tag setting-tag--timer"><Icons.Timer /> {shot.extractionTime}s</span>
-                    )}
-                    {shot.doseIn && shot.doseOut && (
-                        <span className="setting-tag setting-tag--dose">
-                            {shot.doseIn}→{shot.doseOut}g (1:{(shot.doseOut / shot.doseIn).toFixed(1)})
-                            {ratioLabel && <span className="ratio-label">{ratioLabel}</span>}
-                        </span>
-                    )}
-                    {shot.milk && (
-                        <span className="setting-tag setting-tag--milk">
-                            {shot.milk.type} {shot.milk.style}
-                        </span>
-                    )}
-                </div>
-                {shot.notes && (
-                    <div className="history-item__notes">
-                        {shot.notes}
-                    </div>
-                )}
-            </div>
+            <button
+                type="button"
+                className="history-item__review"
+                onClick={() => onSelect(shot)}
+                onDoubleClick={onOpen ? () => onOpen(shot) : undefined}
+            >
+                <span className={`history-item__rating ${config ? `history-item__rating--${config.colorClass}` : 'history-item__rating--unrated'}`} title={config ? undefined : 'Not rated yet'}>
+                    {ShotIcon ? <ShotIcon /> : <span className="rating-unrated-mark" aria-hidden="true">?</span>}
+                </span>
+                <span className="history-item__details">
+                    <span className="history-item__bean">{shot.beanName}</span>
+                    <span className="history-item__meta">
+                        {shot.brewType} • {formatDate(shot.timestamp, use24Hour)}
+                    </span>
+                    <span className="history-item__settings">
+                        <span className="setting-tag">Grind {shot.grindSize}</span>
+                        {shot.temperature && <span className="setting-tag">{shot.temperature}</span>}
+                        <span className="setting-tag">{shot.basket}</span>
+                        <span className="setting-tag">Str {shot.strength}</span>
+                        {shot.extractionTime && (
+                            <span className="setting-tag setting-tag--timer"><Icons.Timer /> {shot.extractionTime}s</span>
+                        )}
+                        {shot.doseIn && shot.doseOut && (
+                            <span className="setting-tag setting-tag--dose">
+                                {shot.doseIn}→{shot.doseOut}g (1:{(shot.doseOut / shot.doseIn).toFixed(1)})
+                                {ratioLabel && <span className="ratio-label">{ratioLabel}</span>}
+                            </span>
+                        )}
+                        {shot.milk && (
+                            <span className="setting-tag setting-tag--milk">
+                                {shot.milk.type} {shot.milk.style}
+                            </span>
+                        )}
+                    </span>
+                    {shot.notes && <span className="history-item__notes">{shot.notes}</span>}
+                </span>
+            </button>
             <div className="history-item__actions">
                 <button
                     className={`star-btn ${isFavorite ? 'star-btn--active' : ''}`}

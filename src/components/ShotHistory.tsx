@@ -61,6 +61,7 @@ export default function ShotHistory({
                     <div className="history-filter">
                         <select
                             className="history-filter__select"
+                            aria-label="Filter by bean"
                             value={beanFilter}
                             onChange={(e) => setBeanFilter(e.target.value)}
                         >
@@ -86,6 +87,7 @@ export default function ShotHistory({
                     <input
                         type="text"
                         className="history-filter__search"
+                        aria-label="Search notes"
                         placeholder="Search notes..."
                         value={notesSearch}
                         onChange={(e) => setNotesSearch(e.target.value)}

@@ -36,6 +36,7 @@ interface WindowLike {
 export interface MigrationLanding {
     json?: string;
     tooBig?: boolean;
+    invalid?: boolean;
 }
 
 // Old origin carrying the send flag: serialize this origin's data and redirect to
@@ -53,7 +54,11 @@ export function handleMigrationSend(loc: LocationLike = window.location): boolea
 export function readMigrationLanding(loc: LocationLike = window.location): MigrationLanding | null {
     if (loc.hash === TOOBIG_HASH) return { tooBig: true };
     if (loc.hash.startsWith(PAYLOAD_HASH_PREFIX)) {
-        return { json: decodeURIComponent(loc.hash.slice(PAYLOAD_HASH_PREFIX.length)) };
+        try {
+            return { json: decodeURIComponent(loc.hash.slice(PAYLOAD_HASH_PREFIX.length)) };
+        } catch {
+            return { invalid: true };
+        }
     }
     return null;
 }

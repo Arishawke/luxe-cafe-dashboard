@@ -23,8 +23,8 @@ describe('design tokens in index.css', () => {
     });
 
     it('leaves no raw rating/accent hex literals in rules (tokens only)', () => {
-        // The five themes own these colors; a literal here is right in one
-        // theme and wrong in the other four.
+        // The six themes own these colors; a literal here is right in one
+        // theme and wrong in the other five.
         const offenders = ['#D4915C', '#7A9E6D', '#B85C5C', '#E8A045', '#C04545', '#FFD700'];
         const body = css.slice(css.indexOf('/* Reset & Base */'));
         const found = offenders.filter(hex => body.toUpperCase().includes(hex));

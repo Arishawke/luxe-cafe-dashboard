@@ -24,6 +24,8 @@ import SuggestionCard from './components/SuggestionCard';
 import ShotHistory from './components/ShotHistory';
 import ShotComparison from './components/ShotComparison';
 import { RATING_COLOR_CLASS } from './lib/ratings';
+import { saveStorageValue } from './lib/storage';
+import { getRecentShotsForBean } from './lib/shots';
 
 const RecipeEditorModal = lazy(() => import('./components/modals/RecipeEditorModal'));
 const BeanLibraryModal = lazy(() => import('./components/modals/BeanLibraryModal'));
@@ -110,6 +112,10 @@ function App() {
     const landing = readMigrationLanding();
     if (!landing) return;
     clearMigrationHash();
+    if (landing.invalid) {
+      showToast('Could not read the data from the old site. Try Export and Import instead.', 'error');
+      return;
+    }
     if (landing.tooBig) {
       showToast('Your data is large. On the old site use Settings, Export, then Import here.', 'error');
       return;
@@ -163,13 +169,8 @@ function App() {
   const favoriteId = favorites[currentBeanKey];
   const favoriteShot = favoriteId ? shots.find(s => s.id === favoriteId) : null;
 
-  const lastShotForBean = favoriteShot || (form.beanName.trim()
-    ? shots.find(s => s.beanName.toLowerCase() === currentBeanKey)
-    : null);
-
-  const shotsForBean = form.beanName.trim()
-    ? shots.filter(s => s.beanName.toLowerCase() === currentBeanKey).slice(0, 5)
-    : [];
+  const shotsForBean = getRecentShotsForBean(shots, form.beanName, 5);
+  const lastShotForBean = shotsForBean[0] ?? null;
 
   const suggestedSettings = getSuggestedSettings(lastShotForBean);
 
@@ -321,13 +322,9 @@ function App() {
     const ratingIdx = shot.rating ? RATINGS.indexOf(shot.rating) : -1;
     form.setRated(ratingIdx >= 0);
     form.setRatingIndex(ratingIdx >= 0 ? ratingIdx : BALANCED_RATING_INDEX);
-    if (shot.doseIn) {
-      form.setShowDose(true);
-      form.setDoseIn(shot.doseIn.toString());
-    }
-    if (shot.doseOut) {
-      form.setDoseOut(shot.doseOut.toString());
-    }
+    form.setShowDose(shot.doseIn !== undefined || shot.doseOut !== undefined);
+    form.setDoseIn(shot.doseIn?.toString() ?? '');
+    form.setDoseOut(shot.doseOut?.toString() ?? '');
     if (shot.extractionTime) {
       form.setShowTimer(true);
     }
@@ -451,7 +448,7 @@ function App() {
     if (editingShot) {
       submitShotEdits();
       form.reset();
-      autocomplete.setShowSuggestions(false);
+      autocomplete.closeSuggestions();
       resetTimer();
       return;
     }
@@ -485,7 +482,7 @@ function App() {
     setJustLoggedId(newShot.id);
     const beanShots = shots.filter(s => s.beanName.toLowerCase() === newShot.beanName.toLowerCase()).length + 1;
     form.reset();
-    autocomplete.setShowSuggestions(false);
+    autocomplete.closeSuggestions();
     resetTimer();
     showToast(getLogMessage(shots.length + 1, beanShots, newShot.beanName), 'success');
   };
@@ -868,7 +865,7 @@ function App() {
                 className="shortcuts-panel__close"
                 onClick={() => {
                   setShowShortcuts(false);
-                  localStorage.setItem('luxe-cafe-show-shortcuts', 'false');
+                  saveStorageValue('luxe-cafe-show-shortcuts', 'false');
                 }}
                 title="Hide shortcuts"
               >
@@ -899,7 +896,7 @@ function App() {
             className="shortcuts-panel__toggle"
             onClick={() => {
               setShowShortcuts(true);
-              localStorage.setItem('luxe-cafe-show-shortcuts', 'true');
+              saveStorageValue('luxe-cafe-show-shortcuts', 'true');
             }}
             title="Show keyboard shortcuts"
             aria-label="Show keyboard shortcuts"

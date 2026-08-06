@@ -1,6 +1,13 @@
 import type { ShotLog, SavedRecipe, BeanProfile, FavoritesMap, MaintenanceEvent } from '../types';
-import { RATINGS } from '../constants';
-import { reviveShot, reviveRecipe, reviveBean } from './storage';
+import {
+    reviveShot,
+    reviveRecipe,
+    reviveBean,
+    validShotRecord,
+    validRecipeRecord,
+    validBeanRecord,
+    validMaintenanceRecord,
+} from './storage';
 
 export interface BackupPayload {
     version: number;
@@ -100,55 +107,29 @@ function isRecord(v: unknown): v is Record<string, unknown> {
     return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-function parsesToValidDate(value: unknown): boolean {
-    if (typeof value !== 'string' && typeof value !== 'number' && !(value instanceof Date)) return false;
-    return !isNaN(new Date(value).getTime());
-}
-
-function validShotRecord(s: unknown): s is ShotLog {
-    if (!isRecord(s)) return false;
-    if (typeof s.beanName !== 'string' || s.beanName.trim() === '') return false;
-    // rating is optional (logged-but-not-yet-tasted); reject only an invalid non-empty value
-    if (s.rating !== undefined && (typeof s.rating !== 'string' || !(RATINGS as readonly string[]).includes(s.rating))) return false;
-    if (typeof s.grindSize !== 'number' || !Number.isFinite(s.grindSize)) return false;
-    return parsesToValidDate(s.timestamp);
-}
-
-function validMaintenanceRecord(m: unknown): m is MaintenanceEvent {
-    if (!isRecord(m)) return false;
-    if (m.task !== 'cleaning' && m.task !== 'descaling') return false;
-    if (typeof m.shotCountAtTime !== 'number') return false;
-    return parsesToValidDate(m.performedAt);
-}
-
-function validRecipeRecord(r: unknown): r is SavedRecipe {
-    if (!isRecord(r)) return false;
-    if (typeof r.name !== 'string' || typeof r.beanName !== 'string') return false;
-    return parsesToValidDate(r.createdAt);
-}
-
-function validFiniteNumberOrAbsent(v: unknown): boolean {
-    return v === undefined || (typeof v === 'number' && Number.isFinite(v));
-}
-
-function validBeanRecord(b: unknown): b is BeanProfile {
-    if (!isRecord(b)) return false;
-    if (typeof b.name !== 'string') return false;
-    // Inventory fields are optional; reject a present-but-non-numeric value so a
-    // hand-edited backup can't render NaN grams/cost.
-    if (!validFiniteNumberOrAbsent(b.bagSizeGrams)) return false;
-    if (!validFiniteNumberOrAbsent(b.pricePaid)) return false;
-    return parsesToValidDate(b.createdAt);
-}
-
 // keep every well-formed record, drop and count the rest (a damaged backup still restores)
-function collect<T>(arr: unknown, valid: (x: unknown) => x is T, revive: (x: T) => T = (x) => x): { items: T[]; skipped: number } {
+function collect<T>(
+    arr: unknown,
+    valid: (x: unknown) => x is T,
+    revive: (x: T) => T = (x) => x,
+    identity?: (item: T) => string,
+): { items: T[]; skipped: number } {
     if (!Array.isArray(arr)) return { items: [], skipped: 0 };
     const items: T[] = [];
+    const seen = new Set<string>();
     let skipped = 0;
     for (const el of arr) {
-        if (valid(el)) items.push(revive(el));
-        else skipped++;
+        if (!valid(el)) {
+            skipped++;
+            continue;
+        }
+        const id = identity?.(el);
+        if (id !== undefined && seen.has(id)) {
+            skipped++;
+            continue;
+        }
+        if (id !== undefined) seen.add(id);
+        items.push(revive(el));
     }
     return { items, skipped };
 }
@@ -159,9 +140,9 @@ export function parseBackup(text: string): ImportResult {
         throw new Error('Invalid backup file: missing shots data');
     }
 
-    const shots = collect<ShotLog>(data.shots, validShotRecord, reviveShot);
-    const recipes = collect<SavedRecipe>(data.recipes, validRecipeRecord, reviveRecipe);
-    const beans = collect<BeanProfile>(data.beans, validBeanRecord, reviveBean);
+    const shots = collect<ShotLog>(data.shots, validShotRecord, reviveShot, (shot) => shot.id);
+    const recipes = collect<SavedRecipe>(data.recipes, validRecipeRecord, reviveRecipe, (recipe) => recipe.id);
+    const beans = collect<BeanProfile>(data.beans, validBeanRecord, reviveBean, (bean) => bean.id);
     // older backups predate maintenance, default to empty
     const maintenance = collect<MaintenanceEvent>(data.maintenance, validMaintenanceRecord);
 
