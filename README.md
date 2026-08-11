@@ -1,3 +1,5 @@
+
+
 # Luxe Cafe Dashboard
 
 > [!WARNING]
@@ -23,6 +25,7 @@ A small web app for logging espresso shots and dialing in beans.
 - Next-shot tips based on taste and extraction time
 - Export to JSON or CSV; import from JSON
 - 6 themes; 12 or 24-hour time format
+- PWA support (installable and offline-capable)
 
 ## Keyboard Shortcuts
 
